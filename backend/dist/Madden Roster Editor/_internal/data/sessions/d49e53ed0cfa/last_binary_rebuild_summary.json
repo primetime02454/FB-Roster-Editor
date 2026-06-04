@@ -1,0 +1,70 @@
+{
+  "output_file": "C:\\Users\\Shadow\\Desktop\\Coding\\madden-roster-editor-webapp\\backend\\data\\sessions\\d49e53ed0cfa\\mroster_209_158_edited_raw.db",
+  "original_size_bytes": 14245866,
+  "rebuilt_size_bytes": 14217845,
+  "visual_blbm_original_offset": 10,
+  "visual_blbm_original_end": 8099166,
+  "small_blbm_original_offset": 8099176,
+  "small_blbm_original_end": 8126991,
+  "dcht_original_offset": 8127007,
+  "visuals_rebuilt": {
+    "included": true,
+    "source_json": "C:\\Users\\Shadow\\Desktop\\Coding\\madden-roster-editor-webapp\\backend\\data\\sessions\\d49e53ed0cfa\\visuals\\character_visuals_nested.json",
+    "players_encoded": 12154,
+    "original_visuals_size_bytes": 8099156,
+    "rebuilt_visuals_size_bytes": 8121213,
+    "unknown1": 0,
+    "unknown2": 2
+  },
+  "tables_rebuilt": [
+    "Character Visuals BLBM",
+    "BLOB.BLBM",
+    "BLOB.DCHT",
+    "BLOB.PLAY",
+    "BLOB.TCPS",
+    "BLOB.TEAM"
+  ],
+  "validation": {
+    "table_count": 1,
+    "warnings": [],
+    "tables": [
+      {
+        "path": "BLOB.BLBM",
+        "records": 609
+      },
+      {
+        "path": "BLOB.DCHT",
+        "records": 8660
+      },
+      {
+        "path": "BLOB.PLAY",
+        "records": 11730
+      },
+      {
+        "path": "BLOB.TCPS",
+        "records": 138
+      },
+      {
+        "path": "BLOB.TEAM",
+        "records": 138
+      }
+    ],
+    "character_visuals": {
+      "input_file": "C:\\Users\\Shadow\\Desktop\\Coding\\madden-roster-editor-webapp\\backend\\data\\sessions\\d49e53ed0cfa\\mroster_209_158_edited_raw.db",
+      "format": "H2-style Madden 26 character visuals validation",
+      "source_table": "BLBM",
+      "source_table_offset": 10,
+      "source_table_unknown2": 2,
+      "declared_records": 12154,
+      "parsed_records": 12154,
+      "warnings": [],
+      "sample_keys": [
+        105,
+        107,
+        108,
+        109,
+        110
+      ]
+    }
+  }
+}

@@ -1,0 +1,7 @@
+backend/.venv/
+backend/data/sessions/
+frontend/node_modules/
+frontend/dist/
+*.zip
+__pycache__/
+*.pyc

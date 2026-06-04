@@ -1,0 +1,3 @@
+_index,BLBM,DCHT,OTID,PLAY,TCPS,TEAM,TREF
+0,"{""nested_table"":""BLBM"",""type"":5,""num_entries"":239,""field_count"":8,""export_path"":""BLOB_BLBM.json/.csv""}",,1,,,,379669584
+1,,"{""nested_table"":""DCHT"",""type"":4,""num_entries"":8626,""field_count"":4,""export_path"":""BLOB_DCHT.json/.csv""}",,"{""nested_table"":""PLAY"",""type"":4,""num_entries"":11730,""field_count"":97,""export_path"":""BLOB_PLAY.json/.csv""}","{""nested_table"":""TCPS"",""type"":4,""num_entries"":138,""field_count"":3,""export_path"":""BLOB_TCPS.json/.csv""}","{""nested_table"":""TEAM"",""type"":4,""num_entries"":138,""field_count"":67,""export_path"":""BLOB_TEAM.json/.csv""}",

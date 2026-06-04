@@ -1,0 +1,27 @@
+{
+  "session_id": "1f49cd10a006",
+  "input_file": "edit-verify-wrapped.bin",
+  "input_stem": "edit-verify-wrapped",
+  "input_size_bytes": 6291530,
+  "input_container": "fbchunks",
+  "input_container_label": "FBCHUNKS wrapped save",
+  "parse_input_file": "parse_input.db",
+  "wrapper_meta": {
+    "year": 2025,
+    "data_start": 74,
+    "payload_size": 4398129,
+    "header_path": "wrapper_header.bin"
+  },
+  "parse_table_count": 7,
+  "parse_warnings": [],
+  "visuals": {
+    "error": "no large BLBM visuals table found; candidates=[]",
+    "warnings": [
+      "no large BLBM visuals table found; candidates=[]"
+    ]
+  },
+  "notes": [
+    "Edits are applied to the parsed project JSON/CSV session.",
+    "Binary .db write-back is enabled for the main roster tables and Character Visuals; Save As JSON remains available separately."
+  ]
+}

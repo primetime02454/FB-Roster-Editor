@@ -1,0 +1,1184 @@
+{
+  "input_file": "parse_input.db",
+  "input_size_bytes": 4398129,
+  "table_count": 7,
+  "warnings": [],
+  "tables": [
+    {
+      "index": 0,
+      "path": "DCHT",
+      "name": "DCHT",
+      "type": 4,
+      "unknown1": 3,
+      "unknown2": null,
+      "offset": 0,
+      "raw_key_hex": "923a340403",
+      "num_entries_declared": 2869,
+      "records_parsed": 2869,
+      "field_count": 4,
+      "fields": [
+        {
+          "name": "DDEP",
+          "type": 0
+        },
+        {
+          "name": "PGID",
+          "type": 0
+        },
+        {
+          "name": "PPOS",
+          "type": 0
+        },
+        {
+          "name": "TGID",
+          "type": 0
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\000_DCHT.json",
+      "csv_file": "csv\\000_DCHT.csv"
+    },
+    {
+      "index": 1,
+      "path": "DFTP",
+      "name": "DFTP",
+      "type": 4,
+      "unknown1": 3,
+      "unknown2": null,
+      "offset": 65755,
+      "raw_key_hex": "926d300403",
+      "num_entries_declared": 672,
+      "records_parsed": 672,
+      "field_count": 5,
+      "fields": [
+        {
+          "name": "DPCT",
+          "type": 0
+        },
+        {
+          "name": "DPOT",
+          "type": 0
+        },
+        {
+          "name": "DPPN",
+          "type": 0
+        },
+        {
+          "name": "DPRD",
+          "type": 0
+        },
+        {
+          "name": "DPYO",
+          "type": 0
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\001_DFTP.json",
+      "csv_file": "csv\\001_DFTP.csv"
+    },
+    {
+      "index": 2,
+      "path": "INJY",
+      "name": "INJY",
+      "type": 4,
+      "unknown1": 3,
+      "unknown2": null,
+      "offset": 83714,
+      "raw_key_hex": "a6eab90403",
+      "num_entries_declared": 3,
+      "records_parsed": 3,
+      "field_count": 8,
+      "fields": [
+        {
+          "name": "INIR",
+          "type": 0
+        },
+        {
+          "name": "INJL",
+          "type": 0
+        },
+        {
+          "name": "INJS",
+          "type": 0
+        },
+        {
+          "name": "INJT",
+          "type": 0
+        },
+        {
+          "name": "INSI",
+          "type": 0
+        },
+        {
+          "name": "INTW",
+          "type": 0
+        },
+        {
+          "name": "PGID",
+          "type": 0
+        },
+        {
+          "name": "TGID",
+          "type": 0
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\002_INJY.json",
+      "csv_file": "csv\\002_INJY.csv"
+    },
+    {
+      "index": 3,
+      "path": "PLAY",
+      "name": "PLAY",
+      "type": 4,
+      "unknown1": 3,
+      "unknown2": null,
+      "offset": 83854,
+      "raw_key_hex": "c2c8790403",
+      "num_entries_declared": 3045,
+      "records_parsed": 3045,
+      "field_count": 147,
+      "fields": [
+        {
+          "name": "EPAV",
+          "type": 0
+        },
+        {
+          "name": "ISCN",
+          "type": 0
+        },
+        {
+          "name": "PACC",
+          "type": 0
+        },
+        {
+          "name": "PAGE",
+          "type": 0
+        },
+        {
+          "name": "PAGI",
+          "type": 0
+        },
+        {
+          "name": "PAWR",
+          "type": 0
+        },
+        {
+          "name": "PBCV",
+          "type": 0
+        },
+        {
+          "name": "PBKT",
+          "type": 0
+        },
+        {
+          "name": "PBSG",
+          "type": 0
+        },
+        {
+          "name": "PBSK",
+          "type": 0
+        },
+        {
+          "name": "PCAR",
+          "type": 0
+        },
+        {
+          "name": "PCBT",
+          "type": 0
+        },
+        {
+          "name": "PCMT",
+          "type": 0
+        },
+        {
+          "name": "PCOL",
+          "type": 0
+        },
+        {
+          "name": "PCON",
+          "type": 0
+        },
+        {
+          "name": "PCPH",
+          "type": 0
+        },
+        {
+          "name": "PCSA",
+          "type": 0
+        },
+        {
+          "name": "PCTH",
+          "type": 0
+        },
+        {
+          "name": "PCYL",
+          "type": 0
+        },
+        {
+          "name": "PDPI",
+          "type": 0
+        },
+        {
+          "name": "PDRO",
+          "type": 0
+        },
+        {
+          "name": "PDRR",
+          "type": 0
+        },
+        {
+          "name": "PEGO",
+          "type": 0
+        },
+        {
+          "name": "PELU",
+          "type": 0
+        },
+        {
+          "name": "PEPS",
+          "type": 1
+        },
+        {
+          "name": "PFMS",
+          "type": 0
+        },
+        {
+          "name": "PFNA",
+          "type": 1
+        },
+        {
+          "name": "PGHE",
+          "type": 0
+        },
+        {
+          "name": "PGID",
+          "type": 0
+        },
+        {
+          "name": "PHAN",
+          "type": 0
+        },
+        {
+          "name": "PHGT",
+          "type": 0
+        },
+        {
+          "name": "PHSN",
+          "type": 0
+        },
+        {
+          "name": "PHTN",
+          "type": 1
+        },
+        {
+          "name": "PICN",
+          "type": 0
+        },
+        {
+          "name": "PIMP",
+          "type": 0
+        },
+        {
+          "name": "PINJ",
+          "type": 0
+        },
+        {
+          "name": "PJEN",
+          "type": 0
+        },
+        {
+          "name": "PJMP",
+          "type": 0
+        },
+        {
+          "name": "PKAC",
+          "type": 0
+        },
+        {
+          "name": "PKPR",
+          "type": 0
+        },
+        {
+          "name": "PKRT",
+          "type": 0
+        },
+        {
+          "name": "PLBD",
+          "type": 0
+        },
+        {
+          "name": "PLBK",
+          "type": 0
+        },
+        {
+          "name": "PLCI",
+          "type": 0
+        },
+        {
+          "name": "PLCP",
+          "type": 0
+        },
+        {
+          "name": "PLDT",
+          "type": 0
+        },
+        {
+          "name": "PLHT",
+          "type": 0
+        },
+        {
+          "name": "PLHY",
+          "type": 0
+        },
+        {
+          "name": "PLIB",
+          "type": 0
+        },
+        {
+          "name": "PLJM",
+          "type": 0
+        },
+        {
+          "name": "PLMC",
+          "type": 0
+        },
+        {
+          "name": "PLMO",
+          "type": 0
+        },
+        {
+          "name": "PLNA",
+          "type": 1
+        },
+        {
+          "name": "PLPE",
+          "type": 0
+        },
+        {
+          "name": "PLPL",
+          "type": 0
+        },
+        {
+          "name": "PLPM",
+          "type": 0
+        },
+        {
+          "name": "PLPO",
+          "type": 0
+        },
+        {
+          "name": "PLPR",
+          "type": 0
+        },
+        {
+          "name": "PLPU",
+          "type": 0
+        },
+        {
+          "name": "PLRL",
+          "type": 0
+        },
+        {
+          "name": "PLSA",
+          "type": 0
+        },
+        {
+          "name": "PLSC",
+          "type": 0
+        },
+        {
+          "name": "PLSM",
+          "type": 0
+        },
+        {
+          "name": "PLTR",
+          "type": 0
+        },
+        {
+          "name": "PLTY",
+          "type": 0
+        },
+        {
+          "name": "PLZC",
+          "type": 0
+        },
+        {
+          "name": "PMRR",
+          "type": 0
+        },
+        {
+          "name": "POID",
+          "type": 0
+        },
+        {
+          "name": "POVR",
+          "type": 0
+        },
+        {
+          "name": "PPBF",
+          "type": 0
+        },
+        {
+          "name": "PPBK",
+          "type": 0
+        },
+        {
+          "name": "PPBS",
+          "type": 0
+        },
+        {
+          "name": "PPLA",
+          "type": 0
+        },
+        {
+          "name": "PPOS",
+          "type": 0
+        },
+        {
+          "name": "PQBS",
+          "type": 0
+        },
+        {
+          "name": "PRBF",
+          "type": 0
+        },
+        {
+          "name": "PRBK",
+          "type": 0
+        },
+        {
+          "name": "PRBS",
+          "type": 0
+        },
+        {
+          "name": "PROL",
+          "type": 0
+        },
+        {
+          "name": "PRSE",
+          "type": 0
+        },
+        {
+          "name": "PSA0",
+          "type": 0
+        },
+        {
+          "name": "PSA1",
+          "type": 0
+        },
+        {
+          "name": "PSA2",
+          "type": 0
+        },
+        {
+          "name": "PSA3",
+          "type": 0
+        },
+        {
+          "name": "PSA4",
+          "type": 0
+        },
+        {
+          "name": "PSA5",
+          "type": 0
+        },
+        {
+          "name": "PSA6",
+          "type": 0
+        },
+        {
+          "name": "PSB0",
+          "type": 0
+        },
+        {
+          "name": "PSB1",
+          "type": 0
+        },
+        {
+          "name": "PSB2",
+          "type": 0
+        },
+        {
+          "name": "PSB3",
+          "type": 0
+        },
+        {
+          "name": "PSB4",
+          "type": 0
+        },
+        {
+          "name": "PSB5",
+          "type": 0
+        },
+        {
+          "name": "PSB6",
+          "type": 0
+        },
+        {
+          "name": "PSBO",
+          "type": 0
+        },
+        {
+          "name": "PSKI",
+          "type": 0
+        },
+        {
+          "name": "PSPD",
+          "type": 0
+        },
+        {
+          "name": "PSTA",
+          "type": 0
+        },
+        {
+          "name": "PSTM",
+          "type": 0
+        },
+        {
+          "name": "PSTN",
+          "type": 0
+        },
+        {
+          "name": "PSTR",
+          "type": 0
+        },
+        {
+          "name": "PSXP",
+          "type": 0
+        },
+        {
+          "name": "PTAD",
+          "type": 0
+        },
+        {
+          "name": "PTAK",
+          "type": 0
+        },
+        {
+          "name": "PTAM",
+          "type": 0
+        },
+        {
+          "name": "PTAS",
+          "type": 0
+        },
+        {
+          "name": "PTEN",
+          "type": 0
+        },
+        {
+          "name": "PTGH",
+          "type": 0
+        },
+        {
+          "name": "PTHA",
+          "type": 0
+        },
+        {
+          "name": "PTHP",
+          "type": 0
+        },
+        {
+          "name": "PTOR",
+          "type": 0
+        },
+        {
+          "name": "PTSA",
+          "type": 0
+        },
+        {
+          "name": "PTUP",
+          "type": 0
+        },
+        {
+          "name": "PVCO",
+          "type": 0
+        },
+        {
+          "name": "PVSB",
+          "type": 0
+        },
+        {
+          "name": "PVTS",
+          "type": 0
+        },
+        {
+          "name": "PWGT",
+          "type": 0
+        },
+        {
+          "name": "PYCF",
+          "type": 0
+        },
+        {
+          "name": "PYRP",
+          "type": 0
+        },
+        {
+          "name": "PYWT",
+          "type": 0
+        },
+        {
+          "name": "SRRN",
+          "type": 0
+        },
+        {
+          "name": "TGID",
+          "type": 0
+        },
+        {
+          "name": "TRBH",
+          "type": 0
+        },
+        {
+          "name": "TRBR",
+          "type": 0
+        },
+        {
+          "name": "TRCB",
+          "type": 0
+        },
+        {
+          "name": "TRCL",
+          "type": 0
+        },
+        {
+          "name": "TRCT",
+          "type": 0
+        },
+        {
+          "name": "TRDO",
+          "type": 0
+        },
+        {
+          "name": "TRDS",
+          "type": 0
+        },
+        {
+          "name": "TRFB",
+          "type": 0
+        },
+        {
+          "name": "TRFK",
+          "type": 0
+        },
+        {
+          "name": "TRFP",
+          "type": 0
+        },
+        {
+          "name": "TRFY",
+          "type": 0
+        },
+        {
+          "name": "TRHM",
+          "type": 0
+        },
+        {
+          "name": "TRIC",
+          "type": 0
+        },
+        {
+          "name": "TRJR",
+          "type": 0
+        },
+        {
+          "name": "TRPB",
+          "type": 0
+        },
+        {
+          "name": "TRSB",
+          "type": 0
+        },
+        {
+          "name": "TRSC",
+          "type": 0
+        },
+        {
+          "name": "TRSP",
+          "type": 0
+        },
+        {
+          "name": "TRSW",
+          "type": 0
+        },
+        {
+          "name": "TRTA",
+          "type": 0
+        },
+        {
+          "name": "TRTL",
+          "type": 0
+        },
+        {
+          "name": "TRTR",
+          "type": 0
+        },
+        {
+          "name": "TRTS",
+          "type": 0
+        },
+        {
+          "name": "TRWU",
+          "type": 0
+        },
+        {
+          "name": "TSPM",
+          "type": 0
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\003_PLAY.json",
+      "csv_file": "csv\\003_PLAY.csv"
+    },
+    {
+      "index": 4,
+      "path": "PLEX",
+      "name": "PLEX",
+      "type": 5,
+      "unknown1": 0,
+      "unknown2": 2,
+      "offset": 2571829,
+      "raw_key_hex": "c2c978050002",
+      "num_entries_declared": 3045,
+      "records_parsed": 3045,
+      "field_count": 14,
+      "fields": [
+        {
+          "name": "ASNM",
+          "type": 1
+        },
+        {
+          "name": "BTYP",
+          "type": 0
+        },
+        {
+          "name": "CFNM",
+          "type": 1
+        },
+        {
+          "name": "CJNO",
+          "type": 0
+        },
+        {
+          "name": "CLNM",
+          "type": 1
+        },
+        {
+          "name": "CNID",
+          "type": 0
+        },
+        {
+          "name": "COMB",
+          "type": 3
+        },
+        {
+          "name": "GENR",
+          "type": 1
+        },
+        {
+          "name": "GNHD",
+          "type": 0
+        },
+        {
+          "name": "HINC",
+          "type": 0
+        },
+        {
+          "name": "LOUT",
+          "type": 4
+        },
+        {
+          "name": "SKNT",
+          "type": 0
+        },
+        {
+          "name": "USKT",
+          "type": 0
+        },
+        {
+          "name": "WLBS",
+          "type": 0
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\004_PLEX.json",
+      "csv_file": "csv\\004_PLEX.csv"
+    },
+    {
+      "index": 5,
+      "path": "PLEX.LOUT",
+      "name": "LOUT",
+      "type": 4,
+      "unknown1": 3,
+      "unknown2": null,
+      "offset": 96,
+      "raw_key_hex": "b2fd7404",
+      "num_entries_declared": 5893,
+      "records_parsed": 5893,
+      "field_count": 3,
+      "fields": [
+        {
+          "name": "LDCT",
+          "type": 0
+        },
+        {
+          "name": "LDTY",
+          "type": 0
+        },
+        {
+          "name": "PINS",
+          "type": 4
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\005_PLEX_LOUT.json",
+      "csv_file": "csv\\005_PLEX_LOUT.csv"
+    },
+    {
+      "index": 6,
+      "path": "PLEX.LOUT.PINS",
+      "name": "PINS",
+      "type": 4,
+      "unknown1": 3,
+      "unknown2": null,
+      "offset": 107,
+      "raw_key_hex": "c29bb304",
+      "num_entries_declared": 88639,
+      "records_parsed": 88639,
+      "field_count": 3,
+      "fields": [
+        {
+          "name": "IBLD",
+          "type": 4
+        },
+        {
+          "name": "ITAN",
+          "type": 1
+        },
+        {
+          "name": "SLOT",
+          "type": 0
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\006_PLEX_LOUT_PINS.json",
+      "csv_file": "csv\\006_PLEX_LOUT_PINS.csv"
+    },
+    {
+      "index": 7,
+      "path": "PLEX.LOUT.PINS.IBLD",
+      "name": "IBLD",
+      "type": 4,
+      "unknown1": 3,
+      "unknown2": null,
+      "offset": 113,
+      "raw_key_hex": "a62b2404",
+      "num_entries_declared": 15385,
+      "records_parsed": 15385,
+      "field_count": 2,
+      "fields": [
+        {
+          "name": "BARY",
+          "type": 10
+        },
+        {
+          "name": "BASE",
+          "type": 10
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\007_PLEX_LOUT_PINS_IBLD.json",
+      "csv_file": "csv\\007_PLEX_LOUT_PINS_IBLD.csv"
+    },
+    {
+      "index": 8,
+      "path": "PLGS",
+      "name": "PLGS",
+      "type": 4,
+      "unknown1": 3,
+      "unknown2": null,
+      "offset": 4385321,
+      "raw_key_hex": "c2c9f30403",
+      "num_entries_declared": 1,
+      "records_parsed": 1,
+      "field_count": 4,
+      "fields": [
+        {
+          "name": "GSCA",
+          "type": 1
+        },
+        {
+          "name": "PEPS",
+          "type": 1
+        },
+        {
+          "name": "PGID",
+          "type": 0
+        },
+        {
+          "name": "TLGO",
+          "type": 0
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\008_PLGS.json",
+      "csv_file": "csv\\008_PLGS.csv"
+    },
+    {
+      "index": 9,
+      "path": "TEAM",
+      "name": "TEAM",
+      "type": 4,
+      "unknown1": 3,
+      "unknown2": null,
+      "offset": 4385423,
+      "raw_key_hex": "d2586d0403",
+      "num_entries_declared": 33,
+      "records_parsed": 33,
+      "field_count": 59,
+      "fields": [
+        {
+          "name": "AFLD",
+          "type": 1
+        },
+        {
+          "name": "CGID",
+          "type": 0
+        },
+        {
+          "name": "CYID",
+          "type": 0
+        },
+        {
+          "name": "DGID",
+          "type": 0
+        },
+        {
+          "name": "DISN",
+          "type": 0
+        },
+        {
+          "name": "SGID",
+          "type": 0
+        },
+        {
+          "name": "SID1",
+          "type": 0
+        },
+        {
+          "name": "TAFL",
+          "type": 0
+        },
+        {
+          "name": "TASN",
+          "type": 1
+        },
+        {
+          "name": "TB2B",
+          "type": 0
+        },
+        {
+          "name": "TB2G",
+          "type": 0
+        },
+        {
+          "name": "TB2R",
+          "type": 0
+        },
+        {
+          "name": "TBCB",
+          "type": 0
+        },
+        {
+          "name": "TBCG",
+          "type": 0
+        },
+        {
+          "name": "TBCR",
+          "type": 0
+        },
+        {
+          "name": "TCCP",
+          "type": 0
+        },
+        {
+          "name": "TCRP",
+          "type": 0
+        },
+        {
+          "name": "TDAN",
+          "type": 1
+        },
+        {
+          "name": "TDNA",
+          "type": 1
+        },
+        {
+          "name": "TDPB",
+          "type": 0
+        },
+        {
+          "name": "TEAV",
+          "type": 0
+        },
+        {
+          "name": "TGID",
+          "type": 0
+        },
+        {
+          "name": "THSC",
+          "type": 0
+        },
+        {
+          "name": "TLGO",
+          "type": 0
+        },
+        {
+          "name": "TLNA",
+          "type": 1
+        },
+        {
+          "name": "TLPG",
+          "type": 0
+        },
+        {
+          "name": "TLPR",
+          "type": 0
+        },
+        {
+          "name": "TLSA",
+          "type": 0
+        },
+        {
+          "name": "TMNC",
+          "type": 1
+        },
+        {
+          "name": "TMSA",
+          "type": 0
+        },
+        {
+          "name": "TOID",
+          "type": 0
+        },
+        {
+          "name": "TOPB",
+          "type": 0
+        },
+        {
+          "name": "TORD",
+          "type": 0
+        },
+        {
+          "name": "TPFN",
+          "type": 1
+        },
+        {
+          "name": "TPSL",
+          "type": 0
+        },
+        {
+          "name": "TPSW",
+          "type": 0
+        },
+        {
+          "name": "TRCP",
+          "type": 0
+        },
+        {
+          "name": "TRDB",
+          "type": 0
+        },
+        {
+          "name": "TRDE",
+          "type": 0
+        },
+        {
+          "name": "TRDL",
+          "type": 0
+        },
+        {
+          "name": "TREP",
+          "type": 0
+        },
+        {
+          "name": "TRLB",
+          "type": 0
+        },
+        {
+          "name": "TROF",
+          "type": 0
+        },
+        {
+          "name": "TROL",
+          "type": 0
+        },
+        {
+          "name": "TROV",
+          "type": 0
+        },
+        {
+          "name": "TRQB",
+          "type": 0
+        },
+        {
+          "name": "TRRB",
+          "type": 0
+        },
+        {
+          "name": "TRST",
+          "type": 0
+        },
+        {
+          "name": "TRV1",
+          "type": 0
+        },
+        {
+          "name": "TRV2",
+          "type": 0
+        },
+        {
+          "name": "TRV3",
+          "type": 0
+        },
+        {
+          "name": "TSHO",
+          "type": 0
+        },
+        {
+          "name": "TSNA",
+          "type": 1
+        },
+        {
+          "name": "TTYP",
+          "type": 0
+        },
+        {
+          "name": "TUAN",
+          "type": 1
+        },
+        {
+          "name": "TUFP",
+          "type": 1
+        },
+        {
+          "name": "TUHO",
+          "type": 0
+        },
+        {
+          "name": "TVIS",
+          "type": 0
+        },
+        {
+          "name": "TWRR",
+          "type": 0
+        }
+      ],
+      "warnings": [],
+      "json_file": "json\\009_TEAM.json",
+      "csv_file": "csv\\009_TEAM.csv"
+    }
+  ]
+}

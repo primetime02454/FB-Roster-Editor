@@ -1,0 +1,38 @@
+{
+  "path": "PLGS",
+  "name": "PLGS",
+  "type": 4,
+  "unknown1": 3,
+  "unknown2": null,
+  "offset": 4385321,
+  "raw_key_hex": "c2c9f30403",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "GSCA",
+      "type": 1
+    },
+    {
+      "name": "PEPS",
+      "type": 1
+    },
+    {
+      "name": "PGID",
+      "type": 0
+    },
+    {
+      "name": "TLGO",
+      "type": 0
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "GSCA": "common/VanityPreset/FA_KaepernickColin_10578.json",
+      "PEPS": "KaepernickColin_10578",
+      "PGID": 10578,
+      "TLGO": 500
+    }
+  ]
+}

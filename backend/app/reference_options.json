@@ -1,0 +1,1812 @@
+{
+  "DEF_PLAYBOOK_IDOptions": [
+    {
+      "label": "Air Force",
+      "value": "501"
+    },
+    {
+      "label": "Akron",
+      "value": "505"
+    },
+    {
+      "label": "Alabama",
+      "value": "507"
+    },
+    {
+      "label": "Appalachian State",
+      "value": "503"
+    },
+    {
+      "label": "Arizona",
+      "value": "507"
+    },
+    {
+      "label": "Arizona State",
+      "value": "501"
+    },
+    {
+      "label": "Arkansas",
+      "value": "507"
+    },
+    {
+      "label": "Arkansas State",
+      "value": "503"
+    },
+    {
+      "label": "Army",
+      "value": "503"
+    },
+    {
+      "label": "Auburn",
+      "value": "502"
+    },
+    {
+      "label": "Ball State",
+      "value": "501"
+    },
+    {
+      "label": "Baylor",
+      "value": "502"
+    },
+    {
+      "label": "Boise State",
+      "value": "507"
+    },
+    {
+      "label": "Boston College",
+      "value": "505"
+    },
+    {
+      "label": "Bowling Green",
+      "value": "503"
+    },
+    {
+      "label": "Buffalo",
+      "value": "507"
+    },
+    {
+      "label": "BYU",
+      "value": "505"
+    },
+    {
+      "label": "California",
+      "value": "501"
+    },
+    {
+      "label": "Central Michigan",
+      "value": "505"
+    },
+    {
+      "label": "Charlotte",
+      "value": "505"
+    },
+    {
+      "label": "Cincinnati",
+      "value": "507"
+    },
+    {
+      "label": "Clemson",
+      "value": "505"
+    },
+    {
+      "label": "Coastal Carolina",
+      "value": "501"
+    },
+    {
+      "label": "Colorado",
+      "value": "501"
+    },
+    {
+      "label": "Colorado State",
+      "value": "507"
+    },
+    {
+      "label": "Duke",
+      "value": "507"
+    },
+    {
+      "label": "East Carolina",
+      "value": "501"
+    },
+    {
+      "label": "Eastern Michigan",
+      "value": "507"
+    },
+    {
+      "label": "Florida",
+      "value": "502"
+    },
+    {
+      "label": "Florida Atlantic",
+      "value": "505"
+    },
+    {
+      "label": "Florida International",
+      "value": "501"
+    },
+    {
+      "label": "Florida State",
+      "value": "505"
+    },
+    {
+      "label": "Fresno State",
+      "value": "507"
+    },
+    {
+      "label": "Georgia",
+      "value": "507"
+    },
+    {
+      "label": "Georgia Southern",
+      "value": "507"
+    },
+    {
+      "label": "Georgia State",
+      "value": "502"
+    },
+    {
+      "label": "Georgia Tech",
+      "value": "507"
+    },
+    {
+      "label": "Hawai'i",
+      "value": "507"
+    },
+    {
+      "label": "Houston",
+      "value": "505"
+    },
+    {
+      "label": "Illinois",
+      "value": "503"
+    },
+    {
+      "label": "Indiana",
+      "value": "503"
+    },
+    {
+      "label": "Iowa",
+      "value": "505"
+    },
+    {
+      "label": "Iowa State",
+      "value": "501"
+    },
+    {
+      "label": "Jacksonville State",
+      "value": "507"
+    },
+    {
+      "label": "James Madison",
+      "value": "507"
+    },
+    {
+      "label": "Kansas",
+      "value": "505"
+    },
+    {
+      "label": "Kansas State",
+      "value": "501"
+    },
+    {
+      "label": "Kennesaw State",
+      "value": "507"
+    },
+    {
+      "label": "Kent State",
+      "value": "507"
+    },
+    {
+      "label": "Kentucky",
+      "value": "503"
+    },
+    {
+      "label": "Liberty",
+      "value": "501"
+    },
+    {
+      "label": "Louisiana",
+      "value": "503"
+    },
+    {
+      "label": "Louisiana Tech",
+      "value": "501"
+    },
+    {
+      "label": "Louisville",
+      "value": "505"
+    },
+    {
+      "label": "LSU",
+      "value": "505"
+    },
+    {
+      "label": "Marshall",
+      "value": "507"
+    },
+    {
+      "label": "Maryland",
+      "value": "503"
+    },
+    {
+      "label": "Memphis",
+      "value": "505"
+    },
+    {
+      "label": "Miami",
+      "value": "507"
+    },
+    {
+      "label": "Miami University",
+      "value": "507"
+    },
+    {
+      "label": "Michigan",
+      "value": "505"
+    },
+    {
+      "label": "Michigan State",
+      "value": "507"
+    },
+    {
+      "label": "Middle Tennessee St",
+      "value": "505"
+    },
+    {
+      "label": "Minnesota",
+      "value": "505"
+    },
+    {
+      "label": "Mississippi State",
+      "value": "501"
+    },
+    {
+      "label": "Missouri",
+      "value": "507"
+    },
+    {
+      "label": "Navy",
+      "value": "503"
+    },
+    {
+      "label": "NC State",
+      "value": "501"
+    },
+    {
+      "label": "Nebraska",
+      "value": "501"
+    },
+    {
+      "label": "Nevada",
+      "value": "501"
+    },
+    {
+      "label": "New Mexico",
+      "value": "501"
+    },
+    {
+      "label": "New Mexico State",
+      "value": "507"
+    },
+    {
+      "label": "North Carolina",
+      "value": "507"
+    },
+    {
+      "label": "North Texas",
+      "value": "501"
+    },
+    {
+      "label": "Northern Illinois",
+      "value": "507"
+    },
+    {
+      "label": "Northwestern",
+      "value": "505"
+    },
+    {
+      "label": "Notre Dame",
+      "value": "505"
+    },
+    {
+      "label": "Ohio",
+      "value": "507"
+    },
+    {
+      "label": "Ohio State",
+      "value": "507"
+    },
+    {
+      "label": "Oklahoma",
+      "value": "505"
+    },
+    {
+      "label": "Oklahoma State",
+      "value": "502"
+    },
+    {
+      "label": "Old Dominion",
+      "value": "507"
+    },
+    {
+      "label": "Ole Miss",
+      "value": "503"
+    },
+    {
+      "label": "Oregon",
+      "value": "503"
+    },
+    {
+      "label": "Oregon State",
+      "value": "503"
+    },
+    {
+      "label": "Penn State",
+      "value": "505"
+    },
+    {
+      "label": "Pittsburgh",
+      "value": "505"
+    },
+    {
+      "label": "Purdue",
+      "value": "503"
+    },
+    {
+      "label": "Rice",
+      "value": "503"
+    },
+    {
+      "label": "Rutgers",
+      "value": "507"
+    },
+    {
+      "label": "Sam Houston",
+      "value": "507"
+    },
+    {
+      "label": "San Diego State",
+      "value": "501"
+    },
+    {
+      "label": "San Jose State",
+      "value": "505"
+    },
+    {
+      "label": "SMU",
+      "value": "505"
+    },
+    {
+      "label": "South Alabama",
+      "value": "501"
+    },
+    {
+      "label": "South Carolina",
+      "value": "501"
+    },
+    {
+      "label": "Southern Mississippi",
+      "value": "502"
+    },
+    {
+      "label": "Stanford",
+      "value": "502"
+    },
+    {
+      "label": "Syracuse",
+      "value": "503"
+    },
+    {
+      "label": "TCU",
+      "value": "501"
+    },
+    {
+      "label": "Temple",
+      "value": "501"
+    },
+    {
+      "label": "Tennessee",
+      "value": "503"
+    },
+    {
+      "label": "Texas",
+      "value": "507"
+    },
+    {
+      "label": "Texas A&M",
+      "value": "505"
+    },
+    {
+      "label": "Texas State",
+      "value": "507"
+    },
+    {
+      "label": "Texas Tech",
+      "value": "507"
+    },
+    {
+      "label": "Toledo",
+      "value": "501"
+    },
+    {
+      "label": "Troy",
+      "value": "507"
+    },
+    {
+      "label": "Tulane",
+      "value": "503"
+    },
+    {
+      "label": "Tulsa",
+      "value": "501"
+    },
+    {
+      "label": "UAB",
+      "value": "507"
+    },
+    {
+      "label": "UCF",
+      "value": "507"
+    },
+    {
+      "label": "UCLA",
+      "value": "507"
+    },
+    {
+      "label": "UConn",
+      "value": "503"
+    },
+    {
+      "label": "UL Monroe",
+      "value": "505"
+    },
+    {
+      "label": "UMass",
+      "value": "505"
+    },
+    {
+      "label": "UNLV",
+      "value": "507"
+    },
+    {
+      "label": "USC",
+      "value": "507"
+    },
+    {
+      "label": "USF",
+      "value": "507"
+    },
+    {
+      "label": "Utah",
+      "value": "507"
+    },
+    {
+      "label": "Utah State",
+      "value": "503"
+    },
+    {
+      "label": "UTEP",
+      "value": "507"
+    },
+    {
+      "label": "UTSA",
+      "value": "505"
+    },
+    {
+      "label": "Vanderbilt",
+      "value": "503"
+    },
+    {
+      "label": "Virginia",
+      "value": "507"
+    },
+    {
+      "label": "Virginia Tech",
+      "value": "505"
+    },
+    {
+      "label": "Wake Forest",
+      "value": "507"
+    },
+    {
+      "label": "Washington",
+      "value": "505"
+    },
+    {
+      "label": "Washington State",
+      "value": "507"
+    },
+    {
+      "label": "West Virginia",
+      "value": "502"
+    },
+    {
+      "label": "Western Kentucky",
+      "value": "501"
+    },
+    {
+      "label": "Western Michigan",
+      "value": "505"
+    },
+    {
+      "label": "Wisconsin",
+      "value": "501"
+    },
+    {
+      "label": "Wyoming",
+      "value": "507"
+    },
+    {
+      "label": "3-2-6",
+      "value": "500"
+    },
+    {
+      "label": "3-3-5",
+      "value": "501"
+    },
+    {
+      "label": "3-3-5 Tite",
+      "value": "502"
+    },
+    {
+      "label": "3-4",
+      "value": "503"
+    },
+    {
+      "label": "3-4 Slant Angle",
+      "value": "504"
+    },
+    {
+      "label": "4-3",
+      "value": "505"
+    },
+    {
+      "label": "4-3 Quarters",
+      "value": "506"
+    },
+    {
+      "label": "4-2-5",
+      "value": "507"
+    },
+    {
+      "label": "Multiple",
+      "value": "508"
+    }
+  ],
+  "OFF_PLAYBOOK_IDOptions": [
+    {
+      "label": "Air Force",
+      "value": "200"
+    },
+    {
+      "label": "Akron",
+      "value": "201"
+    },
+    {
+      "label": "Alabama",
+      "value": "202"
+    },
+    {
+      "label": "Appalachian State",
+      "value": "203"
+    },
+    {
+      "label": "Arizona",
+      "value": "205"
+    },
+    {
+      "label": "Arizona State",
+      "value": "204"
+    },
+    {
+      "label": "Arkansas",
+      "value": "207"
+    },
+    {
+      "label": "Arkansas State",
+      "value": "206"
+    },
+    {
+      "label": "Army",
+      "value": "208"
+    },
+    {
+      "label": "Auburn",
+      "value": "209"
+    },
+    {
+      "label": "Ball State",
+      "value": "210"
+    },
+    {
+      "label": "Baylor",
+      "value": "211"
+    },
+    {
+      "label": "Boise State",
+      "value": "212"
+    },
+    {
+      "label": "Boston College",
+      "value": "213"
+    },
+    {
+      "label": "Bowling Green",
+      "value": "214"
+    },
+    {
+      "label": "Buffalo",
+      "value": "215"
+    },
+    {
+      "label": "BYU",
+      "value": "216"
+    },
+    {
+      "label": "California",
+      "value": "217"
+    },
+    {
+      "label": "Central Michigan",
+      "value": "218"
+    },
+    {
+      "label": "Charlotte",
+      "value": "219"
+    },
+    {
+      "label": "Cincinnati",
+      "value": "220"
+    },
+    {
+      "label": "Clemson",
+      "value": "221"
+    },
+    {
+      "label": "Coastal Carolina",
+      "value": "222"
+    },
+    {
+      "label": "Colorado",
+      "value": "224"
+    },
+    {
+      "label": "Colorado State",
+      "value": "223"
+    },
+    {
+      "label": "Duke",
+      "value": "225"
+    },
+    {
+      "label": "East Carolina",
+      "value": "226"
+    },
+    {
+      "label": "Eastern Michigan",
+      "value": "227"
+    },
+    {
+      "label": "Florida",
+      "value": "231"
+    },
+    {
+      "label": "Florida Atlantic",
+      "value": "228"
+    },
+    {
+      "label": "Florida International",
+      "value": "229"
+    },
+    {
+      "label": "Florida State",
+      "value": "230"
+    },
+    {
+      "label": "Fresno State",
+      "value": "232"
+    },
+    {
+      "label": "Georgia",
+      "value": "236"
+    },
+    {
+      "label": "Georgia Southern",
+      "value": "233"
+    },
+    {
+      "label": "Georgia State",
+      "value": "234"
+    },
+    {
+      "label": "Georgia Tech",
+      "value": "235"
+    },
+    {
+      "label": "Hawai'i",
+      "value": "237"
+    },
+    {
+      "label": "Houston",
+      "value": "238"
+    },
+    {
+      "label": "Illinois",
+      "value": "239"
+    },
+    {
+      "label": "Indiana",
+      "value": "240"
+    },
+    {
+      "label": "Iowa",
+      "value": "242"
+    },
+    {
+      "label": "Iowa State",
+      "value": "241"
+    },
+    {
+      "label": "Jacksonville State",
+      "value": "243"
+    },
+    {
+      "label": "James Madison",
+      "value": "244"
+    },
+    {
+      "label": "Kansas",
+      "value": "246"
+    },
+    {
+      "label": "Kansas State",
+      "value": "245"
+    },
+    {
+      "label": "Kennesaw State",
+      "value": "333"
+    },
+    {
+      "label": "Kent State",
+      "value": "247"
+    },
+    {
+      "label": "Kentucky",
+      "value": "248"
+    },
+    {
+      "label": "Liberty",
+      "value": "249"
+    },
+    {
+      "label": "Louisiana",
+      "value": "251"
+    },
+    {
+      "label": "Louisiana Tech",
+      "value": "250"
+    },
+    {
+      "label": "Louisville",
+      "value": "252"
+    },
+    {
+      "label": "LSU",
+      "value": "253"
+    },
+    {
+      "label": "Marshall",
+      "value": "254"
+    },
+    {
+      "label": "Maryland",
+      "value": "255"
+    },
+    {
+      "label": "Memphis",
+      "value": "256"
+    },
+    {
+      "label": "Miami",
+      "value": "258"
+    },
+    {
+      "label": "Miami University",
+      "value": "257"
+    },
+    {
+      "label": "Michigan",
+      "value": "260"
+    },
+    {
+      "label": "Michigan State",
+      "value": "259"
+    },
+    {
+      "label": "Middle Tennessee St",
+      "value": "261"
+    },
+    {
+      "label": "Minnesota",
+      "value": "262"
+    },
+    {
+      "label": "Mississippi State",
+      "value": "263"
+    },
+    {
+      "label": "Missouri",
+      "value": "264"
+    },
+    {
+      "label": "Navy",
+      "value": "265"
+    },
+    {
+      "label": "NC State",
+      "value": "266"
+    },
+    {
+      "label": "Nebraska",
+      "value": "267"
+    },
+    {
+      "label": "Nevada",
+      "value": "268"
+    },
+    {
+      "label": "New Mexico",
+      "value": "270"
+    },
+    {
+      "label": "New Mexico State",
+      "value": "269"
+    },
+    {
+      "label": "North Carolina",
+      "value": "271"
+    },
+    {
+      "label": "North Texas",
+      "value": "272"
+    },
+    {
+      "label": "Northern Illinois",
+      "value": "273"
+    },
+    {
+      "label": "Northwestern",
+      "value": "274"
+    },
+    {
+      "label": "Notre Dame",
+      "value": "275"
+    },
+    {
+      "label": "Ohio",
+      "value": "277"
+    },
+    {
+      "label": "Ohio State",
+      "value": "276"
+    },
+    {
+      "label": "Oklahoma",
+      "value": "279"
+    },
+    {
+      "label": "Oklahoma State",
+      "value": "278"
+    },
+    {
+      "label": "Old Dominion",
+      "value": "280"
+    },
+    {
+      "label": "Ole Miss",
+      "value": "281"
+    },
+    {
+      "label": "Oregon",
+      "value": "283"
+    },
+    {
+      "label": "Oregon State",
+      "value": "282"
+    },
+    {
+      "label": "Penn State",
+      "value": "284"
+    },
+    {
+      "label": "Pittsburgh",
+      "value": "285"
+    },
+    {
+      "label": "Purdue",
+      "value": "286"
+    },
+    {
+      "label": "Rice",
+      "value": "287"
+    },
+    {
+      "label": "Rutgers",
+      "value": "288"
+    },
+    {
+      "label": "Sam Houston",
+      "value": "289"
+    },
+    {
+      "label": "San Diego State",
+      "value": "290"
+    },
+    {
+      "label": "San Jose State",
+      "value": "291"
+    },
+    {
+      "label": "SMU",
+      "value": "292"
+    },
+    {
+      "label": "South Alabama",
+      "value": "293"
+    },
+    {
+      "label": "South Carolina",
+      "value": "294"
+    },
+    {
+      "label": "Southern Mississippi",
+      "value": "295"
+    },
+    {
+      "label": "Stanford",
+      "value": "296"
+    },
+    {
+      "label": "Syracuse",
+      "value": "297"
+    },
+    {
+      "label": "TCU",
+      "value": "298"
+    },
+    {
+      "label": "Temple",
+      "value": "299"
+    },
+    {
+      "label": "Tennessee",
+      "value": "300"
+    },
+    {
+      "label": "Texas",
+      "value": "304"
+    },
+    {
+      "label": "Texas A&M",
+      "value": "301"
+    },
+    {
+      "label": "Texas State",
+      "value": "302"
+    },
+    {
+      "label": "Texas Tech",
+      "value": "303"
+    },
+    {
+      "label": "Toledo",
+      "value": "305"
+    },
+    {
+      "label": "Troy",
+      "value": "306"
+    },
+    {
+      "label": "Tulane",
+      "value": "307"
+    },
+    {
+      "label": "Tulsa",
+      "value": "308"
+    },
+    {
+      "label": "UAB",
+      "value": "309"
+    },
+    {
+      "label": "UCF",
+      "value": "310"
+    },
+    {
+      "label": "UCLA",
+      "value": "311"
+    },
+    {
+      "label": "UConn",
+      "value": "312"
+    },
+    {
+      "label": "UL Monroe",
+      "value": "313"
+    },
+    {
+      "label": "UMass",
+      "value": "314"
+    },
+    {
+      "label": "UNLV",
+      "value": "315"
+    },
+    {
+      "label": "USC",
+      "value": "316"
+    },
+    {
+      "label": "USF",
+      "value": "317"
+    },
+    {
+      "label": "Utah",
+      "value": "319"
+    },
+    {
+      "label": "Utah State",
+      "value": "318"
+    },
+    {
+      "label": "UTEP",
+      "value": "320"
+    },
+    {
+      "label": "UTSA",
+      "value": "321"
+    },
+    {
+      "label": "Vanderbilt",
+      "value": "322"
+    },
+    {
+      "label": "Virginia",
+      "value": "324"
+    },
+    {
+      "label": "Virginia Tech",
+      "value": "323"
+    },
+    {
+      "label": "Wake Forest",
+      "value": "325"
+    },
+    {
+      "label": "Washington",
+      "value": "327"
+    },
+    {
+      "label": "Washington State",
+      "value": "326"
+    },
+    {
+      "label": "West Virginia",
+      "value": "328"
+    },
+    {
+      "label": "Western Kentucky",
+      "value": "329"
+    },
+    {
+      "label": "Western Michigan",
+      "value": "330"
+    },
+    {
+      "label": "Wisconsin",
+      "value": "331"
+    },
+    {
+      "label": "Wyoming",
+      "value": "332"
+    },
+    {
+      "label": "Air Raid",
+      "value": "400"
+    },
+    {
+      "label": "Multiple",
+      "value": "401"
+    },
+    {
+      "label": "Option",
+      "value": "402"
+    },
+    {
+      "label": "Pistol",
+      "value": "403"
+    },
+    {
+      "label": "Power Spread",
+      "value": "404"
+    },
+    {
+      "label": "Pro Style",
+      "value": "405"
+    },
+    {
+      "label": "Run & Shoot",
+      "value": "406"
+    },
+    {
+      "label": "Spread Option",
+      "value": "407"
+    },
+    {
+      "label": "Spread",
+      "value": "408"
+    },
+    {
+      "label": "Veer & Shoot",
+      "value": "409"
+    }
+  ],
+  "STADIUM_IDOptions": [
+    {
+      "label": "Air Force",
+      "value": "500"
+    },
+    {
+      "label": "Akron",
+      "value": "501"
+    },
+    {
+      "label": "Alabama",
+      "value": "502"
+    },
+    {
+      "label": "Appalachian State",
+      "value": "503"
+    },
+    {
+      "label": "Arizona",
+      "value": "504"
+    },
+    {
+      "label": "Arizona State",
+      "value": "505"
+    },
+    {
+      "label": "Arkansas",
+      "value": "506"
+    },
+    {
+      "label": "Arkansas State",
+      "value": "507"
+    },
+    {
+      "label": "Army",
+      "value": "508"
+    },
+    {
+      "label": "Auburn",
+      "value": "509"
+    },
+    {
+      "label": "Ball State",
+      "value": "510"
+    },
+    {
+      "label": "Baylor",
+      "value": "511"
+    },
+    {
+      "label": "Boise State",
+      "value": "512"
+    },
+    {
+      "label": "Boston College",
+      "value": "513"
+    },
+    {
+      "label": "Bowling Green",
+      "value": "514"
+    },
+    {
+      "label": "Buffalo",
+      "value": "515"
+    },
+    {
+      "label": "BYU",
+      "value": "516"
+    },
+    {
+      "label": "California",
+      "value": "517"
+    },
+    {
+      "label": "Central Michigan",
+      "value": "518"
+    },
+    {
+      "label": "Charlotte",
+      "value": "519"
+    },
+    {
+      "label": "Cincinnati",
+      "value": "520"
+    },
+    {
+      "label": "Clemson",
+      "value": "521"
+    },
+    {
+      "label": "Coastal Carolina",
+      "value": "522"
+    },
+    {
+      "label": "Colorado",
+      "value": "523"
+    },
+    {
+      "label": "Colorado State",
+      "value": "524"
+    },
+    {
+      "label": "Duke",
+      "value": "526"
+    },
+    {
+      "label": "East Carolina",
+      "value": "528"
+    },
+    {
+      "label": "Eastern Michigan",
+      "value": "527"
+    },
+    {
+      "label": "Florida",
+      "value": "530"
+    },
+    {
+      "label": "Florida Atlantic",
+      "value": "531"
+    },
+    {
+      "label": "Florida International",
+      "value": "529"
+    },
+    {
+      "label": "Florida State",
+      "value": "532"
+    },
+    {
+      "label": "Fresno State",
+      "value": "533"
+    },
+    {
+      "label": "Georgia",
+      "value": "534"
+    },
+    {
+      "label": "Georgia Southern",
+      "value": "535"
+    },
+    {
+      "label": "Georgia State",
+      "value": "536"
+    },
+    {
+      "label": "Georgia Tech",
+      "value": "537"
+    },
+    {
+      "label": "Hawai'i",
+      "value": "538"
+    },
+    {
+      "label": "Houston",
+      "value": "539"
+    },
+    {
+      "label": "Illinois",
+      "value": "540"
+    },
+    {
+      "label": "Indiana",
+      "value": "541"
+    },
+    {
+      "label": "Iowa",
+      "value": "542"
+    },
+    {
+      "label": "Iowa State",
+      "value": "543"
+    },
+    {
+      "label": "Jacksonville State",
+      "value": "544"
+    },
+    {
+      "label": "James Madison",
+      "value": "545"
+    },
+    {
+      "label": "Kansas",
+      "value": "546"
+    },
+    {
+      "label": "Kansas State",
+      "value": "547"
+    },
+    {
+      "label": "Kent State",
+      "value": "548"
+    },
+    {
+      "label": "Kentucky",
+      "value": "549"
+    },
+    {
+      "label": "Liberty",
+      "value": "550"
+    },
+    {
+      "label": "Louisiana",
+      "value": "551"
+    },
+    {
+      "label": "Louisiana Tech",
+      "value": "552"
+    },
+    {
+      "label": "Louisville",
+      "value": "553"
+    },
+    {
+      "label": "LSU",
+      "value": "554"
+    },
+    {
+      "label": "Marshall",
+      "value": "555"
+    },
+    {
+      "label": "Maryland",
+      "value": "556"
+    },
+    {
+      "label": "Memphis",
+      "value": "557"
+    },
+    {
+      "label": "Miami",
+      "value": "558"
+    },
+    {
+      "label": "Miami University",
+      "value": "559"
+    },
+    {
+      "label": "Michigan",
+      "value": "560"
+    },
+    {
+      "label": "Michigan State",
+      "value": "561"
+    },
+    {
+      "label": "Middle Tennessee St",
+      "value": "562"
+    },
+    {
+      "label": "Minnesota",
+      "value": "563"
+    },
+    {
+      "label": "Mississippi State",
+      "value": "564"
+    },
+    {
+      "label": "Missouri",
+      "value": "565"
+    },
+    {
+      "label": "Navy",
+      "value": "566"
+    },
+    {
+      "label": "NC State",
+      "value": "567"
+    },
+    {
+      "label": "Nebraska",
+      "value": "568"
+    },
+    {
+      "label": "Nevada",
+      "value": "569"
+    },
+    {
+      "label": "New Mexico",
+      "value": "570"
+    },
+    {
+      "label": "New Mexico State",
+      "value": "571"
+    },
+    {
+      "label": "North Carolina",
+      "value": "572"
+    },
+    {
+      "label": "North Texas",
+      "value": "573"
+    },
+    {
+      "label": "Northern Illinois",
+      "value": "574"
+    },
+    {
+      "label": "Northwestern",
+      "value": "575"
+    },
+    {
+      "label": "Notre Dame",
+      "value": "576"
+    },
+    {
+      "label": "Ohio",
+      "value": "577"
+    },
+    {
+      "label": "Ohio State",
+      "value": "578"
+    },
+    {
+      "label": "Oklahoma",
+      "value": "579"
+    },
+    {
+      "label": "Oklahoma State",
+      "value": "580"
+    },
+    {
+      "label": "Old Dominion",
+      "value": "581"
+    },
+    {
+      "label": "Ole Miss",
+      "value": "582"
+    },
+    {
+      "label": "Oregon",
+      "value": "583"
+    },
+    {
+      "label": "Oregon State",
+      "value": "584"
+    },
+    {
+      "label": "Penn State",
+      "value": "585"
+    },
+    {
+      "label": "Pittsburgh",
+      "value": "586"
+    },
+    {
+      "label": "Purdue",
+      "value": "587"
+    },
+    {
+      "label": "Rice",
+      "value": "588"
+    },
+    {
+      "label": "Rutgers",
+      "value": "589"
+    },
+    {
+      "label": "Sam Houston",
+      "value": "590"
+    },
+    {
+      "label": "San Diego State",
+      "value": "591"
+    },
+    {
+      "label": "San Jose State",
+      "value": "592"
+    },
+    {
+      "label": "SMU",
+      "value": "593"
+    },
+    {
+      "label": "South Alabama",
+      "value": "594"
+    },
+    {
+      "label": "South Carolina",
+      "value": "595"
+    },
+    {
+      "label": "Southern Mississippi",
+      "value": "596"
+    },
+    {
+      "label": "Stanford",
+      "value": "597"
+    },
+    {
+      "label": "Syracuse",
+      "value": "598"
+    },
+    {
+      "label": "TCU",
+      "value": "599"
+    },
+    {
+      "label": "Temple",
+      "value": "600"
+    },
+    {
+      "label": "Tennessee",
+      "value": "601"
+    },
+    {
+      "label": "Texas",
+      "value": "602"
+    },
+    {
+      "label": "Texas A&M",
+      "value": "603"
+    },
+    {
+      "label": "Texas State",
+      "value": "604"
+    },
+    {
+      "label": "Texas Tech",
+      "value": "605"
+    },
+    {
+      "label": "Toledo",
+      "value": "606"
+    },
+    {
+      "label": "Troy",
+      "value": "607"
+    },
+    {
+      "label": "Tulane",
+      "value": "608"
+    },
+    {
+      "label": "Tulsa",
+      "value": "609"
+    },
+    {
+      "label": "UAB",
+      "value": "610"
+    },
+    {
+      "label": "UCF",
+      "value": "611"
+    },
+    {
+      "label": "UCLA",
+      "value": "612"
+    },
+    {
+      "label": "UConn",
+      "value": "525"
+    },
+    {
+      "label": "UL Monroe",
+      "value": "613"
+    },
+    {
+      "label": "UMass",
+      "value": "614"
+    },
+    {
+      "label": "UNLV",
+      "value": "615"
+    },
+    {
+      "label": "USC",
+      "value": "616"
+    },
+    {
+      "label": "USF",
+      "value": "617"
+    },
+    {
+      "label": "Utah",
+      "value": "618"
+    },
+    {
+      "label": "Utah State",
+      "value": "619"
+    },
+    {
+      "label": "UTEP",
+      "value": "620"
+    },
+    {
+      "label": "UTSA",
+      "value": "621"
+    },
+    {
+      "label": "Vanderbilt",
+      "value": "622"
+    },
+    {
+      "label": "Virginia",
+      "value": "623"
+    },
+    {
+      "label": "Virginia Tech",
+      "value": "624"
+    },
+    {
+      "label": "Wake Forest",
+      "value": "625"
+    },
+    {
+      "label": "Washington",
+      "value": "626"
+    },
+    {
+      "label": "Washington State",
+      "value": "627"
+    },
+    {
+      "label": "West Virginia",
+      "value": "628"
+    },
+    {
+      "label": "Western Kentucky",
+      "value": "629"
+    },
+    {
+      "label": "Western Michigan",
+      "value": "630"
+    },
+    {
+      "label": "Wisconsin",
+      "value": "631"
+    },
+    {
+      "label": "Wyoming",
+      "value": "632"
+    },
+    {
+      "label": "Kennesaw State",
+      "value": "633"
+    },
+    {
+      "label": "Hard Rock Stadium",
+      "value": "635"
+    },
+    {
+      "label": "NRG Stadium",
+      "value": "637"
+    },
+    {
+      "label": "Rose Bowl",
+      "value": "638"
+    },
+    {
+      "label": "AT T Stadium",
+      "value": "639"
+    },
+    {
+      "label": "Outback Bowl",
+      "value": "641"
+    },
+    {
+      "label": "Caesars Superdome",
+      "value": "643"
+    },
+    {
+      "label": "ACC Championship",
+      "value": "644"
+    },
+    {
+      "label": "Ford Field",
+      "value": "645"
+    },
+    {
+      "label": "Big Ten Championship",
+      "value": "646"
+    },
+    {
+      "label": "State Farm Stadium",
+      "value": "647"
+    },
+    {
+      "label": "Frisco Bowl Stadium",
+      "value": "648"
+    },
+    {
+      "label": "Fenway Bowl Stadium",
+      "value": "649"
+    },
+    {
+      "label": "Independence Bowl Stadium",
+      "value": "650"
+    },
+    {
+      "label": "SoFi Stadium",
+      "value": "651"
+    },
+    {
+      "label": "Exploria Stadium",
+      "value": "652"
+    },
+    {
+      "label": "Camping World",
+      "value": "653"
+    },
+    {
+      "label": "Camellia Bowl Stadium",
+      "value": "654"
+    },
+    {
+      "label": "Nassau",
+      "value": "655"
+    },
+    {
+      "label": "Guaranteed Rate Bowl Stadium",
+      "value": "656"
+    },
+    {
+      "label": "Holiday Bowl Stadium",
+      "value": "658"
+    },
+    {
+      "label": "City Stadium",
+      "value": "660"
+    },
+    {
+      "label": "College practice field",
+      "value": "661"
+    },
+    {
+      "label": "Cotton Bowl",
+      "value": "700"
+    },
+    {
+      "label": "Army Navy",
+      "value": "701"
+    },
+    {
+      "label": "Mercedes Benz Stadium",
+      "value": "702"
+    },
+    {
+      "label": "EverBank Stadium",
+      "value": "703"
+    },
+    {
+      "label": "Penn State Syracuse",
+      "value": "704"
+    },
+    {
+      "label": "Nissan Stadium",
+      "value": "705"
+    },
+    {
+      "label": "Dublin Stadium",
+      "value": "706"
+    },
+    {
+      "label": "Commanders Stadium",
+      "value": "707"
+    }
+  ]
+}

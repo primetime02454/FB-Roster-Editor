@@ -1,0 +1,1986 @@
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import './styles.css';
+
+const CLOUD_RUN_API_BASE = 'https://madden-roster-editor-api-13516500762.us-central1.run.app/api';
+const API = import.meta.env.VITE_API_URL || defaultApiBase();
+const PAGE_SIZE = 250;
+const VISUALS_PAGE_SIZE = 100;
+const PLAYER_INFO_ORDER = [
+  'PFNA', 'PLNA', 'PGID', 'POID', 'TGID', 'PPOS', 'PLTY', 'POVR',
+  'PAGE', 'PHGT', 'PWGT', 'PYRP', 'PJEN', 'PCOL', 'PHTN', 'PHSN',
+  'PHAN', 'PCPH', 'PIMP', 'PINJ', 'PYCF', 'PSXP', 'PGHE', 'PCMT',
+];
+const PLAYER_CONTRACT_ORDER = [
+  'PCON', 'PCYL', 'PCSA', 'PTSA', 'PVCO', 'PVSB', 'PVTS', 'PSBO',
+  'PSA0', 'PSA1', 'PSA2', 'PSA3', 'PSA4', 'PSA5', 'PSA6',
+  'PSB0', 'PSB1', 'PSB2', 'PSB3', 'PSB4', 'PSB5', 'PSB6',
+];
+const PLAYER_MISC_ORDER = [
+  'PFPB', 'PFHO', 'ISCN', 'PSTM', 'PSTN', 'PQBS', 'PSTY',
+  'EPAV', 'PEPS', 'PEYE', 'PBRE', 'PFMK', 'PHCL', 'PHLM',
+];
+const TEAM_INFO_ORDER = [
+  'TDNA', 'TLNA', 'TMNC', 'TMAN', 'TGID', 'TMID', 'TCID', 'CYID', 'TORD',
+  'TCIN', 'TCNA', 'TDPB', 'TOPB', 'TCRP', 'TCRD', 'TMSO', 'TMST',
+  'TMHO', 'TMHT', 'TOID', 'SGID', 'TRV1', 'TRV2', 'TRV3', 'TSNA', 'TTYP', 'TVIS', 'TREP',
+];
+const TEAM_RATING_ORDER = [
+  'TOQB', 'TORB', 'TOWR', 'TOOL', 'TODL', 'TOLB', 'TODB', 'TOOF', 'TODF', 'TOSP',
+  'TRQB', 'TRRB', 'TWRR', 'TROL', 'TRDL', 'TRLB', 'TRDB', 'TROF', 'TRDE', 'TRST', 'TROV',
+];
+const POSITION_OPTIONS = [
+  { id: 0, label: 'QB' },
+  { id: 1, label: 'RB' },
+  { id: 2, label: 'FB' },
+  { id: 3, label: 'WR' },
+  { id: 4, label: 'TE' },
+  { id: 5, label: 'LT' },
+  { id: 6, label: 'LG' },
+  { id: 7, label: 'C' },
+  { id: 8, label: 'RG' },
+  { id: 9, label: 'RT' },
+  { id: 10, label: 'LE' },
+  { id: 11, label: 'RE' },
+  { id: 12, label: 'DT' },
+  { id: 13, label: 'LOLB' },
+  { id: 14, label: 'MLB' },
+  { id: 15, label: 'ROLB' },
+  { id: 16, label: 'CB' },
+  { id: 17, label: 'FS' },
+  { id: 18, label: 'SS' },
+  { id: 19, label: 'K' },
+  { id: 20, label: 'P' },
+];
+
+const PLAYER_SECTION_DEFS = [
+  { key: 'identity', title: 'Player Information', codes: PLAYER_INFO_ORDER },
+  { key: 'ratings', title: 'Player Ratings', matcher: code => (code.startsWith('P') || code.startsWith('T') || code.startsWith('S')) && !PLAYER_CONTRACT_ORDER.includes(code) && !PLAYER_MISC_ORDER.includes(code) && !PLAYER_INFO_ORDER.includes(code) },
+  { key: 'misc', title: 'Traits / Misc', codes: PLAYER_MISC_ORDER },
+  { key: 'contract', title: 'Contract', codes: PLAYER_CONTRACT_ORDER },
+];
+
+const TEAM_SECTION_DEFS = [
+  { key: 'identity', title: 'Team Information', codes: TEAM_INFO_ORDER },
+  { key: 'ratings', title: 'Team Ratings', codes: TEAM_RATING_ORDER },
+  { key: 'misc', title: 'Other Team Data', matcher: () => true },
+];
+const PLAYER_EDITOR_TABS = [
+  { key: 'info', label: 'Player Information' },
+  { key: 'ratings', label: 'Player Ratings' },
+  { key: 'visuals', label: 'Appear/Equip/Misc' },
+  { key: 'contract', label: 'Contract' },
+];
+const TEAM_EDITOR_TABS = [
+  { key: 'info', label: 'Team Information' },
+  { key: 'ratings', label: 'Team Ratings' },
+  { key: 'misc', label: 'Other' },
+];
+const PLAYER_RATING_COLUMNS = new Set([
+  'POVR', 'PAGE', 'PHGT', 'PWGT', 'PYRP', 'PJEN', 'PHAN', 'PYCF', 'PSXP',
+  'PACC', 'PAGI', 'PAWR', 'PBCV', 'PBKT', 'PBSG', 'PBSK', 'PCAR', 'PCBT',
+  'PCMT', 'PCTH', 'PDRO', 'PDRR', 'PELU', 'PFMS', 'PICN', 'PIMP', 'PINJ',
+  'PJEN', 'PJMP', 'PKAC', 'PKPR', 'PKRT', 'PLBK', 'PLBD', 'PMCV', 'PPBK',
+  'PPLY', 'PPMC', 'PPRE', 'PRBK', 'PRLS', 'PRUN', 'PSAC', 'PSFA', 'PSFM',
+  'PSHK', 'PSHP', 'PSPD', 'PSTA', 'PSTR', 'PTAK', 'PTHA', 'PTHP', 'PTOR',
+  'PTUP', 'PWGT', 'PZCV',
+]);
+const TEAM_COLOR_FIELDS = [
+  { key: 'TBCR', label: 'Primary R' },
+  { key: 'TBCG', label: 'Primary G' },
+  { key: 'TBCB', label: 'Primary B' },
+  { key: 'TB2R', label: 'Secondary R' },
+  { key: 'TB2G', label: 'Secondary G' },
+  { key: 'TB2B', label: 'Secondary B' },
+];
+const TEAM_BRANDING_NAME_COLUMNS = ['TSNA', 'TMSO', 'TMST', 'TMHO', 'TMHT'].filter(Boolean);
+const TEAM_RIVAL_COLUMNS = ['TRV1', 'TRV2', 'TRV3'];
+const TEAM_COLOR_FIELD_KEYS = TEAM_COLOR_FIELDS.map(field => field.key);
+const TEAM_INFO_EXTRA_COLUMNS = [...TEAM_BRANDING_NAME_COLUMNS, ...TEAM_RIVAL_COLUMNS, ...TEAM_COLOR_FIELD_KEYS];
+const HIDDEN_TABLE_COLUMNS = new Set(['__rowIndex', '_parent_table_path', '_parent_table_name', '_parent_record_index', '_index']);
+const TABLE_NAME_SUFFIXES = {
+  TCPS: 'Team Rankings',
+};
+const VIEW_BUTTONS = [
+  { key: 'table', label: 'Table View' },
+  { key: 'player', label: 'Player Editor' },
+  { key: 'team', label: 'Team Editor' },
+  { key: 'visuals', label: 'Character Visuals' },
+  { key: 'node', label: 'Node JSON' },
+];
+const VISUALS_LABELS = {
+  'Player ID': 'Player ID',
+  'First Name': 'First Name',
+  'Last Name': 'Last Name',
+  'Jersey Number': 'Jersey Number',
+  'Asset Name': 'Asset Name',
+};
+const EDITOR_MODE_LABELS = {
+  table: 'Table View',
+  player: 'Player Editor',
+  team: 'Team Editor',
+  visuals: 'Character Visuals',
+  node: 'Node JSON',
+};
+
+function defaultApiBase() {
+  const host = window.location.hostname;
+  const port = window.location.port;
+  if (host.endsWith('.web.app') || host.endsWith('.firebaseapp.com')) {
+    return CLOUD_RUN_API_BASE;
+  }
+  if ((host === '127.0.0.1' || host === 'localhost') && port === '5173') {
+    return 'http://127.0.0.1:8000/api';
+  }
+  if ((host === '127.0.0.1' || host === 'localhost') && port === '5000') {
+    return 'http://127.0.0.1:8000/api';
+  }
+  return `${window.location.origin}/api`;
+}
+
+function initialSessionIdFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('session') || '';
+  } catch {
+    return '';
+  }
+}
+
+function isVisibleTableColumn(column) {
+  return column && !HIDDEN_TABLE_COLUMNS.has(column) && !column.startsWith('_parent_');
+}
+
+function tableDisplayName(table) {
+  const name = table?.name || '';
+  const suffix = TABLE_NAME_SUFFIXES[name?.toUpperCase?.()];
+  return suffix ? `${name} (${suffix})` : name;
+}
+
+function tableTitle(path, table) {
+  if (!path) return 'No table selected';
+  const name = table?.name || path.split('.').pop();
+  const suffix = TABLE_NAME_SUFFIXES[name?.toUpperCase?.()];
+  return suffix ? `${path} (${suffix})` : path;
+}
+
+function clearSessionIdFromUrl() {
+  try {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('session')) return;
+    url.searchParams.delete('session');
+    window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  } catch {}
+}
+
+function isSessionMissingError(err) {
+  const msg = String(err?.message || '').toLowerCase();
+  return err?.status === 404 || msg.includes('session not found') || msg === 'not found';
+}
+
+function apiUrl(path) {
+  return `${API}${path}`;
+}
+
+function shouldTryCloudFallback(err) {
+  if (!(API.includes('127.0.0.1:8000') || API.includes('localhost:8000'))) return false;
+  const message = String(err?.message || '').toLowerCase();
+  return message.includes('failed to fetch') || message.includes('networkerror') || message.includes('load failed');
+}
+
+async function fetchWithFallback(path, options = {}) {
+  const primaryUrl = apiUrl(path);
+  try {
+    return await fetch(primaryUrl, options);
+  } catch (err) {
+    if (!shouldTryCloudFallback(err)) throw err;
+    return fetch(`${CLOUD_RUN_API_BASE}${path}`, options);
+  }
+}
+
+async function fetchJson(path, options = {}) {
+  const res = await fetchWithFallback(path, options);
+  if (!res.ok) {
+    let message = `${res.status} ${res.statusText}`;
+    try {
+      const body = await res.json();
+      message = body.detail || message;
+    } catch {}
+    const error = new Error(message);
+    error.status = res.status;
+    throw error;
+  }
+  return res.json();
+}
+
+function downloadUrl(path) {
+  window.open(apiUrl(path), '_blank');
+}
+
+function valueText(value) {
+  if (value === null || value === undefined || value === '') return '0';
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+}
+
+function parsePossibleJson(text) {
+  const t = String(text ?? '').trim();
+  if (!t) return '';
+  if ((t.startsWith('{') && t.endsWith('}')) || (t.startsWith('[') && t.endsWith(']'))) {
+    try { return JSON.parse(t); } catch {}
+  }
+  if (/^-?\d+$/.test(t)) return Number(t);
+  if (/^-?\d+\.\d+$/.test(t)) return Number(t);
+  return text;
+}
+
+function labelForField(meta, code) {
+  return meta?.labels?.[code] || code;
+}
+
+function displayLabel(code, labels = {}) {
+  return labels?.[code] || code;
+}
+
+function isNumericValue(value) {
+  return /^-?\d+(\.\d+)?$/.test(String(value ?? '').trim());
+}
+
+function clampColorByte(value) {
+  return Math.max(0, Math.min(255, Number(value) || 0));
+}
+
+function colorStyleFromRecord(record, keys, fallback = '#1c1f24') {
+  const [rKey, gKey, bKey] = keys;
+  if (!record) return fallback;
+  const r = clampColorByte(record[rKey]);
+  const g = clampColorByte(record[gKey]);
+  const b = clampColorByte(record[bKey]);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function colorHexFromValues(r, g, b) {
+  const hex = value => clampColorByte(value).toString(16).padStart(2, '0');
+  return `#${hex(r)}${hex(g)}${hex(b)}`;
+}
+
+function colorFromOption(option, fallback = '#181a1e') {
+  const color = option?.primaryColor;
+  if (!color) return fallback;
+  return `rgb(${clampColorByte(color.r)}, ${clampColorByte(color.g)}, ${clampColorByte(color.b)})`;
+}
+
+function colorOverlayFromOption(option, fallback = 'rgba(24, 26, 30, .82)') {
+  const color = option?.primaryColor;
+  if (!color) return fallback;
+  return `rgba(${clampColorByte(color.r)}, ${clampColorByte(color.g)}, ${clampColorByte(color.b)}, .76)`;
+}
+
+function texturedTeamBackground(option, fallback = 'rgba(24, 26, 30, .82)') {
+  const overlay = colorOverlayFromOption(option, fallback);
+  return `linear-gradient(${overlay}, ${overlay}), url("/CFB27_Background.png") center / cover no-repeat`;
+}
+
+function teamLogoUrl(rowIndex) {
+  if (rowIndex === undefined || rowIndex === null || rowIndex === '') return '';
+  return `/team-logos/${rowIndex}.png`;
+}
+
+function navOptionStyle(option) {
+  return {
+    background: texturedTeamBackground(option),
+    color: '#ffffff',
+    textShadow: '0 1px 2px rgba(0,0,0,.75)',
+  };
+}
+
+function selectOptionStyle(option) {
+  return {
+    backgroundColor: colorFromOption(option, '#101317'),
+    color: '#ffffff',
+  };
+}
+
+function hexToRgb(hex) {
+  const clean = String(hex || '').replace('#', '').trim();
+  if (clean.length !== 6) return null;
+  return {
+    r: parseInt(clean.slice(0, 2), 16),
+    g: parseInt(clean.slice(2, 4), 16),
+    b: parseInt(clean.slice(4, 6), 16),
+  };
+}
+
+function buildDraftValues(record, columns) {
+  const next = {};
+  for (const col of columns || []) next[col] = valueText(record?.[col]);
+  return next;
+}
+
+function orderColumns(columns, priorityCodes = []) {
+  const priority = [];
+  const used = new Set();
+  for (const code of priorityCodes) {
+    if (columns.includes(code) && !used.has(code)) {
+      priority.push(code);
+      used.add(code);
+    }
+  }
+  const rest = columns.filter(code => !used.has(code));
+  return [...priority, ...rest];
+}
+
+function isTeamRatingColumn(code, label = '') {
+  if (TEAM_RIVAL_COLUMNS.includes(code)) return false;
+  if (TEAM_COLOR_FIELD_KEYS.includes(code)) return false;
+  if (TEAM_RATING_ORDER.includes(code)) return true;
+  if (/^TR[A-Z0-9]+$/i.test(code) || /^TO[A-Z0-9]+$/i.test(code)) return true;
+  return /rating/i.test(String(label));
+}
+
+function buildSections(columns, defs) {
+  const remaining = [...columns];
+  const sections = [];
+  for (const def of defs) {
+    const matched = [];
+    if (def.codes) {
+      for (const code of def.codes) {
+        const index = remaining.indexOf(code);
+        if (index >= 0) {
+          matched.push(code);
+          remaining.splice(index, 1);
+        }
+      }
+    }
+    if (def.matcher) {
+      for (let i = 0; i < remaining.length;) {
+        const code = remaining[i];
+        if (def.matcher(code)) {
+          matched.push(code);
+          remaining.splice(i, 1);
+        } else {
+          i += 1;
+        }
+      }
+    }
+    if (matched.length) {
+      sections.push({ key: def.key, title: def.title, columns: matched });
+    }
+  }
+  if (remaining.length) {
+    sections.push({ key: 'remaining', title: 'Additional Data', columns: remaining });
+  }
+  return sections;
+}
+
+function App() {
+  const [bootstrapSessionId] = useState(() => initialSessionIdFromUrl());
+  const [session, setSession] = useState(null);
+  const [tables, setTables] = useState([]);
+  const [currentTable, setCurrentTable] = useState('');
+  const [view, setView] = useState('table');
+  const [tableData, setTableData] = useState({ records: [], columns: [], total: 0, offset: 0 });
+  const [tableSearch, setTableSearch] = useState('');
+  const [tableSortBy, setTableSortBy] = useState('');
+  const [tableSortDir, setTableSortDir] = useState('asc');
+  const [tableFilterColumn, setTableFilterColumn] = useState('');
+  const [tableFilterValue, setTableFilterValue] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState('Open a roster DB to begin.');
+  const [selectedCell, setSelectedCell] = useState(null);
+  const [tableMeta, setTableMeta] = useState({ labels: {} });
+  const [undoStack, setUndoStack] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
+  const [replaceOpen, setReplaceOpen] = useState(false);
+  const [replaceFind, setReplaceFind] = useState('');
+  const [replaceWith, setReplaceWith] = useState('');
+  const [openMenu, setOpenMenu] = useState(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(() => typeof window !== 'undefined' ? window.innerWidth <= 1360 : false);
+  const fileRef = useRef(null);
+  const menuBarRef = useRef(null);
+  const mobileNavRef = useRef(null);
+  const showTableSidebar = view === 'table';
+  const currentModeLabel = EDITOR_MODE_LABELS[view] || 'Table View';
+  const statusFileLabel = session?.input_file ? `Loaded ${session.input_file}` : 'No roster open';
+
+  const playTable = useMemo(() => tables.find(t => t.name === 'PLAY' || t.path?.endsWith('.PLAY'))?.path, [tables]);
+  const teamTable = useMemo(() => tables.find(t => t.name === 'TEAM' || t.path?.endsWith('.TEAM'))?.path, [tables]);
+  const currentTableMeta = useMemo(() => tables.find(t => t.path === currentTable), [tables, currentTable]);
+
+  useEffect(() => {
+    if (!session) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const teams = await fetchJson(`/session/${session.session_id}/team-options`);
+        if (cancelled) return;
+        const firstTeamId = teams?.options?.[0]?.teamId;
+        await Promise.allSettled([
+          fetchJson(`/session/${session.session_id}/editor-meta/TEAM`),
+          fetchJson(`/session/${session.session_id}/editor-meta/PLAY`),
+          fetchJson(`/session/${session.session_id}/visuals-table?offset=0&limit=1&search=`),
+          firstTeamId !== undefined && firstTeamId !== null
+            ? fetchJson(`/session/${session.session_id}/player-options?team_id=${firstTeamId}`)
+            : fetchJson(`/session/${session.session_id}/player-options`),
+        ]);
+      } catch {}
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
+
+  useEffect(() => {
+    if (session && currentTable && view === 'table') {
+      loadTable(currentTable, 0, {
+        search: tableSearch,
+        sortBy: tableSortBy,
+        sortDir: tableSortDir,
+        filterColumn: tableFilterColumn,
+        filterValue: tableFilterValue,
+      });
+    }
+  }, [session, currentTable, view]);
+
+  useEffect(() => {
+    if (session && currentTableMeta?.name) {
+      fetchJson(`/session/${session.session_id}/editor-meta/${currentTableMeta.name}`)
+        .then(out => setTableMeta(out || { labels: {} }))
+        .catch(() => setTableMeta({ labels: {} }));
+    } else {
+      setTableMeta({ labels: {} });
+    }
+  }, [session, currentTableMeta?.name]);
+
+  useEffect(() => {
+    if (bootstrapSessionId) {
+      loadExistingSession(bootstrapSessionId);
+    }
+  }, [bootstrapSessionId]);
+
+  useEffect(() => {
+    function syncCompactNav() {
+      if (window.innerWidth <= 1360) {
+        setMobileNavOpen(true);
+      } else {
+        setMobileNavOpen(false);
+        setOpenMenu(null);
+      }
+    }
+    syncCompactNav();
+    window.addEventListener('resize', syncCompactNav);
+    return () => window.removeEventListener('resize', syncCompactNav);
+  }, []);
+
+  useEffect(() => {
+    function onPointerDown(event) {
+      const insideMenuBar = menuBarRef.current?.contains(event.target);
+      const insideMobilePanel = mobileNavRef.current?.contains(event.target);
+      if (!insideMenuBar && !insideMobilePanel) {
+        setOpenMenu(null);
+      }
+    }
+    window.addEventListener('pointerdown', onPointerDown);
+    return () => window.removeEventListener('pointerdown', onPointerDown);
+  }, []);
+
+  async function onOpenFile(file) {
+    if (!file) return;
+    setLoading(true);
+    setStatus(`Parsing ${file.name}...`);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetchWithFallback('/parse', { method: 'POST', body: form });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      applySession(data);
+      setStatus(`Loaded ${file.name}`);
+    } catch (err) {
+      setStatus(`Parse failed: ${err.message}`);
+    } finally {
+      if (fileRef.current) fileRef.current.value = '';
+      setLoading(false);
+    }
+  }
+
+  async function parseSample() {
+    setLoading(true);
+    setStatus('Parsing bundled sample roster...');
+    try {
+      const data = await fetchJson('/parse-sample', { method: 'POST' });
+      applySession(data);
+      setStatus('Loaded bundled sample roster.');
+    } catch (err) {
+      setStatus(`Sample parse failed: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function loadExistingSession(sessionId) {
+    if (!sessionId) return;
+    setLoading(true);
+    setStatus(`Loading session ${sessionId}...`);
+    try {
+      const data = await fetchJson(`/session/${sessionId}`);
+      applySession(data);
+      setStatus(`Loaded ${data.session?.input_file || sessionId}`);
+    } catch (err) {
+      if (isSessionMissingError(err)) {
+        clearSession('This editing session is no longer available. Reopen the roster file.');
+      } else {
+        setStatus(`Session load failed: ${err.message}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function applySession(data) {
+    setSession(data.session);
+    setTables(data.tables || []);
+    const firstTeam = (data.tables || []).find(t => t.name === 'TEAM' || t.path?.endsWith('.TEAM'));
+    setCurrentTable(firstTeam?.path || (data.tables || [])[0]?.path || '');
+    setUndoStack([]);
+    setRedoStack([]);
+    setView(firstTeam ? 'team' : 'table');
+    setOpenMenu(null);
+    setMobileNavOpen(false);
+  }
+
+  function clearSession(message = 'Session expired. Reopen the roster file.') {
+    clearSessionIdFromUrl();
+    setSession(null);
+    setTables([]);
+    setCurrentTable('');
+    setTableData({ records: [], columns: [], total: 0, offset: 0 });
+    setSelectedCell(null);
+    setUndoStack([]);
+    setRedoStack([]);
+    setView('table');
+    setOpenMenu(null);
+    setMobileNavOpen(false);
+    setStatus(message);
+  }
+
+  function handleSessionError(err, fallback) {
+    const msg = err?.message || fallback;
+    if (isSessionMissingError(err)) {
+      clearSession('This editing session is no longer available. Reopen the roster file.');
+      return true;
+    }
+    setStatus(fallback ? `${fallback}: ${msg}` : msg);
+    return false;
+  }
+
+  async function loadTable(path = currentTable, offset = 0, options = {}) {
+    if (!session || !path) return;
+    setLoading(true);
+    try {
+      const search = options.search ?? tableSearch;
+      const sortBy = options.sortBy ?? tableSortBy;
+      const sortDir = options.sortDir ?? tableSortDir;
+      const filterColumn = options.filterColumn ?? tableFilterColumn;
+      const filterValue = options.filterValue ?? tableFilterValue;
+      const q = new URLSearchParams({ offset, limit: PAGE_SIZE, search, sort_by: sortBy, sort_dir: sortDir, filter_column: filterColumn, filter_value: filterValue });
+      const data = await fetchJson(`/session/${session.session_id}/table/${encodeURIComponent(path)}?${q}`);
+      setTableData(data);
+    } catch (err) {
+      handleSessionError(err, 'Load table failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function patchCell(tablePath, rowIndex, column, value, pushHistory = true, before = undefined) {
+    if (!session || column === '__rowIndex' || column === 'TeamName' || column === 'Position') return;
+    const oldValue = before === undefined
+      ? tableData.records.find(r => r.__rowIndex === rowIndex)?.[column]
+      : before;
+    await fetchJson(`/session/${session.session_id}/cell`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ table_path: tablePath, row_index: rowIndex, column, value }),
+    });
+    if (pushHistory) {
+      setUndoStack(s => [...s, { kind: 'table', tablePath, rowIndex, column, before: oldValue, after: value }]);
+      setRedoStack([]);
+    }
+    setTableData(d => ({
+      ...d,
+      records: d.records.map(r => r.__rowIndex === rowIndex ? { ...r, [column]: value } : r),
+    }));
+  }
+
+  async function undo() {
+    const change = undoStack[undoStack.length - 1];
+    if (!change || change.kind !== 'table') return;
+    await patchCell(change.tablePath, change.rowIndex, change.column, change.before, false, change.after);
+    setUndoStack(s => s.slice(0, -1));
+    setRedoStack(s => [...s, change]);
+  }
+
+  async function redo() {
+    const change = redoStack[redoStack.length - 1];
+    if (!change || change.kind !== 'table') return;
+    await patchCell(change.tablePath, change.rowIndex, change.column, change.after, false, change.before);
+    setRedoStack(s => s.slice(0, -1));
+    setUndoStack(s => [...s, change]);
+  }
+
+  async function copySelection() {
+    if (!selectedCell || selectedCell.scope !== 'table') return;
+    const row = tableData.records.find(r => r.__rowIndex === selectedCell.rowIndex);
+    const value = row ? valueText(row[selectedCell.column]) : '';
+    await navigator.clipboard.writeText(value);
+    setStatus('Copied selected cell.');
+  }
+
+  async function pasteSelection() {
+    if (!selectedCell || selectedCell.scope !== 'table' || !session) return;
+    const text = await navigator.clipboard.readText();
+    const rows = text
+      .replace(/\r/g, '')
+      .split('\n')
+      .filter((r, i, arr) => r.length || i < arr.length - 1)
+      .map(r => r.split('\t').map(parsePossibleJson));
+    await fetchJson(`/session/${session.session_id}/paste`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ table_path: currentTable, start_row_index: selectedCell.rowIndex, start_column: selectedCell.column, rows }),
+    });
+    await loadTable(currentTable, tableData.offset, tableSearch);
+    setStatus('Pasted grid data.');
+  }
+
+  async function doReplace() {
+    if (!replaceFind) return;
+    setLoading(true);
+    try {
+      const res = await fetchJson(`/session/${session.session_id}/replace`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table_path: currentTable, find: replaceFind, replace: replaceWith }),
+      });
+      await loadTable(currentTable, tableData.offset, tableSearch);
+      setStatus(`Replaced ${res.replacements} values.`);
+      setReplaceOpen(false);
+    } catch (err) {
+      setStatus(`Replace failed: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const menus = [
+    {
+      label: 'File',
+      items: [
+        { label: 'Open...', disabled: false, action: () => fileRef.current?.click() },
+        { label: 'Open Sample', disabled: false, action: parseSample },
+        { type: 'separator' },
+        { label: 'Save DB', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/save-roster.db`) },
+        { label: 'Save Raw', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/save-raw.db`) },
+        { label: 'Save Compressed', disabled: !session || session.input_container !== 'fbchunks', action: () => downloadUrl(`/session/${session.session_id}/save-compressed`) },
+        { label: 'Save As DB', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/save-roster.db`) },
+        { label: 'Save As JSON', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/save-project.json`) },
+      ],
+    },
+    {
+      label: 'Edit',
+      items: [
+        { label: 'Undo', disabled: !undoStack.length, action: undo },
+        { label: 'Redo', disabled: !redoStack.length, action: redo },
+        { type: 'separator' },
+        { label: 'Copy', disabled: !selectedCell || selectedCell.scope !== 'table', action: copySelection },
+        { label: 'Paste', disabled: !selectedCell || selectedCell.scope !== 'table', action: pasteSelection },
+        { label: 'Find and Replace', disabled: !session || !currentTable, action: () => setReplaceOpen(true) },
+      ],
+    },
+    {
+      label: 'View',
+      items: [
+        { label: 'Table View', disabled: !session, action: () => setView('table') },
+        { label: 'Player Editor', disabled: !playTable, action: () => { setCurrentTable(playTable); setView('player'); } },
+        { label: 'Team Editor', disabled: !teamTable, action: () => { setCurrentTable(teamTable); setView('team'); } },
+        { label: 'Character Visuals', disabled: !session, action: () => setView('visuals') },
+        { label: 'Node JSON', disabled: !session, action: () => setView('node') },
+      ],
+    },
+    {
+      label: 'Export',
+      items: [
+        { label: 'Export All ZIP', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/all.zip`) },
+        { label: 'Current Table CSV', disabled: !session || !currentTable, action: () => downloadUrl(`/session/${session.session_id}/export/table/${encodeURIComponent(currentTable)}.csv`) },
+        { label: 'Current Table JSON', disabled: !session || !currentTable, action: () => downloadUrl(`/session/${session.session_id}/export/table/${encodeURIComponent(currentTable)}.json`) },
+        { type: 'separator' },
+        { label: 'Visuals Nested JSON', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/nested.json`) },
+        { label: 'Visuals Players CSV', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/players.csv`) },
+        { label: 'Visuals Loadouts CSV', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/loadouts.csv`) },
+        { label: 'Visuals Elements CSV', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/elements.csv`) },
+      ],
+    },
+  ];
+
+  return (
+      <div className="app">
+        <nav className="menubar" ref={menuBarRef}>
+          <div className="nav-left">
+            <button type="button" className="mobile-nav-toggle" aria-label="Toggle navigation" onClick={() => setMobileNavOpen(current => !current)}>☰</button>
+            <div className="menu-strip">
+              {menus.map(menu => (
+                <Menu
+                  key={menu.label}
+                  {...menu}
+                  open={openMenu === menu.label}
+                  onToggle={() => setOpenMenu(current => current === menu.label ? null : menu.label)}
+                  onClose={() => setOpenMenu(null)}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="nav-center" title={loading ? 'Working...' : status}>
+            <strong>FB Roster Editor</strong>
+            <span className="nav-divider">|</span>
+            <span className="top-file-status">{loading ? 'Working...' : statusFileLabel}</span>
+          </div>
+          <div className="nav-right">
+            <div className="mode-strip">
+              {VIEW_BUTTONS.map(button => {
+                const disabled = (button.key === 'player' && !playTable)
+                  || (button.key === 'team' && !teamTable)
+                  || ((button.key === 'visuals' || button.key === 'node') && !session);
+                return (
+                  <button
+                    key={button.key}
+                    className={view === button.key ? 'active' : ''}
+                    disabled={disabled}
+                    onClick={() => {
+                      setOpenMenu(null);
+                      if (button.key === 'player') setCurrentTable(playTable);
+                      if (button.key === 'team') setCurrentTable(teamTable);
+                      setView(button.key);
+                    }}
+                  >
+                    {button.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <input ref={fileRef} className="file-input" type="file" accept=".db,.DB,*" onChange={e => onOpenFile(e.target.files?.[0])} />
+        </nav>
+        {mobileNavOpen && (
+          <div className="mobile-nav-panel" ref={mobileNavRef}>
+            <div className="mobile-nav-menus">
+              {menus.map(menu => (
+                <Menu
+                  key={`mobile-${menu.label}`}
+                  {...menu}
+                  open={openMenu === `mobile-${menu.label}`}
+                  onToggle={() => setOpenMenu(current => current === `mobile-${menu.label}` ? null : `mobile-${menu.label}`)}
+                  onClose={() => {
+                    setOpenMenu(null);
+                  }}
+                />
+              ))}
+            </div>
+          <div className="mobile-nav-modes">
+            {VIEW_BUTTONS.map(button => {
+              const disabled = (button.key === 'player' && !playTable)
+                || (button.key === 'team' && !teamTable)
+                || ((button.key === 'visuals' || button.key === 'node') && !session);
+              return (
+                <button
+                  key={`mobile-mode-${button.key}`}
+                  className={view === button.key ? 'active' : ''}
+                  disabled={disabled}
+                  onClick={() => {
+                    setOpenMenu(null);
+                    setMobileNavOpen(false);
+                    if (button.key === 'player') setCurrentTable(playTable);
+                    if (button.key === 'team') setCurrentTable(teamTable);
+                    setView(button.key);
+                  }}
+                >
+                  {button.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className={`workspace ${showTableSidebar ? '' : 'workspace-editor'}`}>
+        {showTableSidebar && <aside className="sidebar">
+          <div className="sidebar-title">Tables</div>
+          <div className="table-list">
+            {tables.map(t => (
+              <button key={t.path} className={currentTable === t.path ? 'active' : ''} onClick={() => { setCurrentTable(t.path); setView('table'); }}>
+                <b>{tableDisplayName(t)}</b>
+                <span>{t.records?.toLocaleString()} rows</span>
+              </button>
+            ))}
+          </div>
+        </aside>}
+
+        <main className="main">
+          {showTableSidebar && <div className="mobile-table-strip">
+            {tables.map(t => (
+              <button
+                key={`mobile-${t.path}`}
+                className={currentTable === t.path ? 'active' : ''}
+                onClick={() => { setCurrentTable(t.path); setView('table'); }}
+              >
+                {tableDisplayName(t)}
+              </button>
+            ))}
+          </div>}
+
+          {view === 'table' && (
+            <TableView
+              title={tableTitle(currentTable, currentTableMeta)}
+              subtitle={`${tableData.total?.toLocaleString() || 0} records`}
+              data={tableData}
+              columnLabels={tableMeta.labels}
+              search={tableSearch}
+              setSearch={setTableSearch}
+              sortBy={tableSortBy}
+              setSortBy={setTableSortBy}
+              sortDir={tableSortDir}
+              setSortDir={setTableSortDir}
+              filterColumn={tableFilterColumn}
+              setFilterColumn={setTableFilterColumn}
+              filterValue={tableFilterValue}
+              setFilterValue={setTableFilterValue}
+              loadPage={(offset, options) => loadTable(currentTable, offset, options)}
+              onCellCommit={(rowIndex, column, value) => patchCell(currentTable, rowIndex, column, value)}
+              isReadonlyColumn={column => column === '__rowIndex' || column === 'TeamName' || column === 'Position'}
+              selectedCell={selectedCell}
+              setSelectedCell={setSelectedCell}
+              pageSize={PAGE_SIZE}
+              findReplaceAction={() => setReplaceOpen(true)}
+              selectionScope="table"
+            />
+          )}
+          {view === 'player' && <RecordEditor kind="Player" tablePath={playTable} session={session} patchCell={patchCell} setStatus={setStatus} onSessionInvalid={clearSession} />}
+          {view === 'team' && <RecordEditor kind="Team" tablePath={teamTable} session={session} patchCell={patchCell} setStatus={setStatus} onSessionInvalid={clearSession} />}
+          {view === 'visuals' && <VisualsView active={view === 'visuals'} session={session} setStatus={setStatus} selectedCell={selectedCell} setSelectedCell={setSelectedCell} onSessionInvalid={clearSession} />}
+          {view === 'node' && <NodeEditor session={session} currentTable={currentTable} />}
+        </main>
+      </div>
+
+      {replaceOpen && (
+        <div className="modal-backdrop" onClick={() => setReplaceOpen(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>Find and Replace</h2>
+            <label>Find<input value={replaceFind} onChange={e => setReplaceFind(e.target.value)} autoFocus /></label>
+            <label>Replace with<input value={replaceWith} onChange={e => setReplaceWith(e.target.value)} /></label>
+            <div className="row right">
+              <button onClick={() => setReplaceOpen(false)}>Cancel</button>
+              <button onClick={doReplace}>Replace All in {currentTable}</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Menu({ label, items, open, onToggle, onClose }) {
+  return (
+    <div className={`menu ${open ? 'open' : ''}`}>
+      <button className="menu-trigger" type="button" onClick={onToggle}>{label}</button>
+      {open && <div className="menu-dropdown">
+        {items.map((item, index) => item.type === 'separator' ? (
+          <div key={`${label}-${index}`} className="menu-separator" />
+        ) : (
+          <button key={item.label} type="button" disabled={item.disabled} onClick={() => { item.action(); onClose(); }}>{item.label}</button>
+        ))}
+      </div>}
+    </div>
+  );
+}
+
+function TableView({
+  title,
+  subtitle,
+  data,
+  columnLabels,
+  search,
+  setSearch,
+  sortBy,
+  setSortBy,
+  sortDir,
+  setSortDir,
+  filterColumn,
+  setFilterColumn,
+  filterValue,
+  setFilterValue,
+  loadPage,
+  onCellCommit,
+  isReadonlyColumn,
+  selectedCell,
+  setSelectedCell,
+  pageSize,
+  findReplaceAction,
+  selectionScope,
+  headerActions,
+}) {
+  const [draftSearch, setDraftSearch] = useState(search);
+  const [draftFilterValue, setDraftFilterValue] = useState(filterValue || '');
+  const gridWrapRef = useRef(null);
+  const pendingScrollLeftRef = useRef(null);
+  useEffect(() => setDraftSearch(search), [search]);
+  useEffect(() => setDraftFilterValue(filterValue || ''), [filterValue]);
+  useEffect(() => {
+    if (pendingScrollLeftRef.current === null) return;
+    const nextLeft = pendingScrollLeftRef.current;
+    pendingScrollLeftRef.current = null;
+    requestAnimationFrame(() => {
+      if (gridWrapRef.current) gridWrapRef.current.scrollLeft = nextLeft;
+    });
+  }, [data.records, data.columns, data.offset, sortBy, sortDir]);
+  const pageStart = data.total ? data.offset + 1 : 0;
+  const pageEnd = Math.min(data.offset + pageSize, data.total);
+  const visibleColumns = data.columns.filter(isVisibleTableColumn);
+  const filterableColumns = visibleColumns;
+  const showLabel = column => displayLabel(column, columnLabels);
+  const searchPlaceholder = selectionScope === 'visuals' ? 'Search visuals...' : 'Search table...';
+
+  function detectColumnSortType(column) {
+    const samples = (data.records || [])
+      .map(row => row?.[column])
+      .filter(value => value !== null && value !== undefined && String(value).trim() !== '')
+      .slice(0, 20);
+    if (!samples.length) return 'text';
+    return samples.every(isNumericValue) ? 'numeric' : 'text';
+  }
+
+  function nextHeaderSortDirection(column) {
+    const columnType = detectColumnSortType(column);
+    if (sortBy !== column) return columnType === 'numeric' ? 'desc' : 'asc';
+    return sortDir === 'desc' ? 'asc' : 'desc';
+  }
+
+  function sortIndicator(column) {
+    if (sortBy !== column) return '';
+    return sortDir === 'desc' ? '\u2193' : '\u2191';
+  }
+
+  function runQuery(offset = 0, next = {}) {
+    if (gridWrapRef.current) {
+      pendingScrollLeftRef.current = gridWrapRef.current.scrollLeft;
+    }
+    const nextSearch = next.search ?? draftSearch;
+    const nextSortBy = next.sortBy ?? sortBy;
+    const nextSortDir = next.sortDir ?? sortDir;
+    const nextFilterColumn = next.filterColumn ?? filterColumn;
+    const nextFilterValue = next.filterValue ?? draftFilterValue;
+    setSearch(nextSearch);
+    setSortBy?.(nextSortBy);
+    setSortDir?.(nextSortDir);
+    setFilterColumn?.(nextFilterColumn);
+    setFilterValue?.(nextFilterValue);
+    loadPage(offset, {
+      search: nextSearch,
+      sortBy: nextSortBy,
+      sortDir: nextSortDir,
+      filterColumn: nextFilterColumn,
+      filterValue: nextFilterValue,
+    });
+  }
+
+  return (
+    <section className="panel fullheight">
+      <div className="panel-head">
+        <div>
+          <h2>{title}</h2>
+          <p>{subtitle}</p>
+        </div>
+        <div className="search-tools">{headerActions}</div>
+      </div>
+      <div className="table-toolbar">
+        <label>
+          <span>Sort</span>
+          <select value={sortBy} onChange={e => runQuery(0, { sortBy: e.target.value })}>
+            <option value="">Default order</option>
+            {filterableColumns.map(column => <option key={column} value={column}>{showLabel(column)}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>Direction</span>
+          <select value={sortDir} onChange={e => runQuery(0, { sortDir: e.target.value })}>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </label>
+        <label>
+          <span>Filter Column</span>
+          <select value={filterColumn} onChange={e => runQuery(0, { filterColumn: e.target.value })}>
+            <option value="">Any column</option>
+            {filterableColumns.map(column => <option key={column} value={column}>{showLabel(column)}</option>)}
+          </select>
+        </label>
+        <label className="toolbar-grow">
+          <span>Filter Value</span>
+          <input
+            placeholder="Filter value..."
+            value={draftFilterValue}
+            onChange={e => setDraftFilterValue(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') runQuery(0, { filterValue: draftFilterValue });
+            }}
+          />
+        </label>
+        <label className="toolbar-grow">
+          <span>Search</span>
+          <input
+            placeholder={searchPlaceholder}
+            value={draftSearch}
+            onChange={e => setDraftSearch(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                runQuery(0, { search: draftSearch });
+              }
+            }}
+          />
+        </label>
+        <button onClick={() => runQuery(0, { search: draftSearch })}>Find</button>
+        {findReplaceAction && <button onClick={findReplaceAction}>Find/Replace</button>}
+        <button onClick={() => runQuery(0, { filterValue: draftFilterValue })}>Apply</button>
+        <button disabled={data.offset <= 0} onClick={() => runQuery(Math.max(0, data.offset - pageSize))}>Prev</button>
+        <button disabled={pageEnd >= data.total} onClick={() => runQuery(data.offset + pageSize)}>Next</button>
+      </div>
+      <div className="grid-wrap" ref={gridWrapRef}>
+        <table className="data-grid">
+          <thead>
+            <tr>
+                {visibleColumns.map(column => (
+                  <th
+                    key={column}
+                    className={sortBy === column ? 'sorted' : ''}
+                    onClick={() => runQuery(0, { sortBy: column, sortDir: nextHeaderSortDirection(column) })}
+                  >
+                    <span>{showLabel(column)}</span>
+                    {showLabel(column) !== column && <small>{column}</small>}
+                    {sortBy === column && <small className="sort-indicator">{sortIndicator(column)}</small>}
+                  </th>
+                ))}
+              </tr>
+          </thead>
+          <tbody>
+            {data.records.map((row, rowIndex) => {
+              const rowId = row.__rowIndex ?? row['Player ID'] ?? rowIndex;
+              return (
+                <tr key={rowId}>
+                  {visibleColumns.map(column => {
+                    const readonly = isReadonlyColumn(column);
+                    const selected = selectedCell?.scope === selectionScope && selectedCell?.rowIndex === rowId && selectedCell?.column === column;
+                    return (
+                      <td
+                        key={column}
+                        className={`${readonly ? 'readonly' : ''} ${selected ? 'selected' : ''}`}
+                        contentEditable={!readonly}
+                        suppressContentEditableWarning
+                        onFocus={() => setSelectedCell({ scope: selectionScope, rowIndex: rowId, column })}
+                        onClick={() => setSelectedCell({ scope: selectionScope, rowIndex: rowId, column })}
+                        onBlur={e => {
+                          if (readonly) return;
+                          const next = parsePossibleJson(e.currentTarget.innerText);
+                          const prev = row[column];
+                          if (valueText(prev) !== valueText(next)) {
+                            onCellCommit(rowId, column, next);
+                          }
+                        }}
+                        title={valueText(row[column])}
+                      >
+                        {valueText(row[column])}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function SpinnerField({ value, onChange, onCommit, min = -9999, max = 9999, step = 1 }) {
+  const numericValue = Number(value || 0);
+  return (
+    <div className="spinner-field">
+      <input
+        type="number"
+        value={value}
+        min={min}
+        max={max}
+        step={step}
+        onChange={e => onChange(e.target.value)}
+        onBlur={onCommit}
+      />
+      <div className="spinner-buttons">
+        <button type="button" onClick={() => onChange(String(numericValue + step))}>+</button>
+        <button type="button" onClick={() => onChange(String(numericValue - step))}>-</button>
+      </div>
+    </div>
+  );
+}
+
+function RecordNavCard({ option, active, onClick, kind, style, logoUrl }) {
+  const topMeta = kind === 'Team' && option.ovr !== undefined && option.ovr !== null ? `${option.ovr} OVR` : '';
+  const detailBits = [];
+  if (option.teamName) detailBits.push(option.teamName);
+  if (option.position) {
+    detailBits.push(option.ovr !== undefined && option.ovr !== null ? `${option.position} - ${option.ovr} OVR` : option.position);
+  } else if (kind !== 'Team' && option.ovr !== undefined && option.ovr !== null) {
+    detailBits.push(`${option.ovr} OVR`);
+  }
+  if (option.nickname && kind === 'Team') detailBits.push(option.nickname);
+  return (
+    <button type="button" className={active ? 'active' : ''} onClick={onClick} style={style} data-active={active ? 'true' : 'false'}>
+      <div className="record-card-row">
+        {logoUrl && <img className="record-card-logo" src={logoUrl} alt="" loading="lazy" />}
+        <div className="record-card-body">
+          <div className="record-card-head">
+            <b>{option.label}</b>
+            {topMeta && <small>{topMeta}</small>}
+          </div>
+          {detailBits.length > 0 && <span>{detailBits.join(' - ')}</span>}
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessionInvalid }) {
+  const [data, setData] = useState({ records: [], columns: [], total: 0, offset: 0 });
+  const [query, setQuery] = useState('');
+  const [teamOptions, setTeamOptions] = useState([]);
+  const [playerOptions, setPlayerOptions] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState('');
+  const [selectedPosition, setSelectedPosition] = useState('');
+  const [selectedRowIndex, setSelectedRowIndex] = useState('');
+  const [editorMeta, setEditorMeta] = useState({ labels: {}, gearFields: [] });
+  const [draftValues, setDraftValues] = useState({});
+  const [gearValues, setGearValues] = useState({});
+  const [visualOptions, setVisualOptions] = useState({});
+  const [bootstrapping, setBootstrapping] = useState(false);
+  const [activeTab, setActiveTab] = useState('info');
+  const editorContentRef = useRef(null);
+  const navListRef = useRef(null);
+
+  useEffect(() => {
+    if (session && tablePath) {
+      initializeEditor();
+    }
+  }, [session, tablePath]);
+
+  useEffect(() => {
+    setActiveTab('info');
+  }, [kind, session?.session_id, tablePath]);
+
+  useEffect(() => {
+    const activeButton = navListRef.current?.querySelector('button[data-active="true"]');
+    activeButton?.scrollIntoView({ block: 'nearest' });
+  }, [selectedRowIndex, playerOptions, teamOptions, query]);
+
+  async function initializeEditor() {
+    setBootstrapping(true);
+    setSelectedTeam('');
+    setSelectedPosition('');
+    setSelectedRowIndex('');
+    setDraftValues({});
+    setGearValues({});
+    setVisualOptions({});
+    try {
+      const prepPromise = Promise.all([loadMeta(), loadVisualOptions()]);
+      const teams = await fetchJson(`/session/${session.session_id}/team-options`);
+      const teamList = teams.options || [];
+      setTeamOptions(teamList);
+      const defaultTeamId = teamList[0]?.teamId !== undefined && teamList[0]?.teamId !== null ? String(teamList[0].teamId) : '';
+      const defaultTeamRow = teamList[0]?.rowIndex !== undefined && teamList[0]?.rowIndex !== null ? String(teamList[0].rowIndex) : '';
+      if (kind === 'Team') {
+        const firstTeam = teamList[0];
+        setSelectedTeam(defaultTeamRow);
+        if (firstTeam) {
+          setSelectedRowIndex(String(firstTeam.rowIndex));
+          await loadRecord(firstTeam.rowIndex);
+        }
+      } else {
+        setSelectedTeam(defaultTeamId);
+        const baseQ = new URLSearchParams();
+        if (defaultTeamId) baseQ.set('team_id', defaultTeamId);
+        const players = await fetchJson(`/session/${session.session_id}/player-options?${baseQ}`);
+        const options = players.options || [];
+        setPlayerOptions(options);
+        const firstPlayer = options[0];
+        if (firstPlayer) {
+          setSelectedRowIndex(String(firstPlayer.rowIndex));
+          await loadRecord(firstPlayer.rowIndex);
+        }
+      }
+      prepPromise.catch(() => {});
+    } catch (err) {
+      if (isSessionMissingError(err)) {
+        onSessionInvalid?.();
+        return;
+      }
+      setStatus?.(`Initialize ${kind.toLowerCase()} editor failed: ${err.message}`);
+    } finally {
+      setBootstrapping(false);
+    }
+  }
+
+  async function loadMeta() {
+    try {
+      const name = kind === 'Player' ? 'PLAY' : 'TEAM';
+      const out = await fetchJson(`/session/${session.session_id}/editor-meta/${name}`);
+      setEditorMeta(out || { labels: {}, gearFields: [] });
+    } catch (err) {
+      if (isSessionMissingError(err)) {
+        onSessionInvalid?.();
+        return;
+      }
+      setStatus?.(`Load ${kind.toLowerCase()} metadata failed: ${err.message}`);
+    }
+  }
+
+  async function loadVisualOptions() {
+    if (kind !== 'Player') return;
+    try {
+      const out = await fetchJson(`/session/${session.session_id}/visual-options`);
+      setVisualOptions(out.fields || {});
+    } catch (err) {
+      if (isSessionMissingError(err)) {
+        onSessionInvalid?.();
+        return;
+      }
+      setVisualOptions({});
+    }
+  }
+
+  async function loadFilters(teamId = selectedTeam, position = selectedPosition, search = query, autoSelectFirst = false) {
+    if (!session) return;
+    try {
+      const teams = teamOptions.length ? { options: teamOptions } : await fetchJson(`/session/${session.session_id}/team-options`);
+      setTeamOptions(teams.options || []);
+      if (kind === 'Player') {
+        const baseQ = new URLSearchParams();
+        if (teamId) baseQ.set('team_id', teamId);
+        if (search) baseQ.set('search', search);
+        const basePlayers = await fetchJson(`/session/${session.session_id}/player-options?${baseQ}`);
+        const allOptions = basePlayers.options || [];
+        if (position) {
+          const filteredQ = new URLSearchParams(baseQ);
+          filteredQ.set('position', position);
+          const players = await fetchJson(`/session/${session.session_id}/player-options?${filteredQ}`);
+          const options = players.options || [];
+          setPlayerOptions(options);
+          if (autoSelectFirst && options[0]) {
+            setSelectedRowIndex(String(options[0].rowIndex));
+            await loadRecord(options[0].rowIndex);
+          }
+        } else {
+          setPlayerOptions(allOptions);
+          if (autoSelectFirst && allOptions[0]) {
+            setSelectedRowIndex(String(allOptions[0].rowIndex));
+            await loadRecord(allOptions[0].rowIndex);
+          }
+        }
+      }
+      if (kind === 'Team' && autoSelectFirst) {
+        const needle = search.trim().toLowerCase();
+        const options = (teams.options || []).filter(option => (
+          !needle
+          || String(option.label || '').toLowerCase().includes(needle)
+          || String(option.nickname || '').toLowerCase().includes(needle)
+          || String(option.abbrev || '').toLowerCase().includes(needle)
+          || String(option.teamId ?? '').includes(needle)
+        ));
+        if (options[0]) {
+          setSelectedTeam(String(options[0].rowIndex));
+          setSelectedRowIndex(String(options[0].rowIndex));
+          await loadRecord(options[0].rowIndex);
+        }
+      }
+    } catch (err) {
+      setTeamOptions([]);
+      setPlayerOptions([]);
+      if (isSessionMissingError(err)) {
+        onSessionInvalid?.();
+        return;
+      }
+      setStatus?.(`Load ${kind.toLowerCase()} filters failed: ${err.message}`);
+    }
+  }
+
+  async function loadRecord(rowIndex) {
+    if (rowIndex === '' || rowIndex === undefined || rowIndex === null) return;
+    const q = new URLSearchParams({ offset: rowIndex, limit: 1, search: '' });
+    try {
+      const out = await fetchJson(`/session/${session.session_id}/table/${encodeURIComponent(tablePath)}?${q}`);
+      setData({ ...out, total: out.total });
+      const loadedRecord = out.records?.[0] || null;
+      setDraftValues(buildDraftValues(loadedRecord, out.columns || []));
+      if (loadedRecord?.__rowIndex !== undefined) {
+        setSelectedRowIndex(String(loadedRecord.__rowIndex));
+      }
+      if (kind === 'Player' && loadedRecord?.PGID !== undefined) {
+        try {
+          const visuals = await fetchJson(`/session/${session.session_id}/player-visuals/${loadedRecord.PGID}`);
+          setGearValues(visuals.fields || {});
+        } catch (err) {
+          if (isSessionMissingError(err)) {
+            onSessionInvalid?.();
+            return;
+          }
+          setGearValues({});
+        }
+      } else {
+        setGearValues({});
+      }
+      if (typeof window !== 'undefined' && window.innerWidth <= 1360) {
+        requestAnimationFrame(() => {
+          editorContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    } catch (err) {
+      if (isSessionMissingError(err)) {
+        onSessionInvalid?.();
+        return;
+      }
+      setStatus?.(`Load ${kind.toLowerCase()} failed: ${err.message}`);
+    }
+  }
+
+  const record = data.records[0];
+  const editableColumns = data.columns.filter(c => !c.startsWith('__') && c !== 'TeamName' && c !== 'Position');
+  const orderedColumns = kind === 'Player'
+    ? orderColumns(editableColumns, [...PLAYER_INFO_ORDER, ...PLAYER_MISC_ORDER, ...PLAYER_CONTRACT_ORDER])
+    : orderColumns(editableColumns, [...TEAM_INFO_ORDER, ...TEAM_RATING_ORDER]);
+  const sections = kind === 'Player'
+    ? buildSections(orderedColumns, PLAYER_SECTION_DEFS)
+    : buildSections(orderedColumns, TEAM_SECTION_DEFS);
+  const sectionByKey = Object.fromEntries(sections.map(section => [section.key, section]));
+  const filteredTeamOptions = useMemo(() => {
+    if (kind !== 'Team') return teamOptions;
+    const needle = query.trim().toLowerCase();
+    if (!needle) return teamOptions;
+    return teamOptions.filter(option => (
+      String(option.label || '').toLowerCase().includes(needle)
+      || String(option.nickname || '').toLowerCase().includes(needle)
+      || String(option.abbrev || '').toLowerCase().includes(needle)
+      || String(option.teamId ?? '').includes(needle)
+    ));
+  }, [kind, teamOptions, query]);
+  const navigationOptions = kind === 'Player' ? playerOptions : filteredTeamOptions;
+  const teamNameById = Object.fromEntries(teamOptions.map(option => [String(option.teamId), option.label]));
+  const teamOptionById = Object.fromEntries(teamOptions.map(option => [String(option.teamId), option]));
+  const currentNavIndex = navigationOptions.findIndex(option => String(option.rowIndex) === String(selectedRowIndex));
+  const currentTeamOption = kind === 'Team'
+    ? teamOptions.find(option => String(option.rowIndex) === String(selectedTeam))
+    : teamOptions.find(option => String(option.teamId) === String(selectedTeam));
+  const selectedPlayerOption = playerOptions.find(option => String(option.rowIndex) === String(selectedRowIndex));
+  const currentRecordTeamOption = kind === 'Player'
+    ? teamOptionById[String(record?.TGID ?? selectedPlayerOption?.teamId ?? selectedTeam)]
+    : currentTeamOption;
+  const currentTeamLogo = teamLogoUrl(currentRecordTeamOption?.rowIndex);
+  const playerFirstName = valueText(draftValues.PFNA ?? record?.PFNA ?? selectedPlayerOption?.label?.split?.(' ')?.[0] ?? record?.firstName ?? '');
+  const playerLastName = valueText(draftValues.PLNA ?? record?.PLNA ?? (selectedPlayerOption?.label ? selectedPlayerOption.label.split(' ').slice(1).join(' ') : record?.lastName ?? ''));
+  const teamDisplayName = valueText(draftValues.TDNA ?? record?.TDNA ?? currentTeamOption?.label ?? record?.TeamName ?? '');
+  const teamNickname = valueText(draftValues.TMNC ?? record?.TMNC ?? '');
+  const primaryColor = colorStyleFromRecord(draftValues, ['TBCR', 'TBCG', 'TBCB'], colorStyleFromRecord(record, ['TBCR', 'TBCG', 'TBCB'], '#1c1f24'));
+  const secondaryColor = colorStyleFromRecord(draftValues, ['TB2R', 'TB2G', 'TB2B'], colorStyleFromRecord(record, ['TB2R', 'TB2G', 'TB2B'], '#3a3d42'));
+  const primaryHex = colorHexFromValues(draftValues.TBCR ?? record?.TBCR, draftValues.TBCG ?? record?.TBCG, draftValues.TBCB ?? record?.TBCB);
+  const secondaryHex = colorHexFromValues(draftValues.TB2R ?? record?.TB2R, draftValues.TB2G ?? record?.TB2G, draftValues.TB2B ?? record?.TB2B);
+  const tabSet = kind === 'Player' ? PLAYER_EDITOR_TABS : TEAM_EDITOR_TABS;
+  const teamBrandingColumns = TEAM_COLOR_FIELD_KEYS.filter(col => (
+    orderedColumns.includes(col)
+    || Object.prototype.hasOwnProperty.call(record || {}, col)
+    || Object.prototype.hasOwnProperty.call(draftValues || {}, col)
+  ));
+  const teamBrandingNameColumns = TEAM_BRANDING_NAME_COLUMNS.filter(col => orderedColumns.includes(col));
+  const teamRatingColumns = orderedColumns.filter(col => isTeamRatingColumn(col, labelForField(editorMeta, col)));
+  const teamInfoColumns = orderedColumns.filter(col => (
+    (TEAM_INFO_ORDER.includes(col) || TEAM_INFO_EXTRA_COLUMNS.includes(col))
+    && !teamRatingColumns.includes(col)
+  ));
+  const teamMiscColumns = orderedColumns.filter(col => (
+    !teamInfoColumns.includes(col)
+    && !teamRatingColumns.includes(col)
+    && !teamBrandingColumns.includes(col)
+    && !teamBrandingNameColumns.includes(col)
+  ));
+  const visibleSections = (() => {
+    if (kind === 'Player') {
+      if (activeTab === 'info') return [sectionByKey.identity].filter(Boolean);
+      if (activeTab === 'ratings') return [sectionByKey.ratings].filter(Boolean);
+      if (activeTab === 'contract') return [sectionByKey.contract].filter(Boolean);
+      return [sectionByKey.misc, sectionByKey.remaining].filter(Boolean);
+    }
+    if (activeTab === 'info') {
+      const infoSections = [];
+      const identityColumns = teamInfoColumns.filter(col => !teamBrandingNameColumns.includes(col) && !teamBrandingColumns.includes(col));
+      if (identityColumns.length) infoSections.push({ key: 'team-info', title: 'Team Information', columns: identityColumns });
+      if (teamBrandingNameColumns.length) infoSections.push({ key: 'branding', title: 'Branding', columns: teamBrandingNameColumns });
+      if (teamBrandingColumns.length) infoSections.push({ key: 'colors', title: 'Team Colors', columns: teamBrandingColumns });
+      return infoSections;
+    }
+    if (activeTab === 'ratings') {
+      return teamRatingColumns.length ? [{ key: 'team-ratings', title: 'Team Ratings', columns: teamRatingColumns }] : [];
+    }
+    if (activeTab === 'branding') {
+      const brandingSections = [];
+      if (teamBrandingNameColumns.length) brandingSections.push({ key: 'branding', title: 'Branding', columns: teamBrandingNameColumns });
+      if (teamBrandingColumns.length) brandingSections.push({ key: 'colors', title: 'Team Colors', columns: teamBrandingColumns });
+      return brandingSections;
+    }
+    return teamMiscColumns.length ? [{ key: 'team-other', title: 'Other Team Data', columns: teamMiscColumns }] : [];
+  })();
+
+  function gearFieldLabel(col) {
+    return (visualOptions[col]?.label || col.replace('slotType: ', '').replace(/([a-z])([A-Z])/g, '$1 $2')).trim();
+  }
+
+  function mergedGearOptions(col) {
+    const current = valueText(gearValues[col]);
+    const base = visualOptions[col]?.options || [];
+    const extra = [];
+    if (!base.some(option => String(option.value) === '0')) extra.push({ label: '0', value: '0' });
+    if (current && current !== '0' && !base.some(option => String(option.value) === current)) {
+      extra.push({ label: `${current} (Current)`, value: current });
+    }
+    return [...extra, ...base];
+  }
+
+  function teamReferenceLabel(col, value) {
+    if (kind !== 'Team') return '';
+    if (!['TRV1', 'TRV2', 'TRV3'].includes(col)) return '';
+    return teamNameById[String(value)] || '';
+  }
+
+  function selectOptionsForColumn(col) {
+    if (kind !== 'Team') return [];
+    if (TEAM_RIVAL_COLUMNS.includes(col)) {
+      const current = valueText(draftValues[col]);
+      const options = teamOptions
+        .filter(option => option.teamId !== undefined && option.teamId !== null)
+        .map(option => ({
+          label: `${option.label}${option.ovr !== undefined && option.ovr !== null ? ` - ${option.ovr} OVR` : ''}`,
+          value: String(option.teamId),
+        }));
+      const withZero = options.some(option => option.value === '0')
+        ? options
+        : [{ label: 'No rival', value: '0' }, ...options];
+      return withZero.some(option => option.value === current)
+        ? withZero
+        : [{ label: `${current} (Current)`, value: current }, ...options];
+    }
+    const options = editorMeta.selectOptions?.[col] || [];
+    if (!options.length) return [];
+    const current = valueText(draftValues[col]);
+    const withZero = options.some(option => String(option.value) === '0')
+      ? options
+      : [{ label: '0', value: '0' }, ...options];
+    return withZero.some(option => String(option.value) === current)
+      ? withZero
+      : [{ label: `${current} (Current)`, value: current }, ...options];
+  }
+
+  async function commitFieldValue(col, rawValue) {
+    if (!record) return;
+    const nextValue = parsePossibleJson(rawValue);
+    if (String(valueText(record[col])) === String(rawValue)) return;
+    await patchCell(tablePath, record.__rowIndex, col, nextValue);
+    setData(current => ({
+      ...current,
+      records: current.records.map(r => r.__rowIndex === record.__rowIndex ? { ...r, [col]: nextValue } : r),
+    }));
+  }
+
+  async function commitField(col) {
+    await commitFieldValue(col, draftValues[col]);
+  }
+
+  async function patchGearField(column, value) {
+    if (!record?.PGID) return;
+    try {
+      await fetchJson(`/session/${session.session_id}/visuals-cell`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player_id: String(record.PGID), column, value: parsePossibleJson(value) }),
+      });
+      setGearValues(current => ({ ...current, [column]: value }));
+    } catch (err) {
+      setStatus?.(`Update gear failed: ${err.message}`);
+    }
+  }
+
+  async function patchColorFields(nextValues) {
+    if (!record) return;
+    const updates = Object.entries(nextValues);
+    setDraftValues(current => ({ ...current, ...Object.fromEntries(updates.map(([key, value]) => [key, String(value)])) }));
+    for (const [column, value] of updates) {
+      await patchCell(tablePath, record.__rowIndex, column, value);
+    }
+    setData(current => ({
+      ...current,
+      records: current.records.map(r => r.__rowIndex === record.__rowIndex ? { ...r, ...nextValues } : r),
+    }));
+  }
+
+  async function patchColorHex(group, hex) {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return;
+    const nextValues = group === 'primary'
+      ? { TBCR: rgb.r, TBCG: rgb.g, TBCB: rgb.b }
+      : { TB2R: rgb.r, TB2G: rgb.g, TB2B: rgb.b };
+    await patchColorFields(nextValues);
+  }
+
+  return (
+    <section className={`panel fullheight editor-page editor-page-${kind.toLowerCase()}`}>
+      {!record ? <div className="empty">{bootstrapping ? `Loading ${kind.toLowerCase()} editor...` : 'No record selected.'}</div> : (
+          <div className="editor-shell">
+            <aside className="editor-nav">
+            <div className="nav-controls">
+              <label>
+                <span>Team</span>
+                <select
+                  value={selectedTeam}
+                  style={currentTeamOption ? navOptionStyle(currentTeamOption) : undefined}
+                  onChange={async e => {
+                    const teamValue = e.target.value;
+                    setSelectedTeam(teamValue);
+                    if (kind === 'Player') {
+                      setSelectedRowIndex('');
+                      await loadFilters(teamValue, selectedPosition, query, true);
+                    } else {
+                      const match = teamOptions.find(option => String(option.rowIndex) === String(teamValue));
+                      if (match) {
+                        setSelectedRowIndex(String(match.rowIndex));
+                        await loadRecord(match.rowIndex);
+                      }
+                    }
+                  }}
+                >
+                  <option value="">{kind === 'Player' ? 'All teams' : 'Select team'}</option>
+                  {teamOptions.map(option => (
+                    <option
+                      key={`${option.teamId}-${option.rowIndex}`}
+                      value={kind === 'Player' ? option.teamId : option.rowIndex}
+                      style={selectOptionStyle(option)}
+                    >
+                      {option.label}{option.ovr !== undefined && option.ovr !== null ? ` - ${option.ovr} OVR` : ''}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {kind === 'Player' && (
+                <>
+                  <label>
+                    <span>Position</span>
+                    <select
+                      value={selectedPosition}
+                      onChange={async e => {
+                        const nextPosition = e.target.value;
+                        setSelectedPosition(nextPosition);
+                        setSelectedRowIndex('');
+                        await loadFilters(selectedTeam, nextPosition, query, true);
+                      }}
+                    >
+                      <option value="">All positions</option>
+                      {POSITION_OPTIONS.map(position => (
+                        <option key={position.id} value={position.label}>{position.label}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>Player</span>
+                    <select
+                      value={selectedRowIndex}
+                      style={selectedPlayerOption ? navOptionStyle(teamOptionById[String(selectedPlayerOption.teamId)]) : undefined}
+                      onChange={async e => {
+                        const rowIndex = e.target.value;
+                        setSelectedRowIndex(rowIndex);
+                        await loadRecord(rowIndex);
+                      }}
+                    >
+                      <option value="">Select player</option>
+                      {playerOptions.map(option => {
+                        const teamOption = teamOptionById[String(option.teamId)];
+                        return (
+                          <option key={option.rowIndex} value={option.rowIndex} style={teamOption ? selectOptionStyle(teamOption) : undefined}>
+                            {option.detail ? `${option.label} - ${option.detail}${option.ovr !== undefined && option.ovr !== null ? ` - ${option.ovr} OVR` : ''}` : option.label}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </label>
+                </>
+              )}
+              <div className="record-count">{currentNavIndex >= 0 ? currentNavIndex + 1 : 0} / {navigationOptions.length || data.total}</div>
+            </div>
+            <div className="editor-nav-list" ref={navListRef}>
+              {navigationOptions.map(option => (
+                <RecordNavCard
+                  key={`${option.rowIndex}-${option.teamId ?? 'na'}`}
+                  kind={kind}
+                  option={option}
+                  active={String(selectedRowIndex) === String(option.rowIndex)}
+                  style={kind === 'Player' ? navOptionStyle(teamOptionById[String(option.teamId)]) : navOptionStyle(option)}
+                  logoUrl={kind === 'Player' ? teamLogoUrl(teamOptionById[String(option.teamId)]?.rowIndex) : teamLogoUrl(option.rowIndex)}
+                  onClick={() => loadRecord(option.rowIndex)}
+                />
+              ))}
+            </div>
+            </aside>
+            <div className="editor-content" ref={editorContentRef}>
+              <div className="identity-card compact-identity" style={{ background: texturedTeamBackground(currentRecordTeamOption, 'rgba(20, 22, 25, .82)') }}>
+                <div className="identity-main">
+                  <div className="identity-title-group">
+                    {kind === 'Player' ? (
+                      <div className="identity-title-row">
+                        <h3>{playerFirstName || `Player ${record.__rowIndex}`}</h3>
+                        <h3>{playerLastName || ''}</h3>
+                        {currentTeamLogo && <img className="identity-logo player-logo" src={currentTeamLogo} alt="" />}
+                      </div>
+                    ) : (
+                      <div className="identity-title-row">
+                        {currentTeamLogo && <img className="identity-logo team-logo" src={currentTeamLogo} alt="" />}
+                        <h3>{teamDisplayName || `Team ${record.__rowIndex}`}</h3>
+                        <h3>{teamNickname || ''}</h3>
+                      </div>
+                    )}
+                  </div>
+                  <div className="chips">
+                    {record.TeamName && <span>{record.TeamName}</span>}
+                  {record.Position && <span>{record.Position}</span>}
+                  {record.POVR !== undefined && <span>{record.POVR} OVR</span>}
+                  {record.TROV !== undefined && <span>{record.TROV} OVR</span>}
+                  {record.TGID !== undefined && <span>TGID {record.TGID}</span>}
+                </div>
+              </div>
+            </div>
+            <div className="editor-tabs-row">
+              <div className="subtabs">
+                {tabSet.map(tab => (
+                  <button key={tab.key} className={activeTab === tab.key ? 'active' : ''} onClick={() => setActiveTab(tab.key)}>{tab.label}</button>
+                ))}
+              </div>
+              <div className="editor-search-inline">
+                <input placeholder={`Search ${kind.toLowerCase()}...`} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && loadFilters(selectedTeam, selectedPosition, query, true)} />
+                <button onClick={() => loadFilters(selectedTeam, selectedPosition, query, true)}>Search</button>
+              </div>
+            </div>
+            {visibleSections.map(section => (
+              <div className="editor-section" key={section.key}>
+                <div className="editor-section-head">
+                  <h3>{section.title}</h3>
+                  <p>{section.columns.length} editable values</p>
+                </div>
+                {kind === 'Team' && section.key === 'team-info' && (
+                  <div className="team-swatches team-swatches-panel">
+                    <div className="swatch-block">
+                      <label className="swatch-input">
+                        <input type="color" value={primaryHex} onChange={e => patchColorHex('primary', e.target.value)} />
+                        <span className="color-swatch" style={{ background: primaryColor }} />
+                      </label>
+                      <div><strong>Primary</strong></div>
+                    </div>
+                    <div className="swatch-block">
+                      <label className="swatch-input">
+                        <input type="color" value={secondaryHex} onChange={e => patchColorHex('secondary', e.target.value)} />
+                        <span className="color-swatch" style={{ background: secondaryColor }} />
+                      </label>
+                      <div><strong>Secondary</strong></div>
+                    </div>
+                  </div>
+                )}
+                  <div className={`form-grid ${section.key === 'identity' || section.key === 'team-info' ? 'form-grid-priority' : ''}`}>
+                  {section.columns.map(col => {
+                    const selectOptions = selectOptionsForColumn(col);
+                    return (
+                      <label key={col}>
+                        <span>{labelForField(editorMeta, col)}</span>
+                        <small>{col}</small>
+                        {selectOptions.length ? (
+                          <select
+                            value={valueText(draftValues[col])}
+                            onChange={e => {
+                              const next = e.target.value;
+                              setDraftValues(current => ({ ...current, [col]: next }));
+                              commitFieldValue(col, next).catch(err => setStatus?.(`Update ${labelForField(editorMeta, col)} failed: ${err.message}`));
+                            }}
+                          >
+                            {selectOptions.map(option => (
+                              <option key={`${col}-${option.value}`} value={option.value}>{option.label}</option>
+                            ))}
+                          </select>
+                        ) : isNumericValue(draftValues[col]) ? (
+                        <SpinnerField
+                          value={draftValues[col] ?? ''}
+                          onChange={value => setDraftValues(current => ({ ...current, [col]: value }))}
+                          onCommit={() => commitField(col)}
+                          min={TEAM_COLOR_FIELDS.some(field => field.key === col) ? 0 : -9999}
+                          max={TEAM_COLOR_FIELDS.some(field => field.key === col) ? 255 : 9999}
+                        />
+                      ) : (
+                        <input
+                          value={draftValues[col] ?? ''}
+                          onChange={e => setDraftValues(current => ({ ...current, [col]: e.target.value }))}
+                          onBlur={() => commitField(col)}
+                        />
+                      )}
+                        {teamReferenceLabel(col, draftValues[col]) && !selectOptions.length && <em className="field-hint">{teamReferenceLabel(col, draftValues[col])}</em>}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+            {kind === 'Player' && activeTab === 'visuals' && Object.keys(gearValues).length > 0 && (
+              <div className="editor-section">
+                <div className="editor-section-head">
+                  <h3>Character Visuals</h3>
+                  <p>Appearance and equipment values come from the visuals dataset.</p>
+                </div>
+                <div className="form-grid gear-grid">
+                  {editorMeta.gearFields.filter(col => Object.prototype.hasOwnProperty.call(gearValues, col)).map(col => (
+                    <label key={col}>
+                      <span>{gearFieldLabel(col)}</span>
+                      <small>{col}</small>
+                      <select
+                        value={valueText(gearValues[col])}
+                        onChange={e => {
+                          const next = e.target.value;
+                          setGearValues(current => ({ ...current, [col]: next }));
+                          patchGearField(col, next);
+                        }}
+                      >
+                        {mergedGearOptions(col).map(option => (
+                          <option key={`${col}-${option.value}`} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+function VisualsView({ active, session, setStatus, selectedCell, setSelectedCell, onSessionInvalid }) {
+  const [data, setData] = useState({ records: [], columns: [], total: 0, offset: 0 });
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('');
+  const [sortDir, setSortDir] = useState('asc');
+  const [filterColumn, setFilterColumn] = useState('');
+  const [filterValue, setFilterValue] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    if (session && active) {
+      load(0, { search });
+    }
+  }, [session, active]);
+
+  async function load(offset = 0, options = {}) {
+    if (!session) return;
+    setLoading(true);
+    setLoadError('');
+    try {
+      const searchValue = options.search ?? search;
+      const nextSortBy = options.sortBy ?? sortBy;
+      const nextSortDir = options.sortDir ?? sortDir;
+      const nextFilterColumn = options.filterColumn ?? filterColumn;
+      const nextFilterValue = options.filterValue ?? filterValue;
+      const q = new URLSearchParams({
+        offset,
+        limit: VISUALS_PAGE_SIZE,
+        search: searchValue,
+        sort_by: nextSortBy,
+        sort_dir: nextSortDir,
+        filter_column: nextFilterColumn,
+        filter_value: nextFilterValue,
+      });
+      const out = await fetchJson(`/session/${session.session_id}/visuals-table?${q}`);
+      setData(out);
+    } catch (err) {
+      setData({ records: [], columns: [], total: 0, offset: 0 });
+      setLoadError(err.message);
+      if (isSessionMissingError(err)) {
+        onSessionInvalid?.();
+        return;
+      }
+      setStatus(`Visuals load failed: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function patchVisualCell(playerId, column, value) {
+    try {
+      await fetchJson(`/session/${session.session_id}/visuals-cell`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player_id: String(playerId), column, value }),
+      });
+      setData(current => ({
+        ...current,
+        records: current.records.map(row => String(row['Player ID']) === String(playerId) ? { ...row, [column]: value } : row),
+      }));
+      setStatus(`Updated visuals for player ${playerId}.`);
+    } catch (err) {
+      if (isSessionMissingError(err)) {
+        onSessionInvalid?.();
+        return;
+      }
+      setStatus(`Visuals edit failed: ${err.message}`);
+      throw err;
+    }
+  }
+
+  return (
+    <TableView
+      title="Character Visuals"
+      subtitle={loading ? 'Loading spreadsheet view...' : loadError ? `Load problem: ${loadError}` : `${data.total?.toLocaleString() || 0} visual player rows`}
+      data={data}
+      columnLabels={VISUALS_LABELS}
+      search={search}
+      setSearch={setSearch}
+      sortBy={sortBy}
+      setSortBy={setSortBy}
+      sortDir={sortDir}
+      setSortDir={setSortDir}
+      filterColumn={filterColumn}
+      setFilterColumn={setFilterColumn}
+      filterValue={filterValue}
+      setFilterValue={setFilterValue}
+      loadPage={load}
+      onCellCommit={patchVisualCell}
+      isReadonlyColumn={column => column === 'Player ID'}
+      selectedCell={selectedCell}
+      setSelectedCell={setSelectedCell}
+      pageSize={VISUALS_PAGE_SIZE}
+      selectionScope="visuals"
+      headerActions={<button onClick={() => load(0, { search })}>Retry</button>}
+    />
+  );
+}
+
+function JsonNode({ name, value, depth = 0 }) {
+  const isObject = value && typeof value === 'object';
+  if (!isObject) {
+    return (
+      <div className="json-leaf" style={{ paddingLeft: `${depth * 14}px` }}>
+        <span className="json-key">{name}</span>
+        <span className="json-value">{valueText(value)}</span>
+      </div>
+    );
+  }
+  const entries = Array.isArray(value)
+    ? value.map((item, index) => [index, item])
+    : Object.entries(value);
+  return (
+    <details className="json-node" open={depth < 2}>
+      <summary style={{ paddingLeft: `${depth * 14}px` }}>
+        <span className="json-key">{name}</span>
+        <span className="json-meta">{Array.isArray(value) ? `[${entries.length}]` : `{${entries.length}}`}</span>
+      </summary>
+      <div>
+        {entries.map(([key, child]) => (
+          <JsonNode key={`${name}-${key}`} name={String(key)} value={child} depth={depth + 1} />
+        ))}
+      </div>
+    </details>
+  );
+}
+
+function NodeEditor({ session, currentTable }) {
+  const [mode, setMode] = useState('table');
+  const [text, setText] = useState('');
+  const [message, setMessage] = useState('');
+  const parsed = useMemo(() => {
+    try {
+      return JSON.parse(text);
+    } catch {
+      return null;
+    }
+  }, [text]);
+
+  useEffect(() => { if (session) load(); }, [session, currentTable, mode]);
+
+  async function load() {
+    if (!session) return;
+    setMessage('Loading JSON...');
+    try {
+      const obj = mode === 'visuals'
+        ? await fetchJson(`/session/${session.session_id}/visuals-json`)
+        : await fetchJson(`/session/${session.session_id}/table-json/${encodeURIComponent(currentTable)}`);
+      setText(JSON.stringify(obj, null, 2));
+      setMessage('Loaded.');
+    } catch (err) {
+      setMessage(err.message);
+    }
+  }
+
+  async function apply() {
+    try {
+      const value = JSON.parse(text);
+      if (mode === 'visuals') {
+        await fetchJson(`/session/${session.session_id}/visuals-json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ value }),
+        });
+      } else {
+        await fetchJson(`/session/${session.session_id}/table-json/${encodeURIComponent(currentTable)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ value }),
+        });
+      }
+      setMessage('Applied JSON edits.');
+    } catch (err) {
+      setMessage(`JSON apply failed: ${err.message}`);
+    }
+  }
+
+  return (
+    <section className="panel fullheight node-editor">
+      <div className="panel-head">
+        <div><h2>Node JSON Editor</h2><p>Tree view on the left, editable JSON on the right.</p></div>
+        <div className="search-tools">
+          <select value={mode} onChange={e => setMode(e.target.value)}>
+            <option value="table">Current table</option>
+            <option value="visuals">Character Visuals</option>
+          </select>
+          <button onClick={load}>Reload</button>
+          <button onClick={() => parsed && setText(JSON.stringify(parsed))} disabled={!parsed}>Compact</button>
+          <button onClick={() => parsed && setText(JSON.stringify(parsed, null, 2))} disabled={!parsed}>Pretty</button>
+          <button onClick={apply}>Apply JSON</button>
+        </div>
+      </div>
+      <div className="node-editor-body">
+        <div className="node-tree">
+          {parsed ? <JsonNode name={mode === 'visuals' ? 'characterVisuals' : currentTable} value={parsed} /> : <div className="empty">JSON parse preview unavailable.</div>}
+        </div>
+        <textarea value={text} onChange={e => setText(e.target.value)} spellCheck={false} />
+      </div>
+      <div className="node-status">{message}</div>
+    </section>
+  );
+}
+
+createRoot(document.getElementById('root')).render(<App />);
+

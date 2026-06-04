@@ -1,0 +1,18 @@
+{
+  "input_file": "C:\\Users\\Shadow\\Desktop\\Coding\\madden-roster-editor-webapp\\backend\\data\\sessions\\542ba2904ec5\\parse_input.db",
+  "output_file": "C:\\Users\\Shadow\\Desktop\\Coding\\madden-roster-editor-webapp\\backend\\data\\sessions\\542ba2904ec5\\visuals\\character_visuals_nested.json",
+  "format": "H2-style Madden 26 characterVisualsPlayerMap JSON",
+  "source_table": "BLBM",
+  "source_table_offset": 10,
+  "source_table_unknown2": 2,
+  "declared_records": 12154,
+  "parsed_records": 12154,
+  "warnings": [],
+  "sample_keys": [
+    "105",
+    "107",
+    "108",
+    "109",
+    "110"
+  ]
+}
