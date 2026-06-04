@@ -1,0 +1,1 @@
+Before UI layout patch on June 4, 2026: frontend/src/main.jsx and frontend/src/styles.css were backed up by replace_in_file automatic .bak files and previous restore process. Changes requested: full-height left school/player list, 66x66 header logos, more spacing, taller header panel, player logo moved left of player name, jersey number displayed beside player name.

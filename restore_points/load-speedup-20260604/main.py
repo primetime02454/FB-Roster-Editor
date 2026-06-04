@@ -434,6 +434,16 @@ def save_table_obj(session_id: str, table_path: str, obj: Dict[str, Any]) -> Non
     obj = sanitize_table_obj(obj)
     write_json(table_json_path(session_id, table_path), obj)
     get_team_lookup.cache_clear()
+    # Keep the table CSV in sync with edits.
+    meta = table_meta(session_id, table_path)
+    csv_path = sdir(session_id) / "parse" / meta["csv_file"]
+    records = obj.get("records", [])
+    cols = collect_columns(records)
+    with csv_path.open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+        w.writeheader()
+        for r in records:
+            w.writerow({k: flatten_for_csv(r.get(k)) for k in cols})
 
 
 def collect_columns(records: Iterable[Dict[str, Any]]) -> List[str]:
@@ -537,23 +547,14 @@ def table_columns(session_id: str, table_path: str, obj: Dict[str, Any]) -> List
     return cols
 
 
-def parse_visuals_for_session(session_id: str, input_path: Path, *, export_csv: bool = False) -> Dict[str, Any]:
+def parse_visuals_for_session(session_id: str, input_path: Path) -> Dict[str, Any]:
     outdir = sdir(session_id) / "visuals"
     outdir.mkdir(parents=True, exist_ok=True)
     json_path = outdir / "character_visuals_nested.json"
     meta = parse_visuals(input_path, json_path, game_year=26)
     write_json(outdir / "character_visuals_meta.json", meta)
-    if export_csv:
-        export_visuals_csv(json_path, outdir)
+    export_visuals_csv(json_path, outdir)
     return meta
-
-
-def visuals_not_parsed_meta() -> Dict[str, Any]:
-    return {
-        "status": "not_parsed",
-        "warnings": [],
-        "note": "Character Visuals are parsed on demand when the visuals editor or a visuals export is opened.",
-    }
 
 
 VISUAL_PLAYER_FIELDS = [
@@ -796,8 +797,12 @@ async def parse_roster(file: UploadFile = File(...)):
 
     parse_dir = base / "parse"
     meta = write_outputs(parse_input_path, parse_dir)
-    visuals_meta: Dict[str, Any] = visuals_not_parsed_meta()
-    write_json(base / "visuals" / "character_visuals_meta.json", visuals_meta)
+    visuals_meta: Dict[str, Any] = {"warnings": []}
+    try:
+        visuals_meta = parse_visuals_for_session(session_id, parse_input_path)
+    except Exception as e:
+        visuals_meta = {"error": str(e), "warnings": [str(e)]}
+        write_json(base / "visuals" / "character_visuals_meta.json", visuals_meta)
 
     session_meta = {
         "session_id": session_id,
@@ -834,8 +839,10 @@ def parse_sample():
     parse_input_path = base / "parse_input.db"
     wrapper_meta = extract_roster_payload(input_path, fmt, parse_input_path)
     meta = write_outputs(parse_input_path, base / "parse")
-    visuals_meta = visuals_not_parsed_meta()
-    write_json(base / "visuals" / "character_visuals_meta.json", visuals_meta)
+    try:
+        visuals_meta = parse_visuals_for_session(session_id, parse_input_path)
+    except Exception as e:
+        visuals_meta = {"error": str(e), "warnings": [str(e)]}
     write_json(base / "session.json", {
         "session_id": session_id,
         "input_file": input_path.name,
@@ -886,7 +893,6 @@ def get_team_options(session_id: str):
         options.append({
             "rowIndex": idx,
             "teamId": rec.get("TGID"),
-            "cgid": rec.get("CGID"),
             "label": str(team_name),
             "nickname": rec.get("TMNA"),
             "abbrev": rec.get("TABB") or rec.get("TABC"),
@@ -1126,31 +1132,8 @@ def sortable_value(value: Any):
         return (1, text.lower())
 
 
-@app.post("/api/session/{session_id}/parse-visuals")
-def parse_visuals_endpoint(session_id: str):
-    base = sdir(session_id)
-    meta = session_metadata(session_id)
-    input_path = base / meta.get("parse_input_file", "parse_input.db")
-    if not input_path.exists():
-        raise HTTPException(500, "Original parsed roster DB is missing for this session.")
-    try:
-        visuals_meta = parse_visuals_for_session(session_id, input_path, export_csv=False)
-    except Exception as e:
-        visuals_meta = {"error": str(e), "warnings": [str(e)]}
-    meta["visuals"] = visuals_meta
-    save_session_metadata(session_id, meta)
-    return visuals_meta
-
-
-def ensure_visuals_parsed(session_id: str) -> None:
-    if visuals_json_path(session_id).exists():
-        return
-    parse_visuals_endpoint(session_id)
-
-
 @app.get("/api/session/{session_id}/visuals")
 def get_visuals(session_id: str, offset: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=2000), search: str = ""):
-    ensure_visuals_parsed(session_id)
     data = load_visuals_obj(session_id)
     pmap = data.get("characterVisualsPlayerMap", {})
     rows = []
@@ -1191,7 +1174,6 @@ def get_visuals_table(
     filter_column: str = "",
     filter_value: str = "",
 ):
-    ensure_visuals_parsed(session_id)
     table = build_visuals_table(load_visuals_obj(session_id), search)
     rows = table["rows"]
     if filter_column and filter_value:
@@ -1205,7 +1187,6 @@ def get_visuals_table(
 
 @app.get("/api/session/{session_id}/visuals-json")
 def get_visuals_json(session_id: str):
-    ensure_visuals_parsed(session_id)
     return load_visuals_obj(session_id)
 
 
@@ -1228,12 +1209,7 @@ def update_visuals_cell(session_id: str, edit: VisualsCellEdit):
 def export_table(session_id: str, table_path: str, fmt: str):
     meta = table_meta(session_id, table_path)
     if fmt.lower() == "csv":
-        obj = load_table_obj(session_id, table_path)
-        records = obj.get("records", [])
-        csv_name = Path(meta.get("csv_file") or f"{table_path}.csv").name
-        csv_path = sdir(session_id) / "parse" / "csv" / csv_name
-        write_csv(csv_path, records)
-        return FileResponse(csv_path, media_type="text/csv", filename=csv_path.name)
+        return FileResponse(sdir(session_id) / "parse" / meta["csv_file"], media_type="text/csv", filename=Path(meta["csv_file"]).name)
     if fmt.lower() == "json":
         return FileResponse(sdir(session_id) / "parse" / meta["json_file"], media_type="application/json", filename=Path(meta["json_file"]).name)
     raise HTTPException(400, "fmt must be csv or json")

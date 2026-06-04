@@ -96,22 +96,7 @@ const TEAM_COLOR_FIELDS = [
 const TEAM_BRANDING_NAME_COLUMNS = ['TSNA', 'TMSO', 'TMST', 'TMHO', 'TMHT'].filter(Boolean);
 const TEAM_RIVAL_COLUMNS = ['TRV1', 'TRV2', 'TRV3'];
 const TEAM_COLOR_FIELD_KEYS = TEAM_COLOR_FIELDS.map(field => field.key);
-const TEAM_INFO_EXTRA_COLUMNS = [...TEAM_BRANDING_NAME_COLUMNS, ...TEAM_RIVAL_COLUMNS, ...TEAM_COLOR_FIELD_KEYS, 'TCRK', 'TMRK'];
-const TEAM_HEADER_STAT_CODES = ['TROV', 'TROF', 'TRDE', 'TCRK', 'TMRK'];
-const CONFERENCE_LOGOS_BY_CGID = {
-  0: { display: 'ACC', file: 'acc.svg' },
-  1: { display: 'Big Ten', file: 'big-ten.svg' },
-  2: { display: 'Big 12', file: 'big-12.svg' },
-  3: { display: 'American', file: 'american.svg' },
-  4: { display: 'C-USA', file: 'c-usa.svg' },
-  5: { display: 'Independent', file: 'independent.svg' },
-  6: { display: 'MAC', file: 'mac.svg' },
-  7: { display: 'Mountain West', file: 'mountain-west.svg' },
-  8: { display: 'Pac 12', file: 'pac-12.svg' },
-  9: { display: 'SEC', file: 'sec.svg' },
-  10: { display: 'Sun Belt', file: 'sun-belt.svg' },
-};
-const CONFERENCE_LOGO_ASSET_VERSION = '20260604-1243';
+const TEAM_INFO_EXTRA_COLUMNS = [...TEAM_BRANDING_NAME_COLUMNS, ...TEAM_RIVAL_COLUMNS, ...TEAM_COLOR_FIELD_KEYS];
 const HIDDEN_TABLE_COLUMNS = new Set(['__rowIndex', '_parent_table_path', '_parent_table_name', '_parent_record_index', '_index']);
 const TABLE_NAME_SUFFIXES = {
   TCPS: 'Team Rankings',
@@ -250,14 +235,7 @@ function parsePossibleJson(text) {
 }
 
 function labelForField(meta, code) {
-  const customLabels = {
-    TROV: 'Overall Rating',
-    TROF: 'Offensive Rating',
-    TRDE: 'Defensive Rating',
-    TCRK: 'Coaches Ranking',
-    TMRK: 'Media Ranking',
-  };
-  return customLabels[code] || meta?.labels?.[code] || code;
+  return meta?.labels?.[code] || code;
 }
 
 function displayLabel(code, labels = {}) {
@@ -306,36 +284,6 @@ function texturedTeamBackground(option, fallback = 'rgba(24, 26, 30, .82)') {
 function teamLogoUrl(rowIndex) {
   if (rowIndex === undefined || rowIndex === null || rowIndex === '') return '';
   return `/team-logos/${rowIndex}.png`;
-}
-
-function conferenceLogoForCgid(cgid) {
-  const conference = CONFERENCE_LOGOS_BY_CGID[String(cgid)];
-  if (!conference) return null;
-  return {
-    ...conference,
-    url: `/conference-logos/${conference.file}?v=${CONFERENCE_LOGO_ASSET_VERSION}`,
-  };
-}
-
-function formatHeight(value) {
-  const inches = Number(value);
-  if (!Number.isFinite(inches) || inches <= 0) return valueText(value);
-  return `${Math.floor(inches / 12)}'${inches % 12}"`;
-}
-
-function normalizePlayerClass(value) {
-  const text = valueText(value);
-  return ({ 0: 'FR', 1: 'SO', 2: 'JR', 3: 'SR', 4: 'RS' })[text] || text;
-}
-
-function HeaderRatingTile({ value, label }) {
-  if (value === undefined || value === null || value === '') return null;
-  return (
-    <span className="header-rating-tile">
-      <strong>{valueText(value)}</strong>
-      <small>{label}</small>
-    </span>
-  );
 }
 
 function navOptionStyle(option) {
@@ -1446,15 +1394,9 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     ? teamOptionById[String(record?.TGID ?? selectedPlayerOption?.teamId ?? selectedTeam)]
     : currentTeamOption;
   const currentTeamLogo = teamLogoUrl(currentRecordTeamOption?.rowIndex);
-  const currentConference = conferenceLogoForCgid(draftValues.CGID ?? record?.CGID ?? currentTeamOption?.cgid ?? currentRecordTeamOption?.cgid);
   const playerFirstName = valueText(draftValues.PFNA ?? record?.PFNA ?? selectedPlayerOption?.label?.split?.(' ')?.[0] ?? record?.firstName ?? '');
   const playerLastName = valueText(draftValues.PLNA ?? record?.PLNA ?? (selectedPlayerOption?.label ? selectedPlayerOption.label.split(' ').slice(1).join(' ') : record?.lastName ?? ''));
   const playerJerseyNumber = valueText(draftValues.PJEN ?? record?.PJEN ?? selectedPlayerOption?.jerseyNumber ?? '');
-  const playerPosition = valueText(record?.Position ?? draftValues.PPOS ?? record?.PPOS ?? selectedPlayerOption?.position ?? '');
-  const playerArchetype = valueText(draftValues.PLTY ?? record?.PLTY ?? '');
-  const playerClass = normalizePlayerClass(draftValues.PYRP ?? record?.PYRP ?? '');
-  const playerHeight = formatHeight(draftValues.PHGT ?? record?.PHGT ?? '');
-  const playerWeight = valueText(draftValues.PWGT ?? record?.PWGT ?? '');
   const teamDisplayName = valueText(draftValues.TDNA ?? record?.TDNA ?? currentTeamOption?.label ?? record?.TeamName ?? '');
   const teamNickname = valueText(draftValues.TMNC ?? record?.TMNC ?? '');
   const primaryColor = colorStyleFromRecord(draftValues, ['TBCR', 'TBCG', 'TBCB'], colorStyleFromRecord(record, ['TBCR', 'TBCG', 'TBCB'], '#1c1f24'));
@@ -1468,8 +1410,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     || Object.prototype.hasOwnProperty.call(draftValues || {}, col)
   ));
   const teamBrandingNameColumns = TEAM_BRANDING_NAME_COLUMNS.filter(col => orderedColumns.includes(col));
-  const teamRankingColumns = ['TCRK', 'TMRK'].filter(col => orderedColumns.includes(col));
-  const teamRatingColumns = orderedColumns.filter(col => isTeamRatingColumn(col, labelForField(editorMeta, col)) && !teamRankingColumns.includes(col));
+  const teamRatingColumns = orderedColumns.filter(col => isTeamRatingColumn(col, labelForField(editorMeta, col)));
   const teamInfoColumns = orderedColumns.filter(col => (
     (TEAM_INFO_ORDER.includes(col) || TEAM_INFO_EXTRA_COLUMNS.includes(col))
     && !teamRatingColumns.includes(col)
@@ -1489,7 +1430,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     }
     if (activeTab === 'info') {
       const infoSections = [];
-      const identityColumns = [...teamInfoColumns, ...teamRankingColumns].filter((col, index, arr) => !teamBrandingNameColumns.includes(col) && !teamBrandingColumns.includes(col) && arr.indexOf(col) === index);
+      const identityColumns = teamInfoColumns.filter(col => !teamBrandingNameColumns.includes(col) && !teamBrandingColumns.includes(col));
       if (identityColumns.length) infoSections.push({ key: 'team-info', title: 'Team Information', columns: identityColumns });
       if (teamBrandingNameColumns.length) infoSections.push({ key: 'branding', title: 'Branding', columns: teamBrandingNameColumns });
       if (teamBrandingColumns.length) infoSections.push({ key: 'colors', title: 'Team Colors', columns: teamBrandingColumns });
@@ -1709,49 +1650,25 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                 <div className="identity-main">
                   <div className="identity-title-group">
                     {kind === 'Player' ? (
-                      <div className="identity-title-row player-title-row">
+                      <div className="identity-title-row">
                         {currentTeamLogo && <img className="identity-logo player-logo" src={currentTeamLogo} alt="" />}
-                        <div className="player-heading-stack">
-                          <h3>{`${playerFirstName || `Player ${record.__rowIndex}`}${playerLastName ? ` ${playerLastName}` : ''}`}</h3>
-                          <div className="player-header-details">
-                            <div>
-                              <span>Position</span>
-                              <strong>{playerPosition}{playerJerseyNumber && playerJerseyNumber !== '0' ? ` #${playerJerseyNumber}` : ''}</strong>
-                            </div>
-                            <div>
-                              <span>Archetype</span>
-                              <strong>{playerArchetype}</strong>
-                            </div>
-                            <div>
-                              <span>Class</span>
-                              <strong>{playerClass}</strong>
-                            </div>
-                            <div>
-                              <span>Height & Weight</span>
-                              <strong>{playerHeight}{playerWeight && playerWeight !== '0' ? ` - ${playerWeight} lbs` : ''}</strong>
-                            </div>
-                          </div>
-                        </div>
+                        <h3>{`${playerFirstName || `Player ${record.__rowIndex}`}${playerLastName ? ` ${playerLastName}` : ''}${playerJerseyNumber && playerJerseyNumber !== '0' ? ` #${playerJerseyNumber}` : ''}`}</h3>
                       </div>
                     ) : (
-                      <div className="identity-title-row team-title-row">
+                      <div className="identity-title-row">
                         {currentTeamLogo && <img className="identity-logo team-logo" src={currentTeamLogo} alt="" />}
                         <h3>{teamDisplayName || `Team ${record.__rowIndex}`}</h3>
                         <h3>{teamNickname || ''}</h3>
                       </div>
                     )}
                   </div>
-                  <div className="chips header-stats">
-                    {kind === 'Player' && <HeaderRatingTile value={record.POVR} label="OVR" />}
-                    {kind === 'Team' && <HeaderRatingTile value={record.TROV} label="OVR" />}
-                    {kind === 'Team' && <HeaderRatingTile value={record.TROF} label="OFF" />}
-                    {kind === 'Team' && <HeaderRatingTile value={record.TRDE} label="DEF" />}
-                    {kind === 'Team' && currentConference && (
-                      <img className={`conference-logo conference-logo-${currentConference.file.replace(/\.svg$/i, '')}`} src={currentConference.url} alt={`${currentConference.display} logo`} />
-                    )}
-                    {kind === 'Team' && record.TCRK !== undefined && <span>Coaches #{record.TCRK}</span>}
-                    {kind === 'Team' && record.TMRK !== undefined && <span>Media #{record.TMRK}</span>}
-                  </div>
+                  <div className="chips">
+                    {record.TeamName && <span>{record.TeamName}</span>}
+                  {record.Position && <span>{record.Position}</span>}
+                  {record.POVR !== undefined && <span>{record.POVR} OVR</span>}
+                  {record.TROV !== undefined && <span>{record.TROV} OVR</span>}
+                  {record.TGID !== undefined && <span>TGID {record.TGID}</span>}
+                </div>
               </div>
             </div>
             <div className="editor-tabs-row">
