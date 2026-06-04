@@ -1329,6 +1329,9 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
       setDraftValues(buildDraftValues(loadedRecord, out.columns || []));
       if (loadedRecord?.__rowIndex !== undefined) {
         setSelectedRowIndex(String(loadedRecord.__rowIndex));
+        if (kind === 'Team') {
+          setSelectedTeam(String(loadedRecord.__rowIndex));
+        }
       }
       if (kind === 'Player' && loadedRecord?.PGID !== undefined) {
         try {
@@ -1383,7 +1386,8 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   const teamOptionById = Object.fromEntries(teamOptions.map(option => [String(option.teamId), option]));
   const currentNavIndex = navigationOptions.findIndex(option => String(option.rowIndex) === String(selectedRowIndex));
   const currentTeamOption = kind === 'Team'
-    ? teamOptions.find(option => String(option.rowIndex) === String(selectedTeam))
+    ? teamOptions.find(option => String(option.rowIndex) === String(selectedRowIndex))
+      || teamOptions.find(option => String(option.rowIndex) === String(selectedTeam))
     : teamOptions.find(option => String(option.teamId) === String(selectedTeam));
   const selectedPlayerOption = playerOptions.find(option => String(option.rowIndex) === String(selectedRowIndex));
   const currentRecordTeamOption = kind === 'Player'

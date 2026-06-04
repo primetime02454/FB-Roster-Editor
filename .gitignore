@@ -1,7 +1,12 @@
+node_modules/
+.firebase/
+backend/build/
+backend/dist/
 backend/.venv/
 backend/data/sessions/
 frontend/node_modules/
 frontend/dist/
+tmp_session_id.txt
 *.zip
 __pycache__/
 *.pyc
