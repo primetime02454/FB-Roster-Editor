@@ -99,8 +99,8 @@ const TEAM_COLOR_FIELD_KEYS = TEAM_COLOR_FIELDS.map(field => field.key);
 const TEAM_INFO_EXTRA_COLUMNS = [...TEAM_BRANDING_NAME_COLUMNS, ...TEAM_RIVAL_COLUMNS, ...TEAM_COLOR_FIELD_KEYS, 'TCRK', 'TMRK'];
 const TEAM_HEADER_STAT_CODES = ['TROV', 'TROF', 'TRDE', 'TCRK', 'TMRK'];
 const CONFERENCE_LOGOS_BY_CGID = {
-  0: { display: 'ACC', file: 'acc.svg' },
-  1: { display: 'Big Ten', file: 'big-ten.svg' },
+  0: { display: 'ACC', file: 'acc.svg', nflFile: 'AFC.png' },
+  1: { display: 'Big Ten', file: 'big-ten.svg', nflFile: 'NFC.png' },
   2: { display: 'Big 12', file: 'big-12.svg' },
   3: { display: 'American', file: 'american.svg' },
   4: { display: 'C-USA', file: 'c-usa.svg' },
@@ -108,10 +108,45 @@ const CONFERENCE_LOGOS_BY_CGID = {
   6: { display: 'MAC', file: 'mac.svg' },
   7: { display: 'Mountain West', file: 'mountain-west.svg' },
   8: { display: 'Pac 12', file: 'pac-12.svg' },
-  9: { display: 'SEC', file: 'sec.svg' },
+  9: { display: 'SEC', file: 'sec.svg', nflFile: null },
   10: { display: 'Sun Belt', file: 'sun-belt.svg' },
 };
-const CONFERENCE_LOGO_ASSET_VERSION = '20260604-1243';
+const CONFERENCE_LOGO_ASSET_VERSION = '20260606-1128';
+const NFL_TEAM_LOGO_FALLBACKS = {
+  bears: '0',
+  bengals: '1',
+  bills: '2',
+  broncos: '3',
+  browns: '4',
+  buccaneers: '5',
+  cardinals: '6',
+  chargers: '7',
+  chiefs: '8',
+  colts: '9',
+  cowboys: '10',
+  dolphins: '11',
+  eagles: '12',
+  falcons: '13',
+  '49ers': '14',
+  giants: '15',
+  jaguars: '16',
+  jets: '17',
+  lions: '18',
+  packers: '19',
+  panthers: '20',
+  patriots: '21',
+  raiders: '22',
+  rams: '23',
+  ravens: '24',
+  saints: '25',
+  seahawks: '26',
+  steelers: '27',
+  texans: '28',
+  titans: '29',
+  vikings: '30',
+  'free agents': 'NFL',
+  freeagents: 'NFL',
+};
 const HIDDEN_TABLE_COLUMNS = new Set(['__rowIndex', '_parent_table_path', '_parent_table_name', '_parent_record_index', '_index']);
 const TABLE_NAME_SUFFIXES = {
   TCPS: 'Team Rankings',
@@ -308,13 +343,46 @@ function teamLogoUrl(rowIndex) {
   return `/team-logos/${rowIndex}.png`;
 }
 
-function conferenceLogoForCgid(cgid) {
+function conferenceLogoForCgid(cgid, rosterFamily = 'college') {
   const conference = CONFERENCE_LOGOS_BY_CGID[String(cgid)];
   if (!conference) return null;
+  if (rosterFamily === 'madden' && conference.nflFile) {
+    return {
+      ...conference,
+      url: `/NFL_Logos/${conference.nflFile}?v=${CONFERENCE_LOGO_ASSET_VERSION}`,
+    };
+  }
   return {
     ...conference,
     url: `/conference-logos/${conference.file}?v=${CONFERENCE_LOGO_ASSET_VERSION}`,
   };
+}
+
+function teamLogoUrlForRoster(option, rosterFamily = 'college') {
+  if (!option) return '';
+  if (rosterFamily === 'madden') {
+    const rawFallbackKey = String(option.teamDbName || option.displayName || option.label || '').toLowerCase().trim();
+    const normalizedFallbackKey = rawFallbackKey.startsWith('teamdb_') ? rawFallbackKey.slice('teamdb_'.length) : rawFallbackKey;
+    const logoId = option.teamLogoId ?? option.logoAssetId ?? NFL_TEAM_LOGO_FALLBACKS[normalizedFallbackKey] ?? NFL_TEAM_LOGO_FALLBACKS[rawFallbackKey] ?? '';
+    if (logoId === undefined || logoId === null || logoId === '') return '';
+    if (logoId === 'NFL') {
+      return `/conference-logos/NFL.png?v=${CONFERENCE_LOGO_ASSET_VERSION}`;
+    }
+    return `/NFL_Logos/${logoId}.png?v=${CONFERENCE_LOGO_ASSET_VERSION}`;
+  }
+  return teamLogoUrl(option.rowIndex);
+}
+
+function fallbackLogoUrlForRoster(option, rosterFamily = 'college') {
+  if (!option || rosterFamily !== 'madden') return '';
+  const rawFallbackKey = String(option.teamDbName || option.displayName || option.label || '').toLowerCase().trim();
+  const normalizedFallbackKey = rawFallbackKey.startsWith('teamdb_') ? rawFallbackKey.slice('teamdb_'.length) : rawFallbackKey;
+  const fallbackId = NFL_TEAM_LOGO_FALLBACKS[normalizedFallbackKey] ?? NFL_TEAM_LOGO_FALLBACKS[rawFallbackKey] ?? '';
+  if (fallbackId === '') return '';
+  if (fallbackId === 'NFL') {
+    return `/conference-logos/NFL.png?v=${CONFERENCE_LOGO_ASSET_VERSION}`;
+  }
+  return `/NFL_Logos/${fallbackId}.png?v=${CONFERENCE_LOGO_ASSET_VERSION}`;
 }
 
 function formatHeight(value) {
@@ -437,6 +505,7 @@ function App() {
   const [tableSortDir, setTableSortDir] = useState('asc');
   const [tableFilterColumn, setTableFilterColumn] = useState('');
   const [tableFilterValue, setTableFilterValue] = useState('');
+  const [tableListQuery, setTableListQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('Open a roster DB to begin.');
   const [selectedCell, setSelectedCell] = useState(null);
@@ -454,10 +523,16 @@ function App() {
   const showTableSidebar = view === 'table';
   const currentModeLabel = EDITOR_MODE_LABELS[view] || 'Table View';
   const statusFileLabel = session?.input_file ? `Loaded ${session.input_file}` : 'No roster open';
+  const franchiseSession = session?.session_kind === 'franchise';
 
   const playTable = useMemo(() => tables.find(t => t.name === 'PLAY' || t.path?.endsWith('.PLAY'))?.path, [tables]);
   const teamTable = useMemo(() => tables.find(t => t.name === 'TEAM' || t.path?.endsWith('.TEAM'))?.path, [tables]);
   const currentTableMeta = useMemo(() => tables.find(t => t.path === currentTable), [tables, currentTable]);
+  const filteredTables = useMemo(() => {
+    const needle = tableListQuery.trim().toLowerCase();
+    if (!needle) return tables;
+    return tables.filter(table => (`${table.path || ''} ${table.name || ''}`).toLowerCase().includes(needle));
+  }, [tables, tableListQuery]);
 
   useEffect(() => {
     if (!session) return;
@@ -605,6 +680,7 @@ function App() {
     clearSessionIdFromUrl();
     setSession(null);
     setTables([]);
+    setTableListQuery('');
     setCurrentTable('');
     setTableData({ records: [], columns: [], total: 0, offset: 0 });
     setSelectedCell(null);
@@ -732,10 +808,10 @@ function App() {
         { label: 'Open...', disabled: false, action: () => fileRef.current?.click() },
         { label: 'Open Sample', disabled: false, action: parseSample },
         { type: 'separator' },
-        { label: 'Save DB', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/save-roster.db`) },
-        { label: 'Save Raw', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/save-raw.db`) },
-        { label: 'Save Compressed', disabled: !session || session.input_container !== 'fbchunks', action: () => downloadUrl(`/session/${session.session_id}/save-compressed`) },
-        { label: 'Save As DB', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/save-roster.db`) },
+        { label: 'Save DB', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/save-roster.db`) },
+        { label: 'Save Raw', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/save-raw.db`) },
+        { label: 'Save Compressed', disabled: !session || franchiseSession || session.input_container !== 'fbchunks', action: () => downloadUrl(`/session/${session.session_id}/save-compressed`) },
+        { label: 'Save As DB', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/save-roster.db`) },
         { label: 'Save As JSON', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/save-project.json`) },
       ],
     },
@@ -767,10 +843,10 @@ function App() {
         { label: 'Current Table CSV', disabled: !session || !currentTable, action: () => downloadUrl(`/session/${session.session_id}/export/table/${encodeURIComponent(currentTable)}.csv`) },
         { label: 'Current Table JSON', disabled: !session || !currentTable, action: () => downloadUrl(`/session/${session.session_id}/export/table/${encodeURIComponent(currentTable)}.json`) },
         { type: 'separator' },
-        { label: 'Visuals Nested JSON', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/nested.json`) },
-        { label: 'Visuals Players CSV', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/players.csv`) },
-        { label: 'Visuals Loadouts CSV', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/loadouts.csv`) },
-        { label: 'Visuals Elements CSV', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/elements.csv`) },
+        { label: 'Visuals Nested JSON', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/nested.json`) },
+        { label: 'Visuals Players CSV', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/players.csv`) },
+        { label: 'Visuals Loadouts CSV', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/loadouts.csv`) },
+        { label: 'Visuals Elements CSV', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/elements.csv`) },
       ],
     },
   ];
@@ -802,7 +878,8 @@ function App() {
               {VIEW_BUTTONS.map(button => {
                 const disabled = (button.key === 'player' && !playTable)
                   || (button.key === 'team' && !teamTable)
-                  || ((button.key === 'visuals' || button.key === 'node') && !session);
+                  || (button.key === 'visuals' && (!session || franchiseSession))
+                  || (button.key === 'node' && !session);
                 return (
                   <button
                     key={button.key}
@@ -821,7 +898,7 @@ function App() {
               })}
             </div>
           </div>
-          <input ref={fileRef} className="file-input" type="file" accept=".db,.DB,*" onChange={e => onOpenFile(e.target.files?.[0])} />
+          <input ref={fileRef} className="file-input" type="file" onChange={e => onOpenFile(e.target.files?.[0])} />
         </nav>
         {mobileNavOpen && (
           <div className="mobile-nav-panel" ref={mobileNavRef}>
@@ -842,7 +919,8 @@ function App() {
             {VIEW_BUTTONS.map(button => {
               const disabled = (button.key === 'player' && !playTable)
                 || (button.key === 'team' && !teamTable)
-                || ((button.key === 'visuals' || button.key === 'node') && !session);
+                || (button.key === 'visuals' && (!session || franchiseSession))
+                || (button.key === 'node' && !session);
               return (
                 <button
                   key={`mobile-mode-${button.key}`}
@@ -867,8 +945,29 @@ function App() {
       <div className={`workspace ${showTableSidebar ? '' : 'workspace-editor'}`}>
         {showTableSidebar && <aside className="sidebar">
           <div className="sidebar-title">Tables</div>
+          <div className="table-list-controls">
+            <input
+              className="table-list-filter"
+              placeholder="Filter tables..."
+              value={tableListQuery}
+              onChange={e => setTableListQuery(e.target.value)}
+            />
+            <select
+              className="table-list-select"
+              value={currentTable}
+              onChange={e => {
+                setCurrentTable(e.target.value);
+                setView('table');
+              }}
+            >
+              <option value="">Jump to table...</option>
+              {filteredTables.map(t => (
+                <option key={`select-${t.path}`} value={t.path}>{t.path}</option>
+              ))}
+            </select>
+          </div>
           <div className="table-list">
-            {tables.map(t => (
+            {filteredTables.map(t => (
               <button key={t.path} className={currentTable === t.path ? 'active' : ''} onClick={() => { setCurrentTable(t.path); setView('table'); }}>
                 <b>{tableDisplayName(t)}</b>
                 <span>{t.records?.toLocaleString()} rows</span>
@@ -1186,17 +1285,30 @@ function SpinnerField({ value, onChange, onCommit, min = -9999, max = 9999, step
 function RecordNavCard({ option, active, onClick, kind, style, logoUrl }) {
   const topMeta = kind === 'Team' && option.ovr !== undefined && option.ovr !== null ? `${option.ovr} OVR` : '';
   const detailBits = [];
-  if (option.teamName) detailBits.push(option.teamName);
-  if (option.position) {
+  if (option.rosterFamily !== 'madden' && option.teamName) detailBits.push(option.teamName);
+  if (option.rosterFamily !== 'madden' && option.position) {
     detailBits.push(option.ovr !== undefined && option.ovr !== null ? `${option.position} - ${option.ovr} OVR` : option.position);
   } else if (kind !== 'Team' && option.ovr !== undefined && option.ovr !== null) {
     detailBits.push(`${option.ovr} OVR`);
   }
-  if (option.nickname && kind === 'Team') detailBits.push(option.nickname);
+  if (option.nickname && kind === 'Team' && option.rosterFamily !== 'madden') detailBits.push(option.nickname);
   return (
     <button type="button" className={active ? 'active' : ''} onClick={onClick} style={style} data-active={active ? 'true' : 'false'}>
       <div className="record-card-row">
-        {logoUrl && <img className="record-card-logo" src={logoUrl} alt="" loading="lazy" />}
+        {logoUrl && (
+          <img
+            className="record-card-logo"
+            src={logoUrl}
+            alt=""
+            loading="lazy"
+            onError={event => {
+              const fallback = fallbackLogoUrlForRoster(option, option.rosterFamily);
+              if (!fallback || event.currentTarget.dataset.fallbackApplied === 'true') return;
+              event.currentTarget.dataset.fallbackApplied = 'true';
+              event.currentTarget.src = fallback;
+            }}
+          />
+        )}
         <div className="record-card-body">
           <div className="record-card-head">
             <b>{option.label}</b>
@@ -1210,6 +1322,7 @@ function RecordNavCard({ option, active, onClick, kind, style, logoUrl }) {
 }
 
 function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessionInvalid }) {
+  const rosterFamily = session?.roster_family || 'college';
   const [data, setData] = useState({ records: [], columns: [], total: 0, offset: 0 });
   const [query, setQuery] = useState('');
   const [teamOptions, setTeamOptions] = useState([]);
@@ -1445,8 +1558,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   const currentRecordTeamOption = kind === 'Player'
     ? teamOptionById[String(record?.TGID ?? selectedPlayerOption?.teamId ?? selectedTeam)]
     : currentTeamOption;
-  const currentTeamLogo = teamLogoUrl(currentRecordTeamOption?.rowIndex);
-  const currentConference = conferenceLogoForCgid(draftValues.CGID ?? record?.CGID ?? currentTeamOption?.cgid ?? currentRecordTeamOption?.cgid);
+  const currentTeamLogo = teamLogoUrlForRoster(currentRecordTeamOption, rosterFamily);
   const playerFirstName = valueText(draftValues.PFNA ?? record?.PFNA ?? selectedPlayerOption?.label?.split?.(' ')?.[0] ?? record?.firstName ?? '');
   const playerLastName = valueText(draftValues.PLNA ?? record?.PLNA ?? (selectedPlayerOption?.label ? selectedPlayerOption.label.split(' ').slice(1).join(' ') : record?.lastName ?? ''));
   const playerJerseyNumber = valueText(draftValues.PJEN ?? record?.PJEN ?? selectedPlayerOption?.jerseyNumber ?? '');
@@ -1455,8 +1567,14 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   const playerClass = normalizePlayerClass(draftValues.PYRP ?? record?.PYRP ?? '');
   const playerHeight = formatHeight(draftValues.PHGT ?? record?.PHGT ?? '');
   const playerWeight = valueText(draftValues.PWGT ?? record?.PWGT ?? '');
-  const teamDisplayName = valueText(draftValues.TDNA ?? record?.TDNA ?? currentTeamOption?.label ?? record?.TeamName ?? '');
-  const teamNickname = valueText(draftValues.TMNC ?? record?.TMNC ?? '');
+  const teamDisplayName = valueText(draftValues.TDNA ?? record?.TDNA ?? currentTeamOption?.displayName ?? currentTeamOption?.label ?? record?.TeamName ?? '');
+  const teamLongName = valueText(draftValues.TDLN ?? record?.TDLN ?? currentTeamOption?.longName ?? '');
+  const teamNickname = valueText(draftValues.TMNC ?? record?.TMNC ?? currentTeamOption?.nickname ?? '');
+  const teamDbName = valueText(draftValues.TDAN ?? record?.TDAN ?? currentTeamOption?.teamDbName ?? '');
+  const isFreeAgents = rosterFamily === 'madden' && /freeagents/i.test(teamDbName || teamDisplayName || teamNickname);
+  const currentConference = !isFreeAgents
+    ? conferenceLogoForCgid(draftValues.CGID ?? record?.CGID ?? currentTeamOption?.cgid ?? currentRecordTeamOption?.cgid, rosterFamily)
+    : null;
   const primaryColor = colorStyleFromRecord(draftValues, ['TBCR', 'TBCG', 'TBCB'], colorStyleFromRecord(record, ['TBCR', 'TBCG', 'TBCB'], '#1c1f24'));
   const secondaryColor = colorStyleFromRecord(draftValues, ['TB2R', 'TB2G', 'TB2B'], colorStyleFromRecord(record, ['TB2R', 'TB2G', 'TB2B'], '#3a3d42'));
   const primaryHex = colorHexFromValues(draftValues.TBCR ?? record?.TBCR, draftValues.TBCG ?? record?.TBCG, draftValues.TBCB ?? record?.TBCB);
@@ -1695,10 +1813,12 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                 <RecordNavCard
                   key={`${option.rowIndex}-${option.teamId ?? 'na'}`}
                   kind={kind}
-                  option={option}
+                  option={{ ...option, rosterFamily }}
                   active={String(selectedRowIndex) === String(option.rowIndex)}
                   style={kind === 'Player' ? navOptionStyle(teamOptionById[String(option.teamId)]) : navOptionStyle(option)}
-                  logoUrl={kind === 'Player' ? teamLogoUrl(teamOptionById[String(option.teamId)]?.rowIndex) : teamLogoUrl(option.rowIndex)}
+                  logoUrl={kind === 'Player'
+                    ? teamLogoUrlForRoster(teamOptionById[String(option.teamId)], rosterFamily)
+                    : teamLogoUrlForRoster(option, rosterFamily)}
                   onClick={() => loadRecord(option.rowIndex)}
                 />
               ))}
@@ -1710,9 +1830,21 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                   <div className="identity-title-group">
                     {kind === 'Player' ? (
                       <div className="identity-title-row player-title-row">
-                        {currentTeamLogo && <img className="identity-logo player-logo" src={currentTeamLogo} alt="" />}
+                        {currentTeamLogo && (
+                          <img
+                            className="identity-logo player-logo"
+                            src={currentTeamLogo}
+                            alt=""
+                            onError={event => {
+                              const fallback = fallbackLogoUrlForRoster(currentRecordTeamOption, rosterFamily);
+                              if (!fallback || event.currentTarget.dataset.fallbackApplied === 'true') return;
+                              event.currentTarget.dataset.fallbackApplied = 'true';
+                              event.currentTarget.src = fallback;
+                            }}
+                          />
+                        )}
                         <div className="player-heading-stack">
-                          <h3>{`${playerFirstName || `Player ${record.__rowIndex}`}${playerLastName ? ` ${playerLastName}` : ''}`}</h3>
+                        <h3>{`${playerFirstName || `Player ${record.__rowIndex}`}${playerLastName ? ` ${playerLastName}` : ''}`}</h3>
                           <div className="player-header-details">
                             <div>
                               <span>Position</span>
@@ -1735,9 +1867,21 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                       </div>
                     ) : (
                       <div className="identity-title-row team-title-row">
-                        {currentTeamLogo && <img className="identity-logo team-logo" src={currentTeamLogo} alt="" />}
-                        <h3>{teamDisplayName || `Team ${record.__rowIndex}`}</h3>
-                        <h3>{teamNickname || ''}</h3>
+                        {currentTeamLogo && (
+                          <img
+                            className="identity-logo team-logo"
+                            src={currentTeamLogo}
+                            alt=""
+                            onError={event => {
+                              const fallback = fallbackLogoUrlForRoster(currentRecordTeamOption, rosterFamily);
+                              if (!fallback || event.currentTarget.dataset.fallbackApplied === 'true') return;
+                              event.currentTarget.dataset.fallbackApplied = 'true';
+                              event.currentTarget.src = fallback;
+                            }}
+                          />
+                        )}
+                        <h3>{rosterFamily === 'madden' ? `${teamLongName || teamDisplayName} ${teamDisplayName || teamNickname || ''}`.trim() : (teamDisplayName || `Team ${record.__rowIndex}`)}</h3>
+                        {rosterFamily !== 'madden' && <h3>{teamNickname || ''}</h3>}
                       </div>
                     )}
                   </div>
@@ -1747,7 +1891,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                     {kind === 'Team' && <HeaderRatingTile value={record.TROF} label="OFF" />}
                     {kind === 'Team' && <HeaderRatingTile value={record.TRDE} label="DEF" />}
                     {kind === 'Team' && currentConference && (
-                      <img className={`conference-logo conference-logo-${currentConference.file.replace(/\.svg$/i, '')}`} src={currentConference.url} alt={`${currentConference.display} logo`} />
+                      <img className={`conference-logo conference-logo-${currentConference.file.replace(/\.[^.]+$/i, '')}`} src={currentConference.url} alt={`${currentConference.display} logo`} />
                     )}
                     {kind === 'Team' && record.TCRK !== undefined && <span>Coaches #{record.TCRK}</span>}
                     {kind === 'Team' && record.TMRK !== undefined && <span>Media #{record.TMRK}</span>}
