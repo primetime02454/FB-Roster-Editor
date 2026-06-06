@@ -111,6 +111,10 @@ const CONFERENCE_LOGOS_BY_CGID = {
   9: { display: 'SEC', file: 'sec.svg', nflFile: null },
   10: { display: 'Sun Belt', file: 'sun-belt.svg' },
 };
+const MADDEN_CONFERENCE_LOGOS_BY_CGID = {
+  0: { display: 'AFC', file: 'AFC.png' },
+  1: { display: 'NFC', file: 'NFC.png' },
+};
 const CONFERENCE_LOGO_ASSET_VERSION = '20260606-1128';
 const NFL_TEAM_LOGO_FALLBACKS = {
   bears: '0',
@@ -344,12 +348,14 @@ function teamLogoUrl(rowIndex) {
 }
 
 function conferenceLogoForCgid(cgid, rosterFamily = 'college') {
-  const conference = CONFERENCE_LOGOS_BY_CGID[String(cgid)];
+  const conference = rosterFamily === 'madden'
+    ? MADDEN_CONFERENCE_LOGOS_BY_CGID[String(cgid)]
+    : CONFERENCE_LOGOS_BY_CGID[String(cgid)];
   if (!conference) return null;
-  if (rosterFamily === 'madden' && conference.nflFile) {
+  if (rosterFamily === 'madden') {
     return {
       ...conference,
-      url: `/NFL_Logos/${conference.nflFile}?v=${CONFERENCE_LOGO_ASSET_VERSION}`,
+      url: `/conference-logos/${conference.file}?v=${CONFERENCE_LOGO_ASSET_VERSION}`,
     };
   }
   return {
