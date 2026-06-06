@@ -3,11 +3,13 @@ from __future__ import annotations
 import csv
 import io
 import json
+import os
 import re
 import shutil
 import subprocess
 import uuid
 import zipfile
+import xml.etree.ElementTree as ET
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
@@ -31,6 +33,9 @@ SESSION_ROOT = DATA_ROOT / "sessions"
 FRONTEND_DIST = PROJECT_ROOT / "frontend" / "dist"
 HC09_ROOT = PROJECT_ROOT.parent / "HC09-Roster-Editor-2.0--master"
 HC09_BRIDGE = BACKEND_ROOT / "tools" / "hc09_save_bridge.js"
+MADDEN_FRANCHISE_ROOT = BACKEND_ROOT / "vendor" / "madden-franchise"
+MADDEN_FRANCHISE_FALLBACK_ROOT = Path.home() / "Downloads" / "madden-franchise-master"
+MADDEN_FRANCHISE_BRIDGE = BACKEND_ROOT / "tools" / "madden_franchise_bridge.mjs"
 SESSION_ROOT.mkdir(parents=True, exist_ok=True)
 
 POSITION_MAP = {
@@ -73,6 +78,74 @@ PLAYER_VISUAL_FIELDS = [
     "slotType: CharacterBodyType",
 ]
 
+NFL_LOGO_ASSET_BY_SOURCE = {}
+for xml_path in sorted((PROJECT_ROOT / "frontend" / "public" / "NFL_Logos" / "xml").glob("*.xml")):
+    try:
+        root = ET.parse(xml_path).getroot()
+        source_path = None
+        asset_id = None
+        for elem in root.iter():
+            tag = elem.tag.split("}", 1)[-1]
+            if tag == "field" and elem.attrib.get("name") == "SourcePath":
+                source_path = (elem.text or "").strip()
+            elif tag == "array" and elem.attrib.get("name") == "AssetIdList":
+                for child in elem:
+                    if child.tag.split("}", 1)[-1] == "item" and (child.text or "").strip():
+                        asset_id = str(child.text).strip()
+                        break
+        if source_path and asset_id is not None:
+            source_name = Path(source_path.replace("\\", "/")).stem
+            NFL_LOGO_ASSET_BY_SOURCE[source_name] = asset_id
+    except Exception:
+        pass
+
+NFL_TEAMDB_TO_STEM = {
+    "teamdb_Bears": "BEA",
+    "teamdb_Bengals": "BEN",
+    "teamdb_Bills": "BIL",
+    "teamdb_Broncos": "BRO",
+    "teamdb_Browns": "BRN",
+    "teamdb_Buccaneers": "BUC",
+    "teamdb_Cardinals": "CAR",
+    "teamdb_Chargers": "CHA",
+    "teamdb_Chiefs": "CHI",
+    "teamdb_Colts": "COL",
+    "teamdb_Cowboys": "COW",
+    "teamdb_Dolphins": "DOL",
+    "teamdb_Eagles": "EAG",
+    "teamdb_Falcons": "FAL",
+    "teamdb_49ers": "NIN",
+    "teamdb_Giants": "GIA",
+    "teamdb_Jaguars": "JAG",
+    "teamdb_Jets": "JET",
+    "teamdb_Lions": "LIO",
+    "teamdb_Packers": "PAC",
+    "teamdb_Panthers": "PAN",
+    "teamdb_Patriots": "PAT",
+    "teamdb_Raiders": "RAI",
+    "teamdb_Rams": "RAM",
+    "teamdb_Ravens": "RAV",
+    "teamdb_Saints": "SAI",
+    "teamdb_Seahawks": "SEA",
+    "teamdb_Steelers": "STE",
+    "teamdb_Texans": "TEX",
+    "teamdb_Titans": "TIT",
+    "teamdb_Vikings": "VIK",
+}
+
+MADDEN_NFL_TEAM_NAMES = {
+    "teamdb_Bears", "teamdb_Bengals", "teamdb_Bills", "teamdb_Broncos", "teamdb_Browns",
+    "teamdb_Buccaneers", "teamdb_Cardinals", "teamdb_Chargers", "teamdb_Chiefs", "teamdb_Colts",
+    "teamdb_Cowboys", "teamdb_Dolphins", "teamdb_Eagles", "teamdb_Falcons", "teamdb_49ers",
+    "teamdb_Giants", "teamdb_Jaguars", "teamdb_Jets", "teamdb_Lions", "teamdb_Packers",
+    "teamdb_Panthers", "teamdb_Patriots", "teamdb_Raiders", "teamdb_Rams", "teamdb_Ravens",
+    "teamdb_Saints", "teamdb_Seahawks", "teamdb_Steelers", "teamdb_Texans", "teamdb_Titans",
+    "teamdb_Vikings",
+}
+COLLEGE_TEAM_NAMES = {
+    "teamdb_af", "teamdb_zips", "teamdb_bama", "teamdb_app", "teamdb_ariz", "teamdb_asu",
+}
+
 
 @lru_cache(maxsize=1)
 def load_reference_options() -> Dict[str, List[Dict[str, str]]]:
@@ -93,6 +166,73 @@ def editor_select_options(table_name: str) -> Dict[str, List[Dict[str, str]]]:
         "TDPB": refs.get("DEF_PLAYBOOK_IDOptions", []),
         "TOPB": refs.get("OFF_PLAYBOOK_IDOptions", []),
     }
+
+
+def detect_roster_family_from_team_records(records: List[Dict[str, Any]]) -> str:
+    candidates = []
+    for rec in records:
+        for key in ("TDAN", "ASNM", "TeamAssetName", "TDNA"):
+            value = rec.get(key)
+            if value:
+                candidates.append(str(value))
+    normalized = {value.strip() for value in candidates}
+    if normalized & MADDEN_NFL_TEAM_NAMES:
+        return "madden"
+    if normalized & COLLEGE_TEAM_NAMES:
+        return "college"
+    if any(value.startswith("teamdb_") for value in normalized):
+        return "college"
+    return "college"
+
+
+def detect_roster_family_from_meta(meta: Dict[str, Any]) -> str:
+    hint = str(meta.get("roster_family_hint") or "").strip().lower()
+    if hint in {"college", "madden"}:
+        return hint
+    branding = " ".join(
+        str(meta.get(key) or "")
+        for key in ("input_container_label", "input_file", "input_stem")
+    ).lower()
+    if "college-27" in branding or "college football" in branding or "dynasty" in branding:
+        return "college"
+    if meta.get("session_kind") == "franchise":
+        return "madden"
+    return "college"
+
+
+def roster_family_for_session(session_id: str) -> str:
+    meta = session_metadata(session_id)
+    inferred = detect_roster_family_from_meta(meta)
+    if meta.get("session_kind") == "franchise":
+        return inferred
+    meta = find_table(session_id, "TEAM")
+    if not meta:
+        return inferred
+    obj = read_json(sdir(session_id) / "parse" / meta["json_file"])
+    return detect_roster_family_from_team_records(obj.get("records", []))
+
+
+def nfl_logo_asset_id_for_team(rec: Dict[str, Any]) -> Optional[str]:
+    for key in ("TLGO", "ASNM", "TDAN", "TeamAssetName"):
+        value = str(rec.get(key) or "").strip()
+        if not value:
+            continue
+        stem = Path(value).stem
+        candidates = [stem, value]
+        if value in NFL_TEAMDB_TO_STEM:
+            candidates.append(f"tld_{NFL_TEAMDB_TO_STEM[value]}")
+        if stem.startswith("teamdb_") and stem in NFL_TEAMDB_TO_STEM:
+            candidates.append(f"tld_{NFL_TEAMDB_TO_STEM[stem]}")
+        if stem.startswith("teamdb_"):
+            short = stem.removeprefix("teamdb_")
+            candidates.extend([
+                f"tld_{short[:3].upper()}",
+                f"tld_{short[:4].upper()}",
+            ])
+        for candidate in candidates:
+            if candidate in NFL_LOGO_ASSET_BY_SOURCE:
+                return NFL_LOGO_ASSET_BY_SOURCE[candidate]
+    return None
 
 VISUAL_SLOT_DISPLAY_ORDER = [
     "HeadWear",
@@ -174,8 +314,42 @@ def detect_input_format(data: bytes) -> Dict[str, str]:
     return {"container": "tdb2", "label": "Raw roster database"}
 
 
+def fbchunks_title_string(data: bytes) -> str:
+    if not data.startswith(b"FBCHUNKS"):
+        return ""
+    text = data[0x20:0x80].decode("utf-16le", errors="ignore").split("\x00", 1)[0].strip()
+    if text:
+        return text
+    ascii_text = data[0x20:0x80].decode("ascii", errors="ignore").split("\x00", 1)[0].strip()
+    return ascii_text
+
+
+def should_parse_as_franchise(input_path: Path, fmt: Dict[str, str]) -> bool:
+    name = input_path.name.upper()
+    if name.startswith("CAREER-") or "FRANCHISE" in name or name.startswith("CAREER_"):
+        return True
+    return False
+
+
+def default_save_mode(meta: Dict[str, Any]) -> str:
+    return meta.get("input_container", "tdb2")
+
+
 def modern_roster_data_start(year: int) -> int:
     return 0x4A if year >= 2021 else 0x3E
+
+
+def find_fbchunks_payload_start(data: bytes, year: int) -> int:
+    if year < 2021:
+        return 0x3E
+    for off in range(0x20, min(len(data) - 1, 0x400)):
+        if data[off] == 0x78 and data[off + 1] in (0x01, 0x5E, 0x9C, 0xDA):
+            return off
+    return modern_roster_data_start(year)
+
+
+def looks_like_franchise_payload(data: bytes) -> bool:
+    return data.startswith(b"FrTk")
 
 
 def crc32_be(data: bytes) -> int:
@@ -202,13 +376,62 @@ def extract_roster_payload(input_path: Path, fmt: Dict[str, str], output_path: P
         if len(data) < 0x18:
             raise HTTPException(400, "FBCHUNKS file is too short.")
         year = int.from_bytes(data[0x16:0x18], "little")
-        data_start = modern_roster_data_start(year)
+        data_start = find_fbchunks_payload_start(data, year)
         header = data[:data_start]
-        payload = zlib.decompress(data[data_start:])
+        try:
+            payload = zlib.decompress(data[data_start:])
+        except zlib.error as exc:
+            raise HTTPException(
+                400,
+                f"FBCHUNKS wrapper did not contain a readable roster payload (start=0x{data_start:X}): {exc}",
+            ) from exc
         output_path.write_bytes(payload)
         return {"year": year, "data_start": data_start, "payload_size": len(payload), "header_path": str((output_path.parent / "wrapper_header.bin").name)}
     output_path.write_bytes(data)
     return {"payload_size": len(data)}
+
+
+def run_franchise_bridge(args: List[str]) -> None:
+    if not MADDEN_FRANCHISE_BRIDGE.exists():
+        raise HTTPException(500, f"Madden franchise bridge not found: {MADDEN_FRANCHISE_BRIDGE}")
+    franchise_root = MADDEN_FRANCHISE_ROOT if MADDEN_FRANCHISE_ROOT.exists() else MADDEN_FRANCHISE_FALLBACK_ROOT
+    if not franchise_root.exists():
+        raise HTTPException(500, f"madden-franchise reference repo not found: {MADDEN_FRANCHISE_ROOT}")
+    env = dict(os.environ)
+    env["MADDEN_FRANCHISE_ROOT"] = str(franchise_root)
+    completed = subprocess.run(
+        ["node", str(MADDEN_FRANCHISE_BRIDGE), *args],
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout or "unknown franchise bridge failure").strip()
+        raise HTTPException(500, f"Franchise bridge failed: {detail}")
+
+
+def franchise_table_meta_file(base: Path, table_meta: Dict[str, Any]) -> Path:
+    return base / "parse" / f"{re.sub(r'[^A-Za-z0-9_-]+', '_', table_meta['path'])}.table-meta.json"
+
+
+def ensure_franchise_table_exported(session_id: str, table_path: str) -> None:
+    meta = session_metadata(session_id)
+    if meta.get("session_kind") != "franchise":
+        return
+    base = sdir(session_id)
+    table = table_meta(session_id, table_path)
+    json_path = base / "parse" / table["json_file"]
+    if json_path.exists():
+        return
+    table_meta_path = franchise_table_meta_file(base, table)
+    write_json(table_meta_path, table)
+    run_franchise_bridge([
+        "export-table",
+        str(base / meta.get("input_file", "")),
+        str(table_meta_path),
+        str(json_path),
+    ])
 
 
 def build_wrapped_roster(raw_data: bytes, header: bytes) -> bytes:
@@ -407,6 +630,7 @@ def table_json_path(session_id: str, table_path: str) -> Path:
 
 
 def load_table_obj(session_id: str, table_path: str) -> Dict[str, Any]:
+    ensure_franchise_table_exported(session_id, table_path)
     return read_json(table_json_path(session_id, table_path))
 
 
@@ -416,6 +640,10 @@ def sanitize_table_obj(obj: Dict[str, Any]) -> Dict[str, Any]:
         name = field.get("name")
         if name:
             allowed_record_keys.add(str(name))
+    for record in obj.get("records", []):
+        for key in record.keys():
+            if key not in {"__rowIndex", "TeamName", "Position"}:
+                allowed_record_keys.add(str(key))
 
     sanitized_records = []
     for record in obj.get("records", []):
@@ -457,7 +685,7 @@ def get_team_lookup(session_id: str) -> Dict[Any, Dict[str, Any]]:
     meta = find_table(session_id, "TEAM")
     if not meta:
         return {}
-    obj = read_json(sdir(session_id) / "parse" / meta["json_file"])
+    obj = load_table_obj(session_id, meta["path"])
     lookup = {}
     for rec in obj.get("records", []):
         tgid = rec.get("TGID")
@@ -484,14 +712,20 @@ def enrich_record(session_id: str, table_path: str, rec: Dict[str, Any]) -> Dict
         if team:
             # Add only friendly TeamName by default to keep tables manageable; details are available in TEAM table.
             out.setdefault("TeamName", team.get("TeamName"))
-    if table_name == "PLAY" and out.get("PPOS") is None:
+    position_value = out.get("PPOS")
+    if position_value is None and table_name == "PLAY" and str(out.get("Position", "")).strip().isdigit():
+        position_value = out.get("Position")
+    if table_name == "PLAY" and position_value is None:
         out.setdefault("Position", POSITION_MAP[0])
-    elif "PPOS" in out:
+    elif position_value is not None:
         try:
-            position_id = int(out["PPOS"])
-            out.setdefault("Position", POSITION_MAP.get(position_id, f"Unknown({out['PPOS']})"))
+            position_text = str(position_value).strip()
+            position_id = int(position_text, 2) if position_text and set(position_text) <= {"0", "1"} else int(position_text)
+            if str(out.get("Position", "")).strip().isdigit() or not out.get("Position"):
+                out["Position"] = POSITION_MAP.get(position_id, f"Unknown({position_value})")
+            out.setdefault("PPOS", position_id)
         except Exception:
-            out.setdefault("Position", f"Unknown({out.get('PPOS')})")
+            out.setdefault("Position", f"Unknown({position_value})")
     return out
 
 
@@ -788,11 +1022,60 @@ async def parse_roster(file: UploadFile = File(...)):
     input_path = base / (file.filename or "roster.db")
     with input_path.open("wb") as f:
         shutil.copyfileobj(file.file, f)
-    fmt = detect_input_format(input_path.read_bytes()[:32])
+    input_bytes = input_path.read_bytes()
+    fmt = detect_input_format(input_bytes[:64])
+    fbchunks_title = fbchunks_title_string(input_bytes) if fmt["container"] == "fbchunks" else ""
     parse_input_path = base / "parse_input.db"
-    wrapper_meta = extract_roster_payload(input_path, fmt, parse_input_path)
+    wrapper_meta = None
+    franchise_input_path = input_path
     if fmt["container"] == "fbchunks":
-        (base / "wrapper_header.bin").write_bytes(input_path.read_bytes()[:wrapper_meta["data_start"]])
+        wrapper_meta = extract_roster_payload(input_path, fmt, parse_input_path)
+        (base / "wrapper_header.bin").write_bytes(input_bytes[:wrapper_meta["data_start"]])
+        franchise_input_path = parse_input_path
+    looks_like_franchise = franchise_input_path.exists() and looks_like_franchise_payload(franchise_input_path.read_bytes()[:8])
+    roster_family_hint = detect_roster_family_from_meta({
+        "session_kind": "franchise" if looks_like_franchise or should_parse_as_franchise(input_path, fmt) else "",
+        "input_file": input_path.name,
+        "input_stem": input_path.stem,
+        "input_container_label": fbchunks_title or fmt["label"],
+    })
+    if looks_like_franchise or should_parse_as_franchise(input_path, fmt):
+        parse_dir = base / "parse"
+        run_franchise_bridge(["summary", str(franchise_input_path), str(parse_dir), input_path.stem])
+        franchise_summary = read_json(parse_dir / f"{input_path.stem}_summary.json")
+        visuals_meta: Dict[str, Any] = {
+            "parsed": False,
+            "supported": False,
+            "note": "Character Visuals lazy parsing is not wired for franchise sessions yet. The CharacterVisuals table is still available in Table View.",
+            "warnings": [],
+        }
+        write_json(base / "visuals" / "character_visuals_meta.json", visuals_meta)
+        session_meta = {
+            "session_id": session_id,
+            "session_kind": "franchise",
+            "input_file": input_path.name,
+            "input_stem": input_path.stem,
+            "input_size_bytes": input_path.stat().st_size,
+            "input_container": fmt["container"],
+            "input_container_label": fbchunks_title or "Madden franchise save",
+            "parse_input_file": franchise_input_path.name,
+            "wrapper_meta": wrapper_meta or {"payload_size": input_path.stat().st_size},
+            "roster_family_hint": roster_family_hint,
+            "parse_table_count": franchise_summary.get("table_count"),
+            "parse_warnings": franchise_summary.get("warnings", []),
+            "visuals": visuals_meta,
+            "notes": [
+                "Opened with the Madden franchise parser bridge.",
+                "Franchise browsing is enabled in Table View, Team Editor, and Player Editor.",
+                "Binary franchise write-back is not enabled yet.",
+            ],
+        }
+        write_json(base / "session.json", session_meta)
+        return session_overview(session_id)
+    if wrapper_meta is None:
+        wrapper_meta = extract_roster_payload(input_path, fmt, parse_input_path)
+        if fmt["container"] == "fbchunks":
+            (base / "wrapper_header.bin").write_bytes(input_bytes[:wrapper_meta["data_start"]])
 
     parse_dir = base / "parse"
     meta = write_outputs(parse_input_path, parse_dir)
@@ -805,9 +1088,10 @@ async def parse_roster(file: UploadFile = File(...)):
         "input_stem": input_path.stem,
         "input_size_bytes": input_path.stat().st_size,
         "input_container": fmt["container"],
-        "input_container_label": fmt["label"],
+        "input_container_label": fbchunks_title or fmt["label"],
         "parse_input_file": parse_input_path.name,
         "wrapper_meta": wrapper_meta,
+        "roster_family_hint": roster_family_hint,
         "parse_table_count": meta.get("table_count"),
         "parse_warnings": meta.get("warnings", []),
         "visuals": visuals_meta,
@@ -857,6 +1141,9 @@ def parse_sample():
 def session_overview(session_id: str):
     meta = session_metadata(session_id)
     summ = summary(session_id)
+    family = roster_family_for_session(session_id)
+    meta = dict(meta)
+    meta["roster_family"] = family
     tables = []
     for t in summ.get("tables", []):
         tables.append({
@@ -879,16 +1166,28 @@ def get_team_options(session_id: str):
     meta = find_table(session_id, "TEAM")
     if not meta:
         return {"options": []}
-    obj = read_json(sdir(session_id) / "parse" / meta["json_file"])
+    family = roster_family_for_session(session_id)
+    obj = load_table_obj(session_id, meta["path"])
     options = []
     for idx, rec in enumerate(obj.get("records", [])):
-        team_name = rec.get("TDNA") or rec.get("TDLN") or rec.get("TMNA") or f"Team {idx}"
+        if rec.get("_isEmpty"):
+            continue
+        display_name = rec.get("TDNA") or rec.get("TeamName") or rec.get("TDLN") or rec.get("TMNA") or f"Team {idx}"
+        long_name = rec.get("TDLN") or rec.get("TLNA") or rec.get("TDNA") or display_name
+        nickname = rec.get("TMNA") or rec.get("TMNC")
+        team_db_name = rec.get("TDAN") or rec.get("ASNM") or rec.get("TeamAssetName")
+        logo_asset_id = nfl_logo_asset_id_for_team(rec) if family == "madden" else None
         options.append({
             "rowIndex": idx,
             "teamId": rec.get("TGID"),
             "cgid": rec.get("CGID"),
-            "label": str(team_name),
-            "nickname": rec.get("TMNA"),
+            "label": str(display_name),
+            "longName": str(long_name),
+            "displayName": str(display_name),
+            "nickname": nickname,
+            "teamDbName": team_db_name,
+            "teamLogoId": rec.get("TLGO"),
+            "logoAssetId": logo_asset_id,
             "abbrev": rec.get("TABB") or rec.get("TABC"),
             "ovr": rec.get("TROV"),
             "primaryColor": {
@@ -902,7 +1201,7 @@ def get_team_options(session_id: str):
                 "b": rec.get("TB2B"),
             },
         })
-    return {"options": options}
+    return {"options": options, "roster_family": family}
 
 
 @app.get("/api/session/{session_id}/player-options")
@@ -910,7 +1209,7 @@ def get_player_options(session_id: str, team_id: Optional[int] = Query(default=N
     meta = find_table(session_id, "PLAY")
     if not meta:
         return {"options": []}
-    obj = read_json(sdir(session_id) / "parse" / meta["json_file"])
+    obj = load_table_obj(session_id, meta["path"])
     records = obj.get("records", [])
     needle = search.lower().strip()
     wanted_position = position.strip().upper()
@@ -1130,6 +1429,16 @@ def sortable_value(value: Any):
 def parse_visuals_endpoint(session_id: str):
     base = sdir(session_id)
     meta = session_metadata(session_id)
+    if meta.get("session_kind") == "franchise":
+        visuals_meta = {
+            "parsed": False,
+            "supported": False,
+            "note": "Visuals extraction is not wired for franchise sessions yet. Use the CharacterVisuals table in Table View.",
+            "warnings": [],
+        }
+        meta["visuals"] = visuals_meta
+        save_session_metadata(session_id, meta)
+        return visuals_meta
     input_path = base / meta.get("parse_input_file", "parse_input.db")
     if not input_path.exists():
         raise HTTPException(500, "Original parsed roster DB is missing for this session.")
@@ -1235,6 +1544,7 @@ def export_table(session_id: str, table_path: str, fmt: str):
         write_csv(csv_path, records)
         return FileResponse(csv_path, media_type="text/csv", filename=csv_path.name)
     if fmt.lower() == "json":
+        load_table_obj(session_id, table_path)
         return FileResponse(sdir(session_id) / "parse" / meta["json_file"], media_type="application/json", filename=Path(meta["json_file"]).name)
     raise HTTPException(400, "fmt must be csv or json")
 
@@ -1281,11 +1591,12 @@ def save_roster_compressed(session_id: str):
 def save_roster_variant(session_id: str, mode: str):
     base = sdir(session_id)
     meta = session_metadata(session_id)
+    if meta.get("session_kind") == "franchise":
+        raise HTTPException(400, "Franchise save/export write-back is not enabled yet.")
     raw_input_path = base / meta.get("parse_input_file", meta.get("input_file", "roster.db"))
     if not raw_input_path.exists():
         raise HTTPException(500, "Original roster DB is missing for this session.")
-    input_container = meta.get("input_container", "tdb2")
-    effective_mode = input_container if mode == "default" else mode
+    effective_mode = default_save_mode(meta) if mode == "default" else mode
     if should_use_hc09_bridge(meta):
         if effective_mode in ("wrapped", "fbchunks"):
             wrapped_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_wrapped"

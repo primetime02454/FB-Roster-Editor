@@ -2,11 +2,18 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 COPY data ./data
+COPY tools ./tools
+COPY vendor ./vendor
+RUN cd ./vendor/madden-franchise && npm install --omit=dev
 RUN mkdir -p ./data/sessions
 
 ENV PORT=8080

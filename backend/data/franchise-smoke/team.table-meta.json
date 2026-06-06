@@ -1,0 +1,12 @@
+{
+    "path":  "FRANCHISE.TEAM",
+    "name":  "TEAM",
+    "actual_name":  "Team",
+    "unique_id":  637929298,
+    "table_id":  5913,
+    "field_count":  314,
+    "record_capacity":  37,
+    "records_parsed":  37,
+    "json_file":  "FRANCHISE_TEAM.json",
+    "csv_file":  "FRANCHISE_TEAM.csv"
+}

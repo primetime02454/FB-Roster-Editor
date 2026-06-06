@@ -170,6 +170,17 @@ p { margin: 0; color: var(--muted); font-size: 12px; }
 .workspace-editor { grid-template-columns: minmax(0, 1fr); }
 .sidebar { min-height: 0; border-right: 1px solid var(--border); background: var(--scratch-panel-soft); display: flex; flex-direction: column; }
 .sidebar-title { padding: 14px; font-weight: 700; border-bottom: 1px solid var(--border); background: var(--scratch-panel-soft); }
+.table-list-controls {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(12, 13, 15, .86);
+}
+.table-list-filter, .table-list-select {
+  width: 100%;
+  min-height: 36px;
+}
 .table-list { overflow: auto; padding: 8px; display: flex; flex-direction: column; gap: 7px; }
 .table-list button { text-align: left; display: grid; gap: 2px; padding: 10px; min-height: 72px; align-content: center; }
 .table-list button.active { border-color: #4b515a; background: #1b1e23; }
@@ -286,21 +297,21 @@ p { margin: 0; color: var(--muted); font-size: 12px; }
   background-blend-mode: normal;
 }
 .editor-nav-list button:hover:not(:disabled), .editor-nav-list button.active { border-color: #d7dde7; filter: brightness(1.12); }
-.record-card-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 7px; min-width: 0; }
+.record-card-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 7px; min-width: 0; min-height: 100%; }
 .record-card-logo {
   width: 24px;
   height: 24px;
   object-fit: contain;
   filter:
-    drop-shadow(0 1px 0 rgba(255,255,255,.35))
-    drop-shadow(0 -1px 0 rgba(255,255,255,.20))
-    drop-shadow(1px 0 0 rgba(255,255,255,.18))
-    drop-shadow(-1px 0 0 rgba(255,255,255,.18))
-    drop-shadow(0 2px 2px rgba(0,0,0,.95))
-    drop-shadow(0 0 5px rgba(255,255,255,.32));
+    drop-shadow(0 1px 0 rgba(255,255,255,.24))
+    drop-shadow(0 -1px 0 rgba(255,255,255,.14))
+    drop-shadow(1px 0 0 rgba(255,255,255,.12))
+    drop-shadow(-1px 0 0 rgba(255,255,255,.12))
+    drop-shadow(0 1px 2px rgba(0,0,0,.78))
+    drop-shadow(0 0 3px rgba(255,255,255,.18));
 }
-.record-card-body { min-width: 0; display: grid; gap: 1px; }
-.record-card-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 8px; min-width: 0; }
+.record-card-body { min-width: 0; display: grid; gap: 1px; align-items: center; }
+.record-card-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; min-width: 0; }
 .editor-nav-list b { font-size: 12px; line-height: 1.18; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .record-card-head small { color: #ffffff; font-size: 10px; white-space: nowrap; text-align: right; font-weight: 800; }
 .editor-nav-list span {
@@ -343,12 +354,12 @@ p { margin: 0; color: var(--muted); font-size: 12px; }
   object-fit: contain;
   align-self: center;
   filter:
-    drop-shadow(0 1px 0 rgba(255,255,255,.42))
-    drop-shadow(0 -1px 0 rgba(255,255,255,.24))
-    drop-shadow(1px 0 0 rgba(255,255,255,.22))
-    drop-shadow(-1px 0 0 rgba(255,255,255,.22))
-    drop-shadow(0 3px 3px rgba(0,0,0,.95))
-    drop-shadow(0 0 10px rgba(255,255,255,.38));
+    drop-shadow(0 1px 0 rgba(255,255,255,.28))
+    drop-shadow(0 -1px 0 rgba(255,255,255,.16))
+    drop-shadow(1px 0 0 rgba(255,255,255,.14))
+    drop-shadow(-1px 0 0 rgba(255,255,255,.14))
+    drop-shadow(0 2px 3px rgba(0,0,0,.8))
+    drop-shadow(0 0 6px rgba(255,255,255,.22));
 }
 .team-logo { order: -1; }
 .player-logo { margin-left: 0; order: -1; }

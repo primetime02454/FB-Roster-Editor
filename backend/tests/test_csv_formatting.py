@@ -2,17 +2,24 @@ import tempfile
 import unittest
 import zlib
 from pathlib import Path
+from unittest.mock import patch
 
 from app.main import (
     build_visuals_table,
     build_wrapped_roster,
     crc32_be,
+    default_save_mode,
     detect_input_format,
+    detect_roster_family_from_meta,
     extract_roster_payload,
+    find_fbchunks_payload_start,
+    looks_like_franchise_payload,
     get_field_description,
     get_field_labels_for_table,
+    roster_family_for_session,
     sanitize_table_obj,
     set_visuals_cell,
+    should_parse_as_franchise,
     should_use_hc09_bridge,
     stable_table_columns,
 )
@@ -155,6 +162,14 @@ class InputFormatTests(unittest.TestCase):
             self.assertEqual(output_path.read_bytes(), raw)
             self.assertEqual(meta["data_start"], 0x4A)
 
+    def test_finds_modern_fbchunks_payload_start_from_zlib_header(self):
+        raw = b"example roster payload"
+        header = bytearray(b"FBCHUNKS" + b"\x00" * (0x48 - 8))
+        header[0x16:0x18] = (2026).to_bytes(2, "little")
+        wrapped = bytes(header) + zlib.compress(raw, level=9)
+
+        self.assertEqual(find_fbchunks_payload_start(wrapped, 2026), 0x48)
+
     def test_builds_wrapped_roster_with_expected_crc_and_size(self):
         raw = b"example roster payload"
         header = bytearray(b"FBCHUNKS" + b"\x00" * (0x4A - 8))
@@ -169,6 +184,35 @@ class InputFormatTests(unittest.TestCase):
 
     def test_raw_sessions_do_not_use_hc09_bridge(self):
         self.assertFalse(should_use_hc09_bridge({"input_container": "tdb2"}))
+
+    def test_wrapped_roster_file_without_extension_is_not_forced_to_franchise(self):
+        input_path = Path("ROSTER-TESTBETA")
+        fmt = {"container": "fbchunks", "label": "FBCHUNKS wrapped save"}
+        self.assertFalse(should_parse_as_franchise(input_path, fmt))
+
+    def test_wrapped_roster_sessions_default_to_wrapped_save_mode(self):
+        self.assertEqual(default_save_mode({"input_container": "fbchunks"}), "fbchunks")
+        self.assertEqual(default_save_mode({"input_container": "tdb2"}), "tdb2")
+
+    def test_detects_franchise_payload_by_header(self):
+        self.assertTrue(looks_like_franchise_payload(bytes.fromhex("4672546b00000000")))
+        self.assertFalse(looks_like_franchise_payload(bytes.fromhex("8acbe2038acbe204")))
+
+
+class FranchiseFamilyTests(unittest.TestCase):
+    def test_detect_roster_family_from_meta_prefers_explicit_hint(self):
+        self.assertEqual(detect_roster_family_from_meta({"roster_family_hint": "college"}), "college")
+        self.assertEqual(detect_roster_family_from_meta({"roster_family_hint": "madden"}), "madden")
+
+    def test_detect_roster_family_from_meta_uses_college_branding(self):
+        self.assertEqual(detect_roster_family_from_meta({"input_file": "DYNASTY", "input_container_label": "College-27-CTRE_RL2"}), "college")
+
+    def test_detect_roster_family_from_meta_defaults_franchise_to_madden_without_hint(self):
+        self.assertEqual(detect_roster_family_from_meta({"session_kind": "franchise"}), "madden")
+
+    def test_roster_family_for_franchise_session_uses_metadata_hint(self):
+        with patch("app.main.session_metadata", return_value={"session_kind": "franchise", "roster_family_hint": "college"}):
+            self.assertEqual(roster_family_for_session("abc123"), "college")
 
 
 class FieldDescriptionTests(unittest.TestCase):
