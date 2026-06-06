@@ -33,7 +33,7 @@ FALLBACK_PLAY_LABELS = {
     "PQBS": "QB Style",
     "PSTY": "Throw Style",
     "EPAV": "Endzone Play",
-    "PEPS": "Celebration",
+    "PEPS": "Asset Name",    #corrected from "Celebration" to "Asset Name": Primetime02454 6-6-2026 - verified
     "PEYE": "Eye Paint",
     "PBRE": "Nasal Strip",
     "PFMK": "Facemask",
