@@ -24,6 +24,7 @@ FALLBACK_PLAY_LABELS = {
     "PSXP": "Portrait ID",
     "PGHE": "Face ID",
     "PCMT": "Comment",
+    "PDPI": "Draft Pick",       #Added: Primetime02454 6-6-2026 - verified
     "PFPB": "Pro Bowl",
     "PFHO": "Holdout",
     "ISCN": "Team Captain",
@@ -109,6 +110,8 @@ FALLBACK_PLAY_LABELS = {
     "PRBK": "Run Block",
     "PRBS": "Run Block Strength",
     "PRKN": "Right Knee",
+    "PROL": "Dev. Trait",            #Added: Primetime02454 6-6-2026 - verified
+    "PRSD": "Red Shirt Status",     #Added: Primetime02454 6-6-2026
     "PSHK": "Sock Height",
     "PSPD": "Speed",
     "PSPL": "Left Ankle",
@@ -125,6 +128,7 @@ FALLBACK_PLAY_LABELS = {
     "PTHP": "Throw Power",
     "PTOR": "Throw On Run",
     "PTUP": "Throw Under Pressure",
+    "PYEA": "Player Exp." ,      #Added: Primetime02454 6-6-2026 - verified
     "SRRN": "Short Route Run",
     "TRBH": "Big Hitter",
     "TRBR": "Bull Rush",
@@ -212,4 +216,11 @@ FALLBACK_TCPS_LABELS = {
     "TGID": "Team ID",
     "TCRK": "Coaches Rankings",
     "TMRK": "Media Rankings",
+}
+
+FALLBACK_DCHT_LABELS = {
+    "PGID": "Player ID" ,        #Added: Primetime02454 6-6-2026 - verified
+    "DDEP": "Depth Position",    #Added: Primetime02454 6-6-2026 - verified
+    "PPOS": "Player Position",   #Added: Primetime02454 6-6-2026 - verified
+    "TGID": "Team ID",           #Added: Primetime02454 6-6-2026 - verified
 }
