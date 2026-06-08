@@ -267,8 +267,29 @@ async function fetchJson(path, options = {}) {
   return res.json();
 }
 
-function downloadUrl(path) {
-  window.open(apiUrl(path), '_blank');
+async function downloadFile(path, fallbackName = 'download.bin') {
+  const res = await fetchWithFallback(path);
+  if (!res.ok) {
+    let message = `${res.status} ${res.statusText}`;
+    try {
+      const body = await res.json();
+      message = body.detail || message;
+    } catch {}
+    const error = new Error(message);
+    error.status = res.status;
+    throw error;
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  const disposition = res.headers.get('content-disposition') || '';
+  const match = disposition.match(/filename="?([^"]+)"?/i);
+  link.href = url;
+  link.download = match?.[1] || fallbackName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 function valueText(value) {
@@ -524,12 +545,19 @@ function App() {
   const [openMenu, setOpenMenu] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(() => typeof window !== 'undefined' ? window.innerWidth <= 1360 : false);
   const fileRef = useRef(null);
+  const csvBundleRef = useRef(null);
+  const tableCsvRef = useRef(null);
+  const visualsCsvRef = useRef(null);
+  const jsonImportRef = useRef(null);
+  const visualsJsonRef = useRef(null);
   const menuBarRef = useRef(null);
   const mobileNavRef = useRef(null);
   const showTableSidebar = view === 'table';
   const currentModeLabel = EDITOR_MODE_LABELS[view] || 'Table View';
   const statusFileLabel = session?.input_file ? `Loaded ${session.input_file}` : 'No roster open';
+  const topBarStatus = loading ? 'Working...' : status;
   const franchiseSession = session?.session_kind === 'franchise';
+  const visualsUnsupported = session?.visuals?.supported === false;
 
   const playTable = useMemo(() => tables.find(t => t.name === 'PLAY' || t.path?.endsWith('.PLAY'))?.path, [tables]);
   const teamTable = useMemo(() => tables.find(t => t.name === 'TEAM' || t.path?.endsWith('.TEAM'))?.path, [tables]);
@@ -650,6 +678,131 @@ function App() {
       setLoading(false);
     }
   }
+
+  async function importAllCsvBundle(file) {
+    if (!file || !session) return;
+    setLoading(true);
+    setStatus(`Importing ${file.name}...`);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetchWithFallback(`/session/${session.session_id}/import/all-csv`, { method: 'POST', body: form });
+      if (!res.ok) throw new Error(await res.text());
+      await loadExistingSession(session.session_id);
+      setStatus(`Imported CSV bundle from ${file.name}.`);
+    } catch (err) {
+      setStatus(`CSV import failed: ${err.message}`);
+    } finally {
+      if (csvBundleRef.current) csvBundleRef.current.value = '';
+      setLoading(false);
+    }
+  }
+
+  async function importCurrentCsv(file) {
+    if (!file || !session || view === 'visuals' || !currentTable) return;
+    setLoading(true);
+    setStatus(`Importing ${file.name}...`);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetchWithFallback(`/session/${session.session_id}/import/table/${encodeURIComponent(currentTable)}.csv`, { method: 'POST', body: form });
+      if (!res.ok) throw new Error(await res.text());
+      await loadExistingSession(session.session_id);
+      setStatus(`Imported CSV into ${currentTableMeta?.name || currentTable}.`);
+    } catch (err) {
+      setStatus(`Current CSV import failed: ${err.message}`);
+    } finally {
+      if (tableCsvRef.current) tableCsvRef.current.value = '';
+      setLoading(false);
+    }
+  }
+
+  async function importVisualsCsv(file) {
+    if (!file || !session || franchiseSession || visualsUnsupported) return;
+    setLoading(true);
+    setStatus(`Importing ${file.name}...`);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetchWithFallback(`/session/${session.session_id}/import/visuals/csv`, { method: 'POST', body: form });
+      if (!res.ok) throw new Error(await res.text());
+      await loadExistingSession(session.session_id);
+      setStatus(`Imported visuals CSV from ${file.name}.`);
+    } catch (err) {
+      setStatus(`Visuals CSV import failed: ${err.message}`);
+    } finally {
+      if (visualsCsvRef.current) visualsCsvRef.current.value = '';
+      setLoading(false);
+    }
+  }
+
+  async function importCurrentJson(file) {
+    if (!file || !session) return;
+    setLoading(true);
+    setStatus(`Importing ${file.name}...`);
+    try {
+      const text = await file.text();
+      const value = JSON.parse(text);
+      const path = view === 'visuals'
+        ? `/session/${session.session_id}/visuals-json`
+        : `/session/${session.session_id}/table-json/${encodeURIComponent(currentTable)}`;
+      await fetchJson(path, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value }),
+      });
+      await loadExistingSession(session.session_id);
+      setStatus(`Imported JSON from ${file.name}.`);
+    } catch (err) {
+      setStatus(`Current JSON import failed: ${err.message}`);
+    } finally {
+      if (jsonImportRef.current) jsonImportRef.current.value = '';
+      setLoading(false);
+    }
+  }
+
+  async function importVisualsJson(file) {
+    if (!file || !session || franchiseSession || visualsUnsupported) return;
+    setLoading(true);
+    setStatus(`Importing ${file.name}...`);
+    try {
+      const text = await file.text();
+      const value = JSON.parse(text);
+      await fetchJson(`/session/${session.session_id}/visuals-json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value }),
+      });
+      await loadExistingSession(session.session_id);
+      setStatus(`Imported visuals JSON from ${file.name}.`);
+    } catch (err) {
+      setStatus(`Visuals JSON import failed: ${err.message}`);
+    } finally {
+      if (visualsJsonRef.current) visualsJsonRef.current.value = '';
+      setLoading(false);
+    }
+  }
+
+  async function downloadSessionFile(path, fallbackName) {
+    setLoading(true);
+    try {
+      await downloadFile(path, fallbackName);
+      setStatus(`Downloaded ${fallbackName}.`);
+    } catch (err) {
+      setStatus(`Download failed: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const currentCsvExportPath = view === 'visuals'
+    ? `/session/${session?.session_id}/export/visuals/players.csv`
+    : currentTable ? `/session/${session?.session_id}/export/table/${encodeURIComponent(currentTable)}.csv` : '';
+  const currentJsonExportPath = view === 'visuals'
+    ? `/session/${session?.session_id}/export/visuals/nested.json`
+    : currentTable ? `/session/${session?.session_id}/export/table/${encodeURIComponent(currentTable)}.json` : '';
+  const currentCsvImportDisabled = !session || view === 'visuals' || !currentTable;
+  const currentJsonImportDisabled = !session || (view !== 'visuals' && !currentTable);
 
   async function loadExistingSession(sessionId) {
     if (!sessionId) return;
@@ -813,12 +966,17 @@ function App() {
       items: [
         { label: 'Open...', disabled: false, action: () => fileRef.current?.click() },
         { label: 'Open Sample', disabled: false, action: parseSample },
+        { label: 'Import All from CSV...', disabled: !session, action: () => csvBundleRef.current?.click() },
+        { label: 'Import Current CSV...', disabled: currentCsvImportDisabled, action: () => tableCsvRef.current?.click() },
+        { label: 'Import Current JSON...', disabled: currentJsonImportDisabled, action: () => jsonImportRef.current?.click() },
+        { label: 'Import Visuals CSV...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsCsvRef.current?.click() },
+        { label: 'Import Visuals JSON...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsJsonRef.current?.click() },
         { type: 'separator' },
-        { label: 'Save DB', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/save-roster.db`) },
-        { label: 'Save Raw', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/save-raw.db`) },
-        { label: 'Save Compressed', disabled: !session || franchiseSession || session.input_container !== 'fbchunks', action: () => downloadUrl(`/session/${session.session_id}/save-compressed`) },
-        { label: 'Save As DB', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/save-roster.db`) },
-        { label: 'Save As JSON', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/save-project.json`) },
+        { label: 'Save DB', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/save-roster.db`, 'roster.db') },
+        { label: 'Save Raw', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/save-raw.db`, 'roster_raw.db') },
+        { label: 'Save Compressed', disabled: !session || franchiseSession || session.input_container !== 'fbchunks', action: () => downloadSessionFile(`/session/${session.session_id}/save-compressed`, 'roster_wrapped') },
+        { label: 'Save As DB', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/save-roster.db`, 'roster.db') },
+        { label: 'Save As JSON', disabled: !session, action: () => downloadSessionFile(`/session/${session.session_id}/save-project.json`, 'madden_roster_editor_project.json') },
       ],
     },
     {
@@ -838,21 +996,24 @@ function App() {
         { label: 'Table View', disabled: !session, action: () => setView('table') },
         { label: 'Player Editor', disabled: !playTable, action: () => { setCurrentTable(playTable); setView('player'); } },
         { label: 'Team Editor', disabled: !teamTable, action: () => { setCurrentTable(teamTable); setView('team'); } },
-        { label: 'Character Visuals', disabled: !session, action: () => setView('visuals') },
+        { label: 'Character Visuals', disabled: !session || franchiseSession || visualsUnsupported, action: () => setView('visuals') },
         { label: 'Node JSON', disabled: !session, action: () => setView('node') },
       ],
     },
     {
       label: 'Export',
       items: [
-        { label: 'Export All ZIP', disabled: !session, action: () => downloadUrl(`/session/${session.session_id}/export/all.zip`) },
-        { label: 'Current Table CSV', disabled: !session || !currentTable, action: () => downloadUrl(`/session/${session.session_id}/export/table/${encodeURIComponent(currentTable)}.csv`) },
-        { label: 'Current Table JSON', disabled: !session || !currentTable, action: () => downloadUrl(`/session/${session.session_id}/export/table/${encodeURIComponent(currentTable)}.json`) },
+        { label: 'Export All ZIP', disabled: !session, action: () => downloadSessionFile(`/session/${session.session_id}/export/all.zip`, 'madden_roster_editor_project_export.zip') },
+        { label: 'Export All to CSV', disabled: !session, action: () => downloadSessionFile(`/session/${session.session_id}/export/all-csv.zip`, 'madden_roster_editor_csv_bundle.zip') },
+        { label: view === 'visuals' ? 'Current View CSV' : 'Current Table CSV', disabled: !session || !currentCsvExportPath, action: () => downloadSessionFile(currentCsvExportPath, view === 'visuals' ? 'character_visuals_players.csv' : `${currentTableMeta?.name || 'table'}.csv`) },
+        { label: view === 'visuals' ? 'Current View JSON' : 'Current Table JSON', disabled: !session || !currentJsonExportPath, action: () => downloadSessionFile(currentJsonExportPath, view === 'visuals' ? 'character_visuals_nested.json' : `${currentTableMeta?.name || 'table'}.json`) },
         { type: 'separator' },
-        { label: 'Visuals Nested JSON', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/nested.json`) },
-        { label: 'Visuals Players CSV', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/players.csv`) },
-        { label: 'Visuals Loadouts CSV', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/loadouts.csv`) },
-        { label: 'Visuals Elements CSV', disabled: !session || franchiseSession, action: () => downloadUrl(`/session/${session.session_id}/export/visuals/elements.csv`) },
+        { label: 'Import Visuals CSV...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsCsvRef.current?.click() },
+        { label: 'Visuals Nested JSON', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/nested.json`, 'character_visuals_nested.json') },
+        { label: 'Import Visuals JSON...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsJsonRef.current?.click() },
+        { label: 'Visuals Players CSV', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/players.csv`, 'character_visuals_players.csv') },
+        { label: 'Visuals Loadouts CSV', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/loadouts.csv`, 'character_visuals_loadouts.csv') },
+        { label: 'Visuals Elements CSV', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/elements.csv`, 'character_visuals_loadout_elements.csv') },
       ],
     },
   ];
@@ -874,17 +1035,19 @@ function App() {
               ))}
             </div>
           </div>
-          <div className="nav-center" title={loading ? 'Working...' : status}>
+          <div className="nav-center" title={topBarStatus}>
             <strong>FB Roster Editor</strong>
             <span className="nav-divider">|</span>
-            <span className="top-file-status">{loading ? 'Working...' : statusFileLabel}</span>
+            <span className="top-status-message">{topBarStatus}</span>
+            <span className="nav-divider">|</span>
+            <span className="top-file-status">{statusFileLabel}</span>
           </div>
           <div className="nav-right">
             <div className="mode-strip">
               {VIEW_BUTTONS.map(button => {
                 const disabled = (button.key === 'player' && !playTable)
                   || (button.key === 'team' && !teamTable)
-                  || (button.key === 'visuals' && (!session || franchiseSession))
+                  || (button.key === 'visuals' && (!session || franchiseSession || visualsUnsupported))
                   || (button.key === 'node' && !session);
                 return (
                   <button
@@ -905,6 +1068,11 @@ function App() {
             </div>
           </div>
           <input ref={fileRef} className="file-input" type="file" onChange={e => onOpenFile(e.target.files?.[0])} />
+          <input ref={csvBundleRef} className="file-input" type="file" accept=".zip,application/zip" onChange={e => importAllCsvBundle(e.target.files?.[0])} />
+          <input ref={tableCsvRef} className="file-input" type="file" accept=".csv,text/csv" onChange={e => importCurrentCsv(e.target.files?.[0])} />
+          <input ref={visualsCsvRef} className="file-input" type="file" accept=".csv,.zip,text/csv,application/zip" onChange={e => importVisualsCsv(e.target.files?.[0])} />
+          <input ref={jsonImportRef} className="file-input" type="file" accept=".json,application/json" onChange={e => importCurrentJson(e.target.files?.[0])} />
+          <input ref={visualsJsonRef} className="file-input" type="file" accept=".json,application/json" onChange={e => importVisualsJson(e.target.files?.[0])} />
         </nav>
         {mobileNavOpen && (
           <div className="mobile-nav-panel" ref={mobileNavRef}>
@@ -925,7 +1093,7 @@ function App() {
             {VIEW_BUTTONS.map(button => {
               const disabled = (button.key === 'player' && !playTable)
                 || (button.key === 'team' && !teamTable)
-                || (button.key === 'visuals' && (!session || franchiseSession))
+                || (button.key === 'visuals' && (!session || franchiseSession || visualsUnsupported))
                 || (button.key === 'node' && !session);
               return (
                 <button
@@ -1329,6 +1497,7 @@ function RecordNavCard({ option, active, onClick, kind, style, logoUrl }) {
 
 function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessionInvalid }) {
   const rosterFamily = session?.roster_family || 'college';
+  const visualsSupported = session?.visuals?.supported !== false;
   const [data, setData] = useState({ records: [], columns: [], total: 0, offset: 0 });
   const [query, setQuery] = useState('');
   const [teamOptions, setTeamOptions] = useState([]);
@@ -1422,7 +1591,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   }
 
   async function loadVisualOptions() {
-    if (kind !== 'Player') return;
+    if (kind !== 'Player' || !visualsSupported) return;
     try {
       const out = await fetchJson(`/session/${session.session_id}/visual-options`);
       setVisualOptions(out.fields || {});
@@ -1490,6 +1659,32 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     }
   }
 
+  async function refreshEditorCollections({
+    teamId = selectedTeam,
+    position = selectedPosition,
+    search = query,
+  } = {}) {
+    if (!session) return;
+    try {
+      const teams = await fetchJson(`/session/${session.session_id}/team-options`);
+      const nextTeamOptions = teams.options || [];
+      setTeamOptions(nextTeamOptions);
+
+      if (kind === 'Player') {
+        const baseQ = new URLSearchParams();
+        if (teamId) baseQ.set('team_id', teamId);
+        if (search) baseQ.set('search', search);
+        if (position) baseQ.set('position', position);
+        const players = await fetchJson(`/session/${session.session_id}/player-options?${baseQ}`);
+        setPlayerOptions(players.options || []);
+      }
+    } catch (err) {
+      if (isSessionMissingError(err)) {
+        onSessionInvalid?.();
+      }
+    }
+  }
+
   async function loadRecord(rowIndex) {
     if (rowIndex === '' || rowIndex === undefined || rowIndex === null) return;
     const q = new URLSearchParams({ offset: rowIndex, limit: 1, search: '' });
@@ -1504,7 +1699,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
           setSelectedTeam(String(loadedRecord.__rowIndex));
         }
       }
-      if (kind === 'Player' && loadedRecord?.PGID !== undefined) {
+      if (kind === 'Player' && visualsSupported && loadedRecord?.PGID !== undefined) {
         try {
           const visuals = await fetchJson(`/session/${session.session_id}/player-visuals/${loadedRecord.PGID}`);
           setGearValues(visuals.fields || {});
@@ -1689,6 +1884,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
       ...current,
       records: current.records.map(r => r.__rowIndex === record.__rowIndex ? { ...r, [col]: nextValue } : r),
     }));
+    await refreshEditorCollections();
   }
 
   async function commitField(col) {
@@ -1720,6 +1916,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
       ...current,
       records: current.records.map(r => r.__rowIndex === record.__rowIndex ? { ...r, ...nextValues } : r),
     }));
+    await refreshEditorCollections();
   }
 
   async function patchColorHex(group, hex) {

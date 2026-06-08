@@ -7,6 +7,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 import uuid
 import zipfile
 import xml.etree.ElementTree as ET
@@ -22,6 +23,7 @@ from pydantic import BaseModel
 
 from app.parsers.parse_madden_tdb2 import write_outputs, flatten_for_csv, TDB2ParserPy
 from app.parsers.parse_h2_visuals_json import parse_visuals, validate_visuals
+from app.parsers.encode_h2_visuals import encode_visuals_blbm_table
 from app.parsers.rebuild_madden_tdb2 import rebuild_roster_db
 from app.fallback_labels import FALLBACK_PLAY_LABELS, FALLBACK_TCPS_LABELS, FALLBACK_TEAM_LABELS
 
@@ -33,8 +35,12 @@ SESSION_ROOT = DATA_ROOT / "sessions"
 FRONTEND_DIST = PROJECT_ROOT / "frontend" / "dist"
 HC09_ROOT = PROJECT_ROOT.parent / "HC09-Roster-Editor-2.0--master"
 HC09_BRIDGE = BACKEND_ROOT / "tools" / "hc09_save_bridge.js"
+TDB_BRIDGE = BACKEND_ROOT / "tools" / "tdb_bridge.js"
+MADDEN_FILE_TOOLS_ROOT = BACKEND_ROOT / "vendor" / "madden-file-tools"
+MADDEN_FILE_TOOLS_FALLBACK_ROOT = Path.home() / "Downloads" / "HC09Editor_M25" / "resources" / "node_modules" / "madden-file-tools"
 MADDEN_FRANCHISE_ROOT = BACKEND_ROOT / "vendor" / "madden-franchise"
 MADDEN_FRANCHISE_FALLBACK_ROOT = Path.home() / "Downloads" / "madden-franchise-master"
+H2_PREFIX = bytes.fromhex("8acbe2040301")
 MADDEN_FRANCHISE_BRIDGE = BACKEND_ROOT / "tools" / "madden_franchise_bridge.mjs"
 SESSION_ROOT.mkdir(parents=True, exist_ok=True)
 
@@ -309,6 +315,9 @@ class VisualsCellEdit(BaseModel):
 
 
 def detect_input_format(data: bytes) -> Dict[str, str]:
+    if data.startswith(b"CD") and len(data) >= 0x14:
+        version = int.from_bytes(data[2:4], "little")
+        return {"container": "cdb", "label": f"EA CDB combined save v{version}"}
     if data.startswith(b"FBCHUNKS"):
         return {"container": "fbchunks", "label": "FBCHUNKS wrapped save"}
     return {"container": "tdb2", "label": "Raw roster database"}
@@ -352,6 +361,10 @@ def looks_like_franchise_payload(data: bytes) -> bool:
     return data.startswith(b"FrTk")
 
 
+def looks_like_classic_tdb_payload(data: bytes) -> bool:
+    return data.startswith(b"DB")
+
+
 def crc32_be(data: bytes) -> int:
     crc_poly_be = 0x04C11DB7
     crc = 0x80000000
@@ -372,6 +385,28 @@ def crc32_be(data: bytes) -> int:
 
 def extract_roster_payload(input_path: Path, fmt: Dict[str, str], output_path: Path) -> Dict[str, Any]:
     data = input_path.read_bytes()
+    if fmt["container"] == "cdb":
+        if len(data) < 0x14:
+            raise HTTPException(400, "CDB file is too short.")
+        version = int.from_bytes(data[2:4], "little")
+        tdb_offset = int.from_bytes(data[4:8], "little")
+        tdb_size = int.from_bytes(data[8:12], "little")
+        h2_offset = int.from_bytes(data[12:16], "little")
+        h2_size = int.from_bytes(data[16:20], "little")
+        if tdb_offset + tdb_size > len(data) or h2_offset + h2_size > len(data):
+            raise HTTPException(400, "CDB header points past the end of the file.")
+        output_path.write_bytes(data[tdb_offset:tdb_offset + tdb_size])
+        h2_path = output_path.parent / "input_payload.h2"
+        h2_path.write_bytes(data[h2_offset:h2_offset + h2_size])
+        return {
+            "version": version,
+            "tdb_offset": tdb_offset,
+            "tdb_size": tdb_size,
+            "h2_offset": h2_offset,
+            "h2_size": h2_size,
+            "payload_size": tdb_size,
+            "h2_path": h2_path.name,
+        }
     if fmt["container"] == "fbchunks":
         if len(data) < 0x18:
             raise HTTPException(400, "FBCHUNKS file is too short.")
@@ -442,8 +477,25 @@ def build_wrapped_roster(raw_data: bytes, header: bytes) -> bytes:
     return bytes(wrapped_header) + compressed
 
 
+def build_cdb_container(raw_tdb_data: bytes, h2_data: bytes, version: int = 1) -> bytes:
+    tdb_offset = 0x14
+    h2_offset = tdb_offset + len(raw_tdb_data)
+    header = bytearray()
+    header += b"CD"
+    header += int(version).to_bytes(2, "little")
+    header += int(tdb_offset).to_bytes(4, "little")
+    header += len(raw_tdb_data).to_bytes(4, "little")
+    header += int(h2_offset).to_bytes(4, "little")
+    header += len(h2_data).to_bytes(4, "little")
+    return bytes(header) + raw_tdb_data + h2_data
+
+
 def should_use_hc09_bridge(meta: Dict[str, Any]) -> bool:
     return meta.get("input_container") == "fbchunks"
+
+
+def should_use_tdb_bridge(meta: Dict[str, Any]) -> bool:
+    return str(meta.get("parse_format") or "").lower() == "tdb"
 
 
 def _titleize_constant(name: str) -> str:
@@ -569,6 +621,70 @@ def run_hc09_save_bridge(session_id: str, mode: str, output_path: Path) -> None:
         raise HTTPException(500, f"HC09 save bridge failed: {detail}")
 
 
+def run_tdb_bridge_summary(input_path: Path, outdir: Path) -> Dict[str, Any]:
+    mft_root = MADDEN_FILE_TOOLS_ROOT if MADDEN_FILE_TOOLS_ROOT.exists() else MADDEN_FILE_TOOLS_FALLBACK_ROOT
+    if not mft_root.exists():
+        raise HTTPException(500, f"madden-file-tools not found at {MADDEN_FILE_TOOLS_ROOT}")
+    if not TDB_BRIDGE.exists():
+        raise HTTPException(500, f"TDB bridge script not found at {TDB_BRIDGE}")
+    outdir.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        "node",
+        str(TDB_BRIDGE),
+        "--command",
+        "summary",
+        "--mft-root",
+        str(mft_root),
+        "--input",
+        str(input_path),
+        "--out-dir",
+        str(outdir),
+    ]
+    try:
+        completed = subprocess.run(cmd, capture_output=True, text=True, check=False, cwd=str(PROJECT_ROOT))
+    except FileNotFoundError as e:
+        raise HTTPException(500, f"Node.js is required for TDB bridge: {e}")
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout or "unknown TDB bridge summary failure").strip()
+        raise HTTPException(500, f"TDB bridge summary failed: {detail}")
+    return read_json(outdir / f"{input_path.stem}_summary.json")
+
+
+def run_tdb_bridge_save(session_id: str, output_path: Path) -> None:
+    mft_root = MADDEN_FILE_TOOLS_ROOT if MADDEN_FILE_TOOLS_ROOT.exists() else MADDEN_FILE_TOOLS_FALLBACK_ROOT
+    if not mft_root.exists():
+        raise HTTPException(500, f"madden-file-tools not found at {MADDEN_FILE_TOOLS_ROOT}")
+    if not TDB_BRIDGE.exists():
+        raise HTTPException(500, f"TDB bridge script not found at {TDB_BRIDGE}")
+    base = sdir(session_id)
+    meta = session_metadata(session_id)
+    input_path = base / meta.get("parse_input_file", "parse_input.db")
+    parse_dir = base / "parse"
+    if not input_path.exists():
+        raise HTTPException(500, f"Original parsed roster DB is missing for session {session_id}")
+    cmd = [
+        "node",
+        str(TDB_BRIDGE),
+        "--command",
+        "save",
+        "--mft-root",
+        str(mft_root),
+        "--input",
+        str(input_path),
+        "--parse-dir",
+        str(parse_dir),
+        "--output",
+        str(output_path),
+    ]
+    try:
+        completed = subprocess.run(cmd, capture_output=True, text=True, check=False, cwd=str(PROJECT_ROOT))
+    except FileNotFoundError as e:
+        raise HTTPException(500, f"Node.js is required for TDB bridge: {e}")
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout or "unknown TDB bridge save failure").strip()
+        raise HTTPException(500, f"TDB bridge save failed: {detail}")
+
+
 def sdir(session_id: str) -> Path:
     p = SESSION_ROOT / session_id
     if not p.exists():
@@ -585,6 +701,29 @@ def write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
         json.dump(value, f, ensure_ascii=False, indent=2)
+
+
+def write_minified_json(path: Path, value: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(value, f, ensure_ascii=False, separators=(",", ":"))
+
+
+def rebuild_classic_h2_from_visuals_json(visuals_json_path: Path, original_h2_path: Path, output_h2_path: Path) -> Dict[str, Any]:
+    visuals = read_json(visuals_json_path)
+    original_h2 = original_h2_path.read_bytes()
+    trailer = original_h2[-10:] if len(original_h2) >= 10 else b""
+    encoded_blbm = encode_visuals_blbm_table(visuals, unknown1=0, unknown2=2)
+    rebuilt = H2_PREFIX + encoded_blbm + trailer
+    output_h2_path.parent.mkdir(parents=True, exist_ok=True)
+    output_h2_path.write_bytes(rebuilt)
+    return {
+        "output_file": str(output_h2_path),
+        "visual_players_encoded": len((visuals.get("characterVisualsPlayerMap") or {})),
+        "original_size_bytes": len(original_h2),
+        "rebuilt_size_bytes": len(rebuilt),
+        "trailer_size_bytes": len(trailer),
+    }
 
 
 def summary(session_id: str) -> Dict[str, Any]:
@@ -1000,6 +1139,210 @@ def write_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
             w.writerow({k: flatten_for_csv(r.get(k)) for k in cols})
 
 
+def parse_csv_cell(text: str, sample: Any = None) -> Any:
+    value = text.strip()
+    if value == "":
+        if isinstance(sample, str):
+            return ""
+        if sample is None:
+            return ""
+        return None
+    if value in {"null", "None"}:
+        return None
+    if value in {"true", "false"}:
+        return value == "true"
+    if value.startswith("{") or value.startswith("["):
+        try:
+            return json.loads(value)
+        except Exception:
+            pass
+    if isinstance(sample, bool):
+        return value.lower() in {"1", "true", "yes", "y"}
+    if isinstance(sample, int) and not isinstance(sample, bool):
+        try:
+            return int(value)
+        except Exception:
+            return value
+    if isinstance(sample, float):
+        try:
+            return float(value)
+        except Exception:
+            return value
+    if re.fullmatch(r"-?\d+", value):
+        try:
+            return int(value)
+        except Exception:
+            pass
+    if re.fullmatch(r"-?\d+\.\d+", value):
+        try:
+            return float(value)
+        except Exception:
+            pass
+    return value
+
+
+def sample_record_types(records: List[Dict[str, Any]]) -> Dict[str, Any]:
+    samples: Dict[str, Any] = {}
+    for record in records:
+        for key, value in record.items():
+            if key not in samples and value not in (None, ""):
+                samples[key] = value
+    return samples
+
+
+def load_records_from_csv_bytes(csv_bytes: bytes, current_records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    text = csv_bytes.decode("utf-8-sig", errors="replace")
+    reader = csv.DictReader(io.StringIO(text))
+    sample_types = sample_record_types(current_records)
+    records: List[Dict[str, Any]] = []
+    for row in reader:
+        record: Dict[str, Any] = {}
+        for key, raw_value in row.items():
+            if key is None:
+                continue
+            record[key] = parse_csv_cell(raw_value or "", sample_types.get(key))
+        records.append(record)
+    return records
+
+
+def import_visuals_players_csv_bytes(csv_bytes: bytes, current_obj: Dict[str, Any]) -> Dict[str, Any]:
+    text = csv_bytes.decode("utf-8-sig", errors="replace")
+    reader = csv.DictReader(io.StringIO(text))
+    current_map = current_obj.get("characterVisualsPlayerMap", {}) or {}
+    imported_map: Dict[str, Any] = {}
+    for row in reader:
+        player_id = str(row.get("visualPlayerId") or row.get("Player ID") or "").strip()
+        if not player_id:
+            continue
+        sample_player = current_map.get(player_id, {})
+        player: Dict[str, Any] = {}
+        for key, raw_value in row.items():
+            if key in (None, "visualPlayerId", "Player ID", "loadoutCount"):
+                continue
+            if key == "loadouts_json":
+                value = (raw_value or "").strip()
+                player["loadouts"] = json.loads(value) if value else []
+                continue
+            player[key] = parse_csv_cell(raw_value or "", sample_player.get(key))
+        if "loadouts" not in player:
+            player["loadouts"] = sample_player.get("loadouts", [])
+        imported_map[player_id] = player
+    return {"characterVisualsPlayerMap": imported_map}
+
+
+def read_csv_rows_from_bytes(csv_bytes: bytes) -> List[Dict[str, Any]]:
+    text = csv_bytes.decode("utf-8-sig", errors="replace")
+    reader = csv.DictReader(io.StringIO(text))
+    rows: List[Dict[str, Any]] = []
+    for row in reader:
+        parsed: Dict[str, Any] = {}
+        for key, raw_value in row.items():
+            if key is None:
+                continue
+            parsed[key] = parse_csv_cell(raw_value or "")
+        rows.append(parsed)
+    return rows
+
+
+def rebuild_visuals_from_flat_rows(
+    players_rows: List[Dict[str, Any]],
+    loadouts_rows: List[Dict[str, Any]],
+    elements_rows: List[Dict[str, Any]],
+    blends_rows: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    player_map: Dict[str, Dict[str, Any]] = {}
+    for row in players_rows:
+        player_id = str(row.get("visualPlayerId") or row.get("Player ID") or "").strip()
+        if not player_id:
+            continue
+        player: Dict[str, Any] = {}
+        for key, value in row.items():
+            if key in {"visualPlayerId", "Player ID", "loadoutCount", "loadouts_json"}:
+                continue
+            player[key] = value
+        player["loadouts"] = []
+        player_map[player_id] = player
+
+    loadout_map: Dict[tuple[str, int], Dict[str, Any]] = {}
+    for row in sorted(loadouts_rows, key=lambda item: (str(item.get("visualPlayerId", "")), int(item.get("loadoutIndex", 0)))):
+        player_id = str(row.get("visualPlayerId") or "").strip()
+        if not player_id:
+            continue
+        player = player_map.setdefault(player_id, {"loadouts": []})
+        loadout_index = int(row.get("loadoutIndex", 0) or 0)
+        loadout = {
+            "loadoutCategory": row.get("loadoutCategory"),
+            "loadoutType": row.get("loadoutType"),
+            "loadoutElements": [],
+        }
+        player.setdefault("loadouts", []).append(loadout)
+        loadout_map[(player_id, loadout_index)] = loadout
+
+    element_map: Dict[tuple[str, int, int], Dict[str, Any]] = {}
+    for row in sorted(elements_rows, key=lambda item: (str(item.get("visualPlayerId", "")), int(item.get("loadoutIndex", 0)), int(item.get("elementIndex", 0)))):
+        player_id = str(row.get("visualPlayerId") or "").strip()
+        if not player_id:
+            continue
+        loadout_index = int(row.get("loadoutIndex", 0) or 0)
+        element_index = int(row.get("elementIndex", 0) or 0)
+        loadout = loadout_map.get((player_id, loadout_index))
+        if loadout is None:
+            loadout = {"loadoutCategory": 0, "loadoutType": 0, "loadoutElements": []}
+            player_map.setdefault(player_id, {"loadouts": []}).setdefault("loadouts", []).append(loadout)
+            loadout_map[(player_id, loadout_index)] = loadout
+        element: Dict[str, Any] = {
+            "slotType": row.get("slotType"),
+            "itemAssetName": row.get("itemAssetName"),
+            "blends": [],
+        }
+        loadout.setdefault("loadoutElements", []).append(element)
+        element_map[(player_id, loadout_index, element_index)] = element
+
+    for row in sorted(blends_rows, key=lambda item: (str(item.get("visualPlayerId", "")), int(item.get("loadoutIndex", 0)), int(item.get("elementIndex", 0)), int(item.get("blendIndex", 0)))):
+        player_id = str(row.get("visualPlayerId") or "").strip()
+        if not player_id:
+            continue
+        key = (
+            player_id,
+            int(row.get("loadoutIndex", 0) or 0),
+            int(row.get("elementIndex", 0) or 0),
+        )
+        element = element_map.get(key)
+        if element is None:
+            continue
+        blend = {
+            "baseBlend": row.get("baseBlend"),
+            "barycentricBlend": row.get("barycentricBlend"),
+        }
+        element.setdefault("blends", []).append(blend)
+
+    return {"characterVisualsPlayerMap": player_map}
+
+
+def export_visuals_csv_bundle(session_id: str) -> Path:
+    ensure_visuals_parsed(session_id)
+    visuals_dir = sdir(session_id) / "visuals"
+    json_path = visuals_dir / "character_visuals_nested.json"
+    export_visuals_csv(json_path, visuals_dir)
+    zip_path = visuals_dir / "character_visuals_csv_bundle.zip"
+    manifest = {
+        "type": "visuals_csv_bundle",
+        "files": [
+            "character_visuals_players.csv",
+            "character_visuals_loadouts.csv",
+            "character_visuals_loadout_elements.csv",
+            "character_visuals_blends.csv",
+        ],
+    }
+    if zip_path.exists():
+        zip_path.unlink()
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+        for name in manifest["files"]:
+            z.write(visuals_dir / name, name)
+        z.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+    return zip_path
+
+
 def zip_dir(source: Path, zip_path: Path) -> None:
     if zip_path.exists():
         zip_path.unlink()
@@ -1027,12 +1370,19 @@ async def parse_roster(file: UploadFile = File(...)):
     fbchunks_title = fbchunks_title_string(input_bytes) if fmt["container"] == "fbchunks" else ""
     parse_input_path = base / "parse_input.db"
     wrapper_meta = None
+    h2_input_path = None
+    parse_format = ""
     franchise_input_path = input_path
-    if fmt["container"] == "fbchunks":
+    if fmt["container"] in {"fbchunks", "cdb"}:
         wrapper_meta = extract_roster_payload(input_path, fmt, parse_input_path)
-        (base / "wrapper_header.bin").write_bytes(input_bytes[:wrapper_meta["data_start"]])
+        if fmt["container"] == "fbchunks":
+            (base / "wrapper_header.bin").write_bytes(input_bytes[:wrapper_meta["data_start"]])
+        elif wrapper_meta.get("h2_path"):
+            h2_input_path = base / wrapper_meta["h2_path"]
         franchise_input_path = parse_input_path
     looks_like_franchise = franchise_input_path.exists() and looks_like_franchise_payload(franchise_input_path.read_bytes()[:8])
+    if franchise_input_path.exists() and looks_like_classic_tdb_payload(franchise_input_path.read_bytes()[:2]):
+        parse_format = "tdb"
     roster_family_hint = detect_roster_family_from_meta({
         "session_kind": "franchise" if looks_like_franchise or should_parse_as_franchise(input_path, fmt) else "",
         "input_file": input_path.name,
@@ -1060,6 +1410,8 @@ async def parse_roster(file: UploadFile = File(...)):
             "input_container_label": fbchunks_title or "Madden franchise save",
             "parse_input_file": franchise_input_path.name,
             "wrapper_meta": wrapper_meta or {"payload_size": input_path.stat().st_size},
+            "h2_input_file": h2_input_path.name if h2_input_path else None,
+            "parse_format": parse_format or "franchise",
             "roster_family_hint": roster_family_hint,
             "parse_table_count": franchise_summary.get("table_count"),
             "parse_warnings": franchise_summary.get("warnings", []),
@@ -1078,8 +1430,34 @@ async def parse_roster(file: UploadFile = File(...)):
             (base / "wrapper_header.bin").write_bytes(input_bytes[:wrapper_meta["data_start"]])
 
     parse_dir = base / "parse"
-    meta = write_outputs(parse_input_path, parse_dir)
-    visuals_meta: Dict[str, Any] = visuals_not_parsed_meta()
+    if parse_format == "tdb":
+        meta = run_tdb_bridge_summary(parse_input_path, parse_dir)
+    else:
+        meta = write_outputs(parse_input_path, parse_dir)
+    if parse_format == "tdb":
+        has_h2_payload = bool(h2_input_path and h2_input_path.exists())
+        if has_h2_payload:
+            try:
+                visuals_meta = parse_visuals_for_session(session_id, h2_input_path, export_csv=False)
+                visuals_meta["supported"] = True
+                visuals_meta["note"] = "Character Visuals were parsed from the original H2 payload for this classic CDB session."
+            except Exception as e:
+                visuals_meta = {
+                    "parsed": False,
+                    "supported": True,
+                    "warnings": [str(e)],
+                    "error": str(e),
+                    "note": "Character Visuals are available for this classic CDB session, but the initial H2 parse failed.",
+                }
+        else:
+            visuals_meta = {
+                "parsed": False,
+                "supported": False,
+                "warnings": [],
+                "note": "Character Visuals are not available for this classic TDB session because no H2 payload was present.",
+            }
+    else:
+        visuals_meta = visuals_not_parsed_meta()
     write_json(base / "visuals" / "character_visuals_meta.json", visuals_meta)
 
     session_meta = {
@@ -1091,13 +1469,15 @@ async def parse_roster(file: UploadFile = File(...)):
         "input_container_label": fbchunks_title or fmt["label"],
         "parse_input_file": parse_input_path.name,
         "wrapper_meta": wrapper_meta,
+        "h2_input_file": h2_input_path.name if h2_input_path else None,
+        "parse_format": parse_format or "tdb2",
         "roster_family_hint": roster_family_hint,
         "parse_table_count": meta.get("table_count"),
         "parse_warnings": meta.get("warnings", []),
         "visuals": visuals_meta,
         "notes": [
             "Edits are applied to the parsed project JSON/CSV session.",
-            "Binary .db write-back is enabled for the main roster tables and Character Visuals; Save As JSON remains available separately.",
+            "Binary save writes back to the original roster format for supported sessions; Save As JSON remains available separately.",
         ],
     }
     write_json(base / "session.json", session_meta)
@@ -1287,6 +1667,11 @@ def get_visual_options(session_id: str):
 
 @app.get("/api/session/{session_id}/player-visuals/{player_id}")
 def get_player_visuals(session_id: str, player_id: str):
+    meta = session_metadata(session_id)
+    visuals_meta = meta.get("visuals") or {}
+    if visuals_meta.get("supported") is False:
+        return {"playerId": player_id, "fields": {}}
+    ensure_visuals_parsed(session_id)
     table = build_visuals_table(load_visuals_obj(session_id))
     row = next((record for record in table.get("rows", []) if str(record.get("Player ID")) == str(player_id)), None)
     if row is None:
@@ -1439,7 +1824,8 @@ def parse_visuals_endpoint(session_id: str):
         meta["visuals"] = visuals_meta
         save_session_metadata(session_id, meta)
         return visuals_meta
-    input_path = base / meta.get("parse_input_file", "parse_input.db")
+    visuals_source_name = meta.get("h2_input_file") or meta.get("parse_input_file") or "parse_input.db"
+    input_path = base / visuals_source_name
     if not input_path.exists():
         raise HTTPException(500, "Original parsed roster DB is missing for this session.")
     try:
@@ -1549,6 +1935,62 @@ def export_table(session_id: str, table_path: str, fmt: str):
     raise HTTPException(400, "fmt must be csv or json")
 
 
+@app.post("/api/session/{session_id}/import/table/{table_path:path}.csv")
+async def import_table_csv(session_id: str, table_path: str, file: UploadFile = File(...)):
+    obj = load_table_obj(session_id, table_path)
+    payload = await file.read()
+    if not payload:
+        raise HTTPException(400, "CSV file is empty.")
+    imported_records = load_records_from_csv_bytes(payload, obj.get("records", []))
+    obj["records"] = imported_records
+    save_table_obj(session_id, table_path, obj)
+    meta = table_meta(session_id, table_path)
+    csv_name = Path(meta.get("csv_file") or f"{table_path}.csv").name
+    write_csv(sdir(session_id) / "parse" / "csv" / csv_name, imported_records)
+    return {"ok": True, "table": table_path, "records": len(imported_records)}
+
+
+@app.post("/api/session/{session_id}/import/visuals/csv")
+async def import_visuals_csv(session_id: str, file: UploadFile = File(...)):
+    payload = await file.read()
+    if not payload:
+        raise HTTPException(400, "Visuals CSV file is empty.")
+    ensure_visuals_parsed(session_id)
+    current_obj = load_visuals_obj(session_id)
+    imported_obj: Dict[str, Any]
+    filename = (file.filename or "").lower()
+    if filename.endswith(".zip"):
+        try:
+            with zipfile.ZipFile(io.BytesIO(payload), "r") as z:
+                names = set(z.namelist())
+                required = {
+                    "character_visuals_players.csv",
+                    "character_visuals_loadouts.csv",
+                    "character_visuals_loadout_elements.csv",
+                    "character_visuals_blends.csv",
+                }
+                missing = sorted(required - names)
+                if missing:
+                    raise HTTPException(400, f"Visuals CSV bundle is missing: {', '.join(missing)}")
+                imported_obj = rebuild_visuals_from_flat_rows(
+                    read_csv_rows_from_bytes(z.read("character_visuals_players.csv")),
+                    read_csv_rows_from_bytes(z.read("character_visuals_loadouts.csv")),
+                    read_csv_rows_from_bytes(z.read("character_visuals_loadout_elements.csv")),
+                    read_csv_rows_from_bytes(z.read("character_visuals_blends.csv")),
+                )
+        except HTTPException:
+            raise
+        except zipfile.BadZipFile:
+            raise HTTPException(400, "Uploaded visuals CSV bundle is not a valid zip archive.")
+    else:
+        imported_obj = import_visuals_players_csv_bytes(payload, current_obj)
+    save_visuals_obj(session_id, imported_obj)
+    return {
+        "ok": True,
+        "players": len(imported_obj.get("characterVisualsPlayerMap", {})),
+    }
+
+
 @app.get("/api/session/{session_id}/export/visuals/{name}")
 def export_visuals(session_id: str, name: str):
     allowed = {
@@ -1561,7 +2003,17 @@ def export_visuals(session_id: str, name: str):
     if name not in allowed:
         raise HTTPException(400, f"Unknown visuals export: {name}")
     fname, media = allowed[name]
-    path = sdir(session_id) / "visuals" / fname
+    ensure_visuals_parsed(session_id)
+    visuals_dir = sdir(session_id) / "visuals"
+    json_path = visuals_dir / "character_visuals_nested.json"
+    if name == "nested.json":
+        minified_path = visuals_dir / "character_visuals_nested_export.json"
+        write_minified_json(minified_path, read_json(json_path))
+        path = minified_path
+    else:
+        if name.endswith(".csv"):
+            export_visuals_csv(json_path, visuals_dir)
+        path = visuals_dir / fname
     return FileResponse(path, media_type=media, filename=fname)
 
 
@@ -1571,6 +2023,83 @@ def export_all(session_id: str):
     zip_path = base / "madden_roster_editor_project_export.zip"
     zip_dir(base, zip_path)
     return FileResponse(zip_path, media_type="application/zip", filename=zip_path.name)
+
+
+@app.get("/api/session/{session_id}/export/all-csv.zip")
+def export_all_csv(session_id: str):
+    base = sdir(session_id)
+    export_path = base / "madden_roster_editor_csv_bundle.zip"
+    manifest = {
+        "session_id": session_id,
+        "input_file": session_metadata(session_id).get("input_file"),
+        "tables": [],
+    }
+    if export_path.exists():
+        export_path.unlink()
+    with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as z:
+        for table in summary(session_id).get("tables", []):
+            table_path = table["path"]
+            obj = load_table_obj(session_id, table_path)
+            records = obj.get("records", [])
+            csv_name = Path(table.get("csv_file") or f"{table_path}.csv").name
+            archive_name = f"tables/{csv_name}"
+            csv_buffer = io.StringIO()
+            cols = collect_columns(records) if records else []
+            if cols:
+                writer = csv.DictWriter(csv_buffer, fieldnames=cols, extrasaction="ignore")
+                writer.writeheader()
+                for record in records:
+                    writer.writerow({k: flatten_for_csv(record.get(k)) for k in cols})
+            z.writestr(archive_name, csv_buffer.getvalue().encode("utf-8"))
+            manifest["tables"].append({
+                "path": table_path,
+                "name": table.get("name"),
+                "csv": archive_name,
+                "records": len(records),
+            })
+        z.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+    return FileResponse(export_path, media_type="application/zip", filename=export_path.name)
+
+
+@app.post("/api/session/{session_id}/import/all-csv")
+async def import_all_csv(session_id: str, file: UploadFile = File(...)):
+    base = sdir(session_id)
+    payload = await file.read()
+    if not payload:
+        raise HTTPException(400, "CSV zip is empty.")
+    updated_tables = []
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload), "r") as z:
+            names = set(z.namelist())
+            if "manifest.json" not in names:
+                raise HTTPException(400, "CSV zip is missing manifest.json.")
+            manifest = json.loads(z.read("manifest.json").decode("utf-8"))
+            for table_entry in manifest.get("tables", []):
+                table_path = table_entry.get("path")
+                csv_name = table_entry.get("csv")
+                if not table_path or not csv_name:
+                    continue
+                if csv_name not in names:
+                    raise HTTPException(400, f"CSV zip is missing {csv_name}.")
+                obj = load_table_obj(session_id, table_path)
+                current_records = obj.get("records", [])
+                imported_records = load_records_from_csv_bytes(z.read(csv_name), current_records)
+                obj["records"] = imported_records
+                save_table_obj(session_id, table_path, obj)
+                write_csv(base / "parse" / "csv" / Path(csv_name).name, imported_records)
+                updated_tables.append({
+                    "path": table_path,
+                    "records": len(imported_records),
+                })
+    except HTTPException:
+        raise
+    except zipfile.BadZipFile:
+        raise HTTPException(400, "Uploaded file is not a valid zip archive.")
+    except json.JSONDecodeError as e:
+        raise HTTPException(400, f"CSV zip manifest is invalid: {e}")
+    except Exception as e:
+        raise HTTPException(500, f"CSV import failed: {e}")
+    return {"ok": True, "tables": updated_tables, "tableCount": len(updated_tables)}
 
 
 @app.get("/api/session/{session_id}/save-roster.db")
@@ -1606,6 +2135,40 @@ def save_roster_variant(session_id: str, mode: str):
             raw_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db"
             run_hc09_save_bridge(session_id, "raw", raw_out_path)
             return FileResponse(raw_out_path, media_type="application/octet-stream", filename=raw_out_path.name)
+        raise HTTPException(400, f"Unsupported save mode: {effective_mode}")
+    if should_use_tdb_bridge(meta):
+        raw_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db"
+        run_tdb_bridge_save(session_id, raw_out_path)
+        write_json(
+            base / "last_binary_rebuild_summary.json",
+            {
+                "mode": "tdb-bridge",
+                "output_file": raw_out_path.name,
+                "input_container": meta.get("input_container"),
+                "parse_format": meta.get("parse_format"),
+            },
+        )
+        if effective_mode in ("raw", "tdb"):
+            return FileResponse(raw_out_path, media_type="application/octet-stream", filename=raw_out_path.name)
+        if effective_mode == "cdb":
+            h2_input_path = base / meta.get("h2_input_file", "")
+            if not h2_input_path.exists():
+                raise HTTPException(400, "This session was not opened from a CDB file with an H2 payload.")
+            cdb_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited.db"
+            version = int((meta.get("wrapper_meta") or {}).get("version") or 1)
+            visuals_json = visuals_json_path(session_id)
+            rebuilt_h2_path = base / "visuals" / "rebuilt_input_payload.h2"
+            if visuals_json.exists():
+                h2_meta = rebuild_classic_h2_from_visuals_json(visuals_json, h2_input_path, rebuilt_h2_path)
+                h2_bytes = rebuilt_h2_path.read_bytes()
+            else:
+                h2_meta = {"preserved_original_h2": True, "output_file": str(h2_input_path)}
+                h2_bytes = h2_input_path.read_bytes()
+            cdb_out_path.write_bytes(build_cdb_container(raw_out_path.read_bytes(), h2_bytes, version=version))
+            rebuild_summary = read_json(base / "last_binary_rebuild_summary.json")
+            rebuild_summary["visuals_h2"] = h2_meta
+            write_json(base / "last_binary_rebuild_summary.json", rebuild_summary)
+            return FileResponse(cdb_out_path, media_type="application/octet-stream", filename=cdb_out_path.name)
         raise HTTPException(400, f"Unsupported save mode: {effective_mode}")
     raw_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db"
     try:

@@ -1,0 +1,30 @@
+{
+  "path": "PLGS",
+  "name": "PLGS",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 151444,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "GSCA",
+      "type": 0
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "TLGO",
+      "type": 3
+    },
+    {
+      "name": "PEPS",
+      "type": 0
+    }
+  ],
+  "records": []
+}
