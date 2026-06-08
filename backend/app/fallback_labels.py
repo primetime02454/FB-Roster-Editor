@@ -18,7 +18,7 @@ FALLBACK_PLAY_LABELS = {
     "PHSN": "Home State",
     "PHAN": "Dom. Hand",
     "PCPH": "Career Phase",
-    "PIMP": "Importance",
+    "PIMP": "Long Snapping",        #corrected from "Importance" to "Long Snapping: Primetime02454 6-7-2026 - verified
     "PINJ": "Injury",
     "PYCF": "Confidence",
     "PSXP": "Portrait ID",
