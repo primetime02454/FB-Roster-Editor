@@ -1,0 +1,73 @@
+{
+  "parser": "madden-franchise",
+  "game_year": 27,
+  "file_type": {
+    "format": "franchise-common",
+    "compressed": true,
+    "year": 27
+  },
+  "table_count": 5,
+  "warnings": [],
+  "tables": [
+    {
+      "path": "FRANCHISE.SeasonDefensiveKPReturnStats.126563798",
+      "name": "SEASONDEFENSIVEKPRETURNSTATS",
+      "actual_name": "SeasonDefensiveKPReturnStats",
+      "unique_id": 126563798,
+      "table_id": 1469,
+      "field_count": 34,
+      "record_capacity": 1138,
+      "records_parsed": 1138,
+      "json_file": "FRANCHISE_SeasonDefensiveKPReturnStats_126563798.json",
+      "csv_file": "FRANCHISE_SeasonDefensiveKPReturnStats_126563798.csv"
+    },
+    {
+      "path": "FRANCHISE.SeasonDefensiveStats.280647311",
+      "name": "SEASONDEFENSIVESTATS",
+      "actual_name": "SeasonDefensiveStats",
+      "unique_id": 280647311,
+      "table_id": 1470,
+      "field_count": 26,
+      "record_capacity": 11940,
+      "records_parsed": 11940,
+      "json_file": "FRANCHISE_SeasonDefensiveStats_280647311.json",
+      "csv_file": "FRANCHISE_SeasonDefensiveStats_280647311.csv"
+    },
+    {
+      "path": "FRANCHISE.SeasonKickingStats.251463306",
+      "name": "SEASONKICKINGSTATS",
+      "actual_name": "SeasonKickingStats",
+      "unique_id": 251463306,
+      "table_id": 1471,
+      "field_count": 34,
+      "record_capacity": 1186,
+      "records_parsed": 1186,
+      "json_file": "FRANCHISE_SeasonKickingStats_251463306.json",
+      "csv_file": "FRANCHISE_SeasonKickingStats_251463306.csv"
+    },
+    {
+      "path": "FRANCHISE.SeasonOffensiveKPReturnStats.171711293",
+      "name": "SEASONOFFENSIVEKPRETURNSTATS",
+      "actual_name": "SeasonOffensiveKPReturnStats",
+      "unique_id": 171711293,
+      "table_id": 1472,
+      "field_count": 39,
+      "record_capacity": 2617,
+      "records_parsed": 2617,
+      "json_file": "FRANCHISE_SeasonOffensiveKPReturnStats_171711293.json",
+      "csv_file": "FRANCHISE_SeasonOffensiveKPReturnStats_171711293.csv"
+    },
+    {
+      "path": "FRANCHISE.SeasonOffensiveStats.125779428",
+      "name": "SEASONOFFENSIVESTATS",
+      "actual_name": "SeasonOffensiveStats",
+      "unique_id": 125779428,
+      "table_id": 1473,
+      "field_count": 31,
+      "record_capacity": 6419,
+      "records_parsed": 6419,
+      "json_file": "FRANCHISE_SeasonOffensiveStats_125779428.json",
+      "csv_file": "FRANCHISE_SeasonOffensiveStats_125779428.csv"
+    }
+  ]
+}

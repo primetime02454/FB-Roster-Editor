@@ -15,7 +15,7 @@ const bridgeDir = path.dirname(fileURLToPath(import.meta.url));
 function pickCfb27DynastyFilesRoot() {
   const candidates = [
     process.env.CFB27_DYNASTY_FILES_ROOT,
-    path.resolve(bridgeDir, '..', 'data', 'cfb27', 'Dynasty_Files'),
+    path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', 'data', 'cfb27', 'Dynasty_Files'),
     path.resolve(franchiseRoot, '..', '..', '..', '..', '..', 'CFB27', 'Dynasty_Files'),
     path.resolve(franchiseRoot, '..', '..', '..', 'CFB27', 'Dynasty_Files'),
     String.raw`C:\Users\Shadow\Desktop\CFB27\Dynasty_Files`

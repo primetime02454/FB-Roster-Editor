@@ -359,24 +359,7 @@ def fbchunks_title_string(data: bytes) -> str:
 def should_parse_as_franchise(input_path: Path, fmt: Dict[str, str]) -> bool:
     name = input_path.name.upper()
     suffix = input_path.suffix.lower()
-    cfb27_standalone_binary_names = {
-        "DYNASTY-DYNASTY-BINARY.FTC",
-        "DYNASTY-GENERATORDATA-BINARY.FTC",
-        "DYNASTY-LEAGUE-BINARY.FTC",
-        "DYNASTY-TUNING-BINARY.FTC",
-        "FRANCHISE-SEASONSTATS-BINARY.FTC",
-    }
-    cfb27_support_binary_names = {
-        "DYNASTY-EXPRESSION-BINARY.FTC",
-        "DYNASTY-SCHEMAS-BINARY.FTB",
-    }
-    if name in cfb27_support_binary_names:
-        return False
-    if name in cfb27_standalone_binary_names:
-        return True
-    if suffix == ".ftb":
-        return False
-    if suffix == ".ftc":
+    if suffix in {".ftc", ".ftb"}:
         return True
     if name.startswith("CAREER-") or "FRANCHISE" in name or name.startswith("CAREER_"):
         return True
@@ -1547,28 +1530,12 @@ def parse_json_tables(input_path: Path) -> List[Dict[str, Any]]:
 
 def parse_binary_tables(input_path: Path) -> List[Dict[str, Any]]:
     data = input_path.read_bytes()
-    cfb27_root = cfb27_dynasty_files_root()
-    cfb27_main_schema = cfb27_root / "franchise-schemas.FTX" if cfb27_root else None
-    decompressed = None
-    decompression_error = ""
-    if data.startswith((b"\x78\x01", b"\x78\x5e", b"\x78\x9c", b"\x78\xda")):
-        try:
-            decompressed = zlib.decompress(data)
-        except zlib.error as exc:
-            decompression_error = str(exc)
     meta_records = [{
         "_index": 0,
         "fileName": input_path.name,
         "sizeBytes": len(data),
         "extension": input_path.suffix,
         "magicHex": data[:32].hex(" "),
-        "cfb27SchemaRoot": str(cfb27_root) if cfb27_root else "",
-        "cfb27MainSchema": str(cfb27_main_schema) if cfb27_main_schema else "",
-        "cfb27MainSchemaExists": bool(cfb27_main_schema and cfb27_main_schema.exists()),
-        "isZlibCompressed": decompressed is not None,
-        "decompressedSizeBytes": len(decompressed) if decompressed is not None else 0,
-        "decompressedMagicHex": decompressed[:32].hex(" ") if decompressed is not None else "",
-        "decompressionError": decompression_error,
     }]
     strings = []
     for idx, match in enumerate(re.finditer(rb"[\x20-\x7E]{4,}", data)):
@@ -1593,55 +1560,19 @@ def parse_binary_tables(input_path: Path) -> List[Dict[str, Any]]:
             "hex": chunk.hex(" "),
             "ascii": "".join(chr(b) if 32 <= b <= 126 else "." for b in chunk),
         })
-    tables = [
+    return [
         {"name": "BINARY_META", "path": "BINARY.META", "records": meta_records},
         {"name": "BINARY_STRINGS", "path": "BINARY.STRINGS", "records": strings},
         {"name": "BINARY_HEX", "path": "BINARY.HEX", "records": chunks},
     ]
-    if decompressed is not None:
-        decompressed_strings = []
-        for idx, match in enumerate(re.finditer(rb"[\x20-\x7E]{4,}", decompressed)):
-            if idx >= 5000:
-                break
-            decompressed_strings.append({
-                "_index": idx,
-                "offset": match.start(),
-                "offsetHex": f"0x{match.start():X}",
-                "length": len(match.group(0)),
-                "text": match.group(0).decode("ascii", errors="replace"),
-            })
-        decompressed_chunks = []
-        max_decompressed_chunks = min((len(decompressed) + 15) // 16, 8192)
-        for chunk_index in range(max_decompressed_chunks):
-            offset = chunk_index * 16
-            chunk = decompressed[offset:offset + 16]
-            decompressed_chunks.append({
-                "_index": chunk_index,
-                "offset": offset,
-                "offsetHex": f"0x{offset:X}",
-                "hex": chunk.hex(" "),
-                "ascii": "".join(chr(b) if 32 <= b <= 126 else "." for b in chunk),
-            })
-        tables.extend([
-            {"name": "BINARY_DECOMPRESSED_STRINGS", "path": "BINARY.DECOMPRESSED_STRINGS", "records": decompressed_strings},
-            {"name": "BINARY_DECOMPRESSED_HEX", "path": "BINARY.DECOMPRESSED_HEX", "records": decompressed_chunks},
-        ])
-    return tables
 
 
 def detect_generic_upload_kind(input_path: Path, data: bytes) -> str:
     suffix = input_path.suffix.lower()
-    name = input_path.name.lower()
-    cfb27_support_binary_names = {
-        "dynasty-expression-binary.ftc",
-        "dynasty-schemas-binary.ftb",
-    }
     if suffix == ".ftx":
         return "ftx"
     if suffix == ".json":
         return "json"
-    if suffix == ".ftb" or name in cfb27_support_binary_names:
-        return "bin"
     if suffix == ".bin" and not looks_like_franchise_payload(data[:8]):
         return "bin"
     return ""
@@ -1834,28 +1765,12 @@ def parse_json_tables(input_path: Path) -> List[Dict[str, Any]]:
 
 def parse_binary_tables(input_path: Path) -> List[Dict[str, Any]]:
     data = input_path.read_bytes()
-    cfb27_root = cfb27_dynasty_files_root()
-    cfb27_main_schema = cfb27_root / "franchise-schemas.FTX" if cfb27_root else None
-    decompressed = None
-    decompression_error = ""
-    if data.startswith((b"\x78\x01", b"\x78\x5e", b"\x78\x9c", b"\x78\xda")):
-        try:
-            decompressed = zlib.decompress(data)
-        except zlib.error as exc:
-            decompression_error = str(exc)
     meta_records = [{
         "_index": 0,
         "fileName": input_path.name,
         "sizeBytes": len(data),
         "extension": input_path.suffix,
         "magicHex": data[:32].hex(" "),
-        "cfb27SchemaRoot": str(cfb27_root) if cfb27_root else "",
-        "cfb27MainSchema": str(cfb27_main_schema) if cfb27_main_schema else "",
-        "cfb27MainSchemaExists": bool(cfb27_main_schema and cfb27_main_schema.exists()),
-        "isZlibCompressed": decompressed is not None,
-        "decompressedSizeBytes": len(decompressed) if decompressed is not None else 0,
-        "decompressedMagicHex": decompressed[:32].hex(" ") if decompressed is not None else "",
-        "decompressionError": decompression_error,
     }]
     strings = []
     for idx, match in enumerate(re.finditer(rb"[\x20-\x7E]{4,}", data)):
@@ -1880,55 +1795,19 @@ def parse_binary_tables(input_path: Path) -> List[Dict[str, Any]]:
             "hex": chunk.hex(" "),
             "ascii": "".join(chr(b) if 32 <= b <= 126 else "." for b in chunk),
         })
-    tables = [
+    return [
         {"name": "BINARY_META", "path": "BINARY.META", "records": meta_records},
         {"name": "BINARY_STRINGS", "path": "BINARY.STRINGS", "records": strings},
         {"name": "BINARY_HEX", "path": "BINARY.HEX", "records": chunks},
     ]
-    if decompressed is not None:
-        decompressed_strings = []
-        for idx, match in enumerate(re.finditer(rb"[\x20-\x7E]{4,}", decompressed)):
-            if idx >= 5000:
-                break
-            decompressed_strings.append({
-                "_index": idx,
-                "offset": match.start(),
-                "offsetHex": f"0x{match.start():X}",
-                "length": len(match.group(0)),
-                "text": match.group(0).decode("ascii", errors="replace"),
-            })
-        decompressed_chunks = []
-        max_decompressed_chunks = min((len(decompressed) + 15) // 16, 8192)
-        for chunk_index in range(max_decompressed_chunks):
-            offset = chunk_index * 16
-            chunk = decompressed[offset:offset + 16]
-            decompressed_chunks.append({
-                "_index": chunk_index,
-                "offset": offset,
-                "offsetHex": f"0x{offset:X}",
-                "hex": chunk.hex(" "),
-                "ascii": "".join(chr(b) if 32 <= b <= 126 else "." for b in chunk),
-            })
-        tables.extend([
-            {"name": "BINARY_DECOMPRESSED_STRINGS", "path": "BINARY.DECOMPRESSED_STRINGS", "records": decompressed_strings},
-            {"name": "BINARY_DECOMPRESSED_HEX", "path": "BINARY.DECOMPRESSED_HEX", "records": decompressed_chunks},
-        ])
-    return tables
 
 
 def detect_generic_upload_kind(input_path: Path, data: bytes) -> str:
     suffix = input_path.suffix.lower()
-    name = input_path.name.lower()
-    cfb27_support_binary_names = {
-        "dynasty-expression-binary.ftc",
-        "dynasty-schemas-binary.ftb",
-    }
     if suffix == ".ftx":
         return "ftx"
     if suffix == ".json":
         return "json"
-    if suffix == ".ftb" or name in cfb27_support_binary_names:
-        return "bin"
     if suffix == ".bin" and not looks_like_franchise_payload(data[:8]):
         return "bin"
     return ""
@@ -2029,7 +1908,7 @@ async def parse_roster(file: UploadFile = File(...)):
             "input_stem": input_path.stem,
             "input_size_bytes": input_path.stat().st_size,
             "input_container": fmt["container"],
-            "input_container_label": fbchunks_title or ("CFB27 dynasty/franchise binary" if roster_family_hint == "college" else "Madden franchise save"),
+            "input_container_label": fbchunks_title or "Madden franchise save",
             "parse_input_file": franchise_input_path.name,
             "wrapper_meta": wrapper_meta or {"payload_size": input_path.stat().st_size},
             "h2_input_file": h2_input_path.name if h2_input_path else None,

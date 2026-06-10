@@ -2029,7 +2029,7 @@ async def parse_roster(file: UploadFile = File(...)):
             "input_stem": input_path.stem,
             "input_size_bytes": input_path.stat().st_size,
             "input_container": fmt["container"],
-            "input_container_label": fbchunks_title or ("CFB27 dynasty/franchise binary" if roster_family_hint == "college" else "Madden franchise save"),
+            "input_container_label": fbchunks_title or "Madden franchise save",
             "parse_input_file": franchise_input_path.name,
             "wrapper_meta": wrapper_meta or {"payload_size": input_path.stat().st_size},
             "h2_input_file": h2_input_path.name if h2_input_path else None,

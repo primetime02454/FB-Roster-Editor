@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { pathToFileURL } from 'node:url';
 
 const franchiseRoot =
   process.env.MADDEN_FRANCHISE_ROOT ||
@@ -10,12 +10,10 @@ const franchiseModuleUrl = pathToFileURL(path.join(franchiseRoot, 'src', 'index.
 const { default: FranchiseFile } = await import(franchiseModuleUrl);
 
 const command = process.argv[2];
-const bridgeDir = path.dirname(fileURLToPath(import.meta.url));
 
 function pickCfb27DynastyFilesRoot() {
   const candidates = [
     process.env.CFB27_DYNASTY_FILES_ROOT,
-    path.resolve(bridgeDir, '..', 'data', 'cfb27', 'Dynasty_Files'),
     path.resolve(franchiseRoot, '..', '..', '..', '..', '..', 'CFB27', 'Dynasty_Files'),
     path.resolve(franchiseRoot, '..', '..', '..', 'CFB27', 'Dynasty_Files'),
     String.raw`C:\Users\Shadow\Desktop\CFB27\Dynasty_Files`
