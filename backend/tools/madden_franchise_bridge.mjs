@@ -11,6 +11,100 @@ const { default: FranchiseFile } = await import(franchiseModuleUrl);
 
 const command = process.argv[2];
 
+function pickCfb27DynastyFilesRoot() {
+  const candidates = [
+    process.env.CFB27_DYNASTY_FILES_ROOT,
+    path.resolve(franchiseRoot, '..', '..', '..', '..', '..', 'CFB27', 'Dynasty_Files'),
+    path.resolve(franchiseRoot, '..', '..', '..', 'CFB27', 'Dynasty_Files'),
+    String.raw`C:\Users\Shadow\Desktop\CFB27\Dynasty_Files`
+  ].filter(Boolean);
+  for (const candidate of candidates) {
+    if (fs.existsSync(path.join(candidate, 'franchise-schemas.FTX'))) {
+      return candidate;
+    }
+  }
+  return candidates[candidates.length - 1];
+}
+
+const cfb27DynastyFilesRoot = pickCfb27DynastyFilesRoot();
+
+function normalizeSchemaKey(value) {
+  return String(value || '')
+    .replace(/\.(ftx|xml)$/i, '')
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '')
+    .toLowerCase();
+}
+
+function addSchemaMapEntry(fileMap, key, filePath) {
+  const raw = String(key || '').replace(/\.(ftx|xml)$/i, '');
+  if (!raw) return;
+  fileMap[raw] = filePath;
+  fileMap[raw.toLowerCase()] = filePath;
+  fileMap[raw.replace(/\//g, '\\')] = filePath;
+  fileMap[raw.replace(/\\/g, '/')] = filePath;
+  fileMap[normalizeSchemaKey(raw)] = filePath;
+  const base = path.basename(raw);
+  fileMap[base] = filePath;
+  fileMap[base.toLowerCase()] = filePath;
+}
+
+function walkSchemaFiles(rootDir) {
+  const out = [];
+  if (!rootDir || !fs.existsSync(rootDir)) return out;
+  for (const entry of fs.readdirSync(rootDir, { withFileTypes: true })) {
+    const entryPath = path.join(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      out.push(...walkSchemaFiles(entryPath));
+    } else if (/\.(ftx|xml)$/i.test(entry.name)) {
+      out.push(entryPath);
+    }
+  }
+  return out;
+}
+
+function buildCfb27SchemaFileMap(rootDir, mainPath) {
+  const fileMap = { main: mainPath };
+  for (const filePath of walkSchemaFiles(rootDir)) {
+    const rel = path.relative(rootDir, filePath);
+    addSchemaMapEntry(fileMap, rel, filePath);
+    addSchemaMapEntry(fileMap, path.basename(filePath), filePath);
+  }
+  return fileMap;
+}
+
+function shouldUseCfb27Schemas(inputPath) {
+  const lower = path.basename(inputPath || '').toLowerCase();
+  return (
+    process.env.FORCE_CFB27_SCHEMAS === '1' ||
+    lower.includes('dynasty') ||
+    lower.endsWith('.ftc') ||
+    lower.endsWith('.ftb')
+  );
+}
+
+function buildOpenSettings(inputPath) {
+  const mainPath = path.join(cfb27DynastyFilesRoot, 'franchise-schemas.FTX');
+  if (!shouldUseCfb27Schemas(inputPath) || !fs.existsSync(mainPath)) {
+    return undefined;
+  }
+  return {
+    schemaOverride: {
+      gameYear: 27,
+      major: 441,
+      minor: 0,
+      path: mainPath
+    },
+    gameYearOverride: 27,
+    useNewSchemaGeneration: true,
+    schemaFileMap: buildCfb27SchemaFileMap(cfb27DynastyFilesRoot, mainPath)
+  };
+}
+
+async function openFranchiseFile(inputPath) {
+  return FranchiseFile.create(inputPath, buildOpenSettings(inputPath));
+}
+
 const NFL_TEAM_INDEX_TO_CGID = {
   0: 0,
   1: 0,
@@ -208,7 +302,7 @@ async function exportTableToJson(franchise, tableMeta, outputPath) {
 }
 
 async function doSummary(inputPath, outDir, inputStem) {
-  const franchise = await FranchiseFile.create(inputPath);
+  const franchise = await openFranchiseFile(inputPath);
   const primaryTeamTable = pickPrimaryTeamTable(franchise);
   const primaryTeamUniqueId = primaryTeamTable?.header?.uniqueId ?? null;
   const tables = franchise.tables.map((table) => {
@@ -243,7 +337,7 @@ async function doSummary(inputPath, outDir, inputStem) {
 
 async function doExportTable(inputPath, tableMetaPath, outputPath) {
   const tableMeta = JSON.parse(fs.readFileSync(tableMetaPath, 'utf8'));
-  const franchise = await FranchiseFile.create(inputPath);
+  const franchise = await openFranchiseFile(inputPath);
   await exportTableToJson(franchise, tableMeta, outputPath);
 }
 

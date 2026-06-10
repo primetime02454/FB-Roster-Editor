@@ -42,6 +42,29 @@ MADDEN_FRANCHISE_ROOT = BACKEND_ROOT / "vendor" / "madden-franchise"
 MADDEN_FRANCHISE_FALLBACK_ROOT = Path.home() / "Downloads" / "madden-franchise-master"
 H2_PREFIX = bytes.fromhex("8acbe2040301")
 MADDEN_FRANCHISE_BRIDGE = BACKEND_ROOT / "tools" / "madden_franchise_bridge.mjs"
+
+
+def cfb27_dynasty_files_root() -> Optional[Path]:
+    """Return the first available CFB27 dynasty/schema folder for local or deployed runs."""
+    env_value = os.environ.get("CFB27_DYNASTY_FILES_ROOT")
+    candidates = []
+    if env_value:
+        candidates.append(Path(env_value))
+    candidates.extend([
+        BACKEND_ROOT / "data" / "cfb27" / "Dynasty_Files",
+        BACKEND_ROOT / "data" / "Dynasty_Files",
+        PROJECT_ROOT.parent.parent / "CFB27" / "Dynasty_Files",
+        Path.home() / "Desktop" / "CFB27" / "Dynasty_Files",
+    ])
+    for candidate in candidates:
+        try:
+            if candidate.exists() and (candidate / "franchise-schemas.FTX").exists():
+                return candidate
+        except OSError:
+            continue
+    return None
+
+
 SESSION_ROOT.mkdir(parents=True, exist_ok=True)
 
 POSITION_MAP = {
@@ -335,7 +358,12 @@ def fbchunks_title_string(data: bytes) -> str:
 
 def should_parse_as_franchise(input_path: Path, fmt: Dict[str, str]) -> bool:
     name = input_path.name.upper()
+    suffix = input_path.suffix.lower()
+    if suffix in {".ftc", ".ftb"}:
+        return True
     if name.startswith("CAREER-") or "FRANCHISE" in name or name.startswith("CAREER_"):
+        return True
+    if name.startswith("DYNASTY-") or name.startswith("DYNASTY_") or "DYNASTY" in name:
         return True
     return False
 
@@ -1352,6 +1380,476 @@ def zip_dir(source: Path, zip_path: Path) -> None:
                 z.write(p, p.relative_to(source))
 
 
+def generic_table_file_name(table_path: str) -> str:
+    return f"{re.sub(r'[^A-Za-z0-9_-]+', '_', table_path)}.json"
+
+
+def compact_json_value(value: Any, limit: int = 12000) -> str:
+    if isinstance(value, (dict, list)):
+        text = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    else:
+        text = str(value)
+    return text if len(text) <= limit else text[:limit] + "..."
+
+
+def field_definitions_from_records(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    return [{"name": col, "type": "auto", "isReference": False} for col in collect_columns(records)]
+
+
+def write_generic_session(
+    session_id: str,
+    input_path: Path,
+    *,
+    parser_name: str,
+    parse_format: str,
+    input_label: str,
+    tables: List[Dict[str, Any]],
+    notes: List[str],
+    warnings: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    base = sdir(session_id)
+    parse_dir = base / "parse"
+    parse_dir.mkdir(parents=True, exist_ok=True)
+    summary_tables = []
+    for table in tables:
+        name = str(table.get("name") or "TABLE")
+        table_path = str(table.get("path") or name)
+        records = table.get("records") or []
+        if not isinstance(records, list):
+            records = []
+        json_file = generic_table_file_name(table_path)
+        table_obj = {
+            "name": name,
+            "path": table_path,
+            "field_definitions": table.get("field_definitions") or field_definitions_from_records(records),
+            "records": records,
+        }
+        write_json(parse_dir / json_file, table_obj)
+        csv_file = f"{Path(json_file).stem}.csv"
+        write_csv(parse_dir / "csv" / csv_file, records)
+        summary_tables.append({
+            "path": table_path,
+            "name": name,
+            "records_parsed": len(records),
+            "field_count": len(table_obj["field_definitions"]),
+            "json_file": json_file,
+            "csv_file": csv_file,
+        })
+    visuals_meta = {
+        "parsed": False,
+        "supported": False,
+        "warnings": [],
+        "note": "Character Visuals are not available for this file type.",
+    }
+    write_json(base / "visuals" / "character_visuals_meta.json", visuals_meta)
+    write_json(parse_dir / f"{input_path.stem}_summary.json", {
+        "parser": parser_name,
+        "table_count": len(summary_tables),
+        "warnings": warnings or [],
+        "tables": summary_tables,
+    })
+    write_json(base / "session.json", {
+        "session_id": session_id,
+        "session_kind": "generic",
+        "input_file": input_path.name,
+        "input_stem": input_path.stem,
+        "input_size_bytes": input_path.stat().st_size,
+        "input_container": parse_format,
+        "input_container_label": input_label,
+        "parse_input_file": input_path.name,
+        "parse_format": parse_format,
+        "parse_table_count": len(summary_tables),
+        "parse_warnings": warnings or [],
+        "visuals": visuals_meta,
+        "notes": notes,
+    })
+    return session_overview(session_id)
+
+
+def parse_ftx_schema_tables(input_path: Path) -> List[Dict[str, Any]]:
+    text = input_path.read_text(encoding="utf-8", errors="ignore")
+    root = ET.fromstring(text)
+    meta_row = {"_index": 0, **root.attrib, "tag": root.tag}
+    include_rows = []
+    for idx, include in enumerate(root.findall(".//IncludeFile")):
+        include_rows.append({"_index": idx, **include.attrib})
+    schema_rows: List[Dict[str, Any]] = []
+    attribute_rows: List[Dict[str, Any]] = []
+    enum_rows: List[Dict[str, Any]] = []
+    enum_member_rows: List[Dict[str, Any]] = []
+    for schema_idx, schema in enumerate(root.findall(".//schema")):
+        schema_name = schema.attrib.get("name", "")
+        schema_rows.append({"_index": schema_idx, **schema.attrib})
+        for attr_idx, attr in enumerate(schema.findall("attribute")):
+            attribute_rows.append({
+                "_index": len(attribute_rows),
+                "schema": schema_name,
+                "attributeIndex": attr_idx,
+                **attr.attrib,
+            })
+    for enum_idx, enum in enumerate(root.findall(".//enum")):
+        enum_name = enum.attrib.get("name", "")
+        enum_rows.append({"_index": enum_idx, **enum.attrib})
+        for member_idx, member in enumerate(enum.findall("attribute")):
+            enum_member_rows.append({
+                "_index": len(enum_member_rows),
+                "enum": enum_name,
+                "memberIndex": member_idx,
+                **member.attrib,
+            })
+    return [
+        {"name": "FTX_META", "path": "FTX.META", "records": [meta_row]},
+        {"name": "FTX_INCLUDES", "path": "FTX.INCLUDES", "records": include_rows},
+        {"name": "FTX_SCHEMAS", "path": "FTX.SCHEMAS", "records": schema_rows},
+        {"name": "FTX_ATTRIBUTES", "path": "FTX.ATTRIBUTES", "records": attribute_rows},
+        {"name": "FTX_ENUMS", "path": "FTX.ENUMS", "records": enum_rows},
+        {"name": "FTX_ENUM_MEMBERS", "path": "FTX.ENUM_MEMBERS", "records": enum_member_rows},
+    ]
+
+
+def parse_json_tables(input_path: Path) -> List[Dict[str, Any]]:
+    value = json.loads(input_path.read_text(encoding="utf-8-sig", errors="replace"))
+    if isinstance(value, dict) and isinstance(value.get("records"), list):
+        records = [row if isinstance(row, dict) else {"value": row} for row in value["records"]]
+        return [{"name": "JSON_RECORDS", "path": "JSON.RECORDS", "records": records}]
+    if isinstance(value, list):
+        records = [row if isinstance(row, dict) else {"_index": idx, "value": row} for idx, row in enumerate(value)]
+        return [{"name": "JSON_ARRAY", "path": "JSON.ARRAY", "records": records}]
+    if isinstance(value, dict):
+        records = []
+        for idx, (key, item) in enumerate(value.items()):
+            records.append({
+                "_index": idx,
+                "key": key,
+                "valueType": type(item).__name__,
+                "value": compact_json_value(item),
+            })
+        return [{"name": "JSON_OBJECT", "path": "JSON.OBJECT", "records": records}]
+    return [{"name": "JSON_VALUE", "path": "JSON.VALUE", "records": [{"_index": 0, "value": value}]}]
+
+
+def parse_binary_tables(input_path: Path) -> List[Dict[str, Any]]:
+    data = input_path.read_bytes()
+    meta_records = [{
+        "_index": 0,
+        "fileName": input_path.name,
+        "sizeBytes": len(data),
+        "extension": input_path.suffix,
+        "magicHex": data[:32].hex(" "),
+    }]
+    strings = []
+    for idx, match in enumerate(re.finditer(rb"[\x20-\x7E]{4,}", data)):
+        if idx >= 5000:
+            break
+        strings.append({
+            "_index": idx,
+            "offset": match.start(),
+            "offsetHex": f"0x{match.start():X}",
+            "length": len(match.group(0)),
+            "text": match.group(0).decode("ascii", errors="replace"),
+        })
+    chunks = []
+    max_chunks = min((len(data) + 15) // 16, 8192)
+    for chunk_index in range(max_chunks):
+        offset = chunk_index * 16
+        chunk = data[offset:offset + 16]
+        chunks.append({
+            "_index": chunk_index,
+            "offset": offset,
+            "offsetHex": f"0x{offset:X}",
+            "hex": chunk.hex(" "),
+            "ascii": "".join(chr(b) if 32 <= b <= 126 else "." for b in chunk),
+        })
+    return [
+        {"name": "BINARY_META", "path": "BINARY.META", "records": meta_records},
+        {"name": "BINARY_STRINGS", "path": "BINARY.STRINGS", "records": strings},
+        {"name": "BINARY_HEX", "path": "BINARY.HEX", "records": chunks},
+    ]
+
+
+def detect_generic_upload_kind(input_path: Path, data: bytes) -> str:
+    suffix = input_path.suffix.lower()
+    if suffix == ".ftx":
+        return "ftx"
+    if suffix == ".json":
+        return "json"
+    if suffix == ".bin" and not looks_like_franchise_payload(data[:8]):
+        return "bin"
+    return ""
+
+
+def parse_generic_upload_session(session_id: str, input_path: Path, data: bytes, kind: str) -> Dict[str, Any]:
+    if kind == "ftx":
+        tables = parse_ftx_schema_tables(input_path)
+        return write_generic_session(
+            session_id,
+            input_path,
+            parser_name="ftx-schema",
+            parse_format="ftx",
+            input_label="FTX schema file",
+            tables=tables,
+            notes=["Opened as a readable FTX schema/include/attribute table set."],
+        )
+    if kind == "json":
+        tables = parse_json_tables(input_path)
+        return write_generic_session(
+            session_id,
+            input_path,
+            parser_name="json",
+            parse_format="json",
+            input_label="JSON data file",
+            tables=tables,
+            notes=["Opened as a generic JSON table session."],
+        )
+    if kind == "bin":
+        tables = parse_binary_tables(input_path)
+        return write_generic_session(
+            session_id,
+            input_path,
+            parser_name="binary-inspector",
+            parse_format="bin",
+            input_label="Binary support file",
+            tables=tables,
+            notes=["Opened as binary metadata, extracted ASCII strings, and hex chunks."],
+        )
+    raise HTTPException(400, f"Unsupported generic file kind: {kind}")
+
+
+def generic_table_file_name(table_path: str) -> str:
+    return f"{re.sub(r'[^A-Za-z0-9_-]+', '_', table_path)}.json"
+
+
+def compact_json_value(value: Any, limit: int = 12000) -> str:
+    if isinstance(value, (dict, list)):
+        text = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    else:
+        text = str(value)
+    return text if len(text) <= limit else text[:limit] + "..."
+
+
+def field_definitions_from_records(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    return [{"name": col, "type": "auto", "isReference": False} for col in collect_columns(records)]
+
+
+def write_generic_session(
+    session_id: str,
+    input_path: Path,
+    *,
+    parser_name: str,
+    parse_format: str,
+    input_label: str,
+    tables: List[Dict[str, Any]],
+    notes: List[str],
+    warnings: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    base = sdir(session_id)
+    parse_dir = base / "parse"
+    parse_dir.mkdir(parents=True, exist_ok=True)
+    summary_tables = []
+    for table in tables:
+        name = str(table.get("name") or "TABLE")
+        table_path = str(table.get("path") or name)
+        records = table.get("records") or []
+        if not isinstance(records, list):
+            records = []
+        json_file = generic_table_file_name(table_path)
+        table_obj = {
+            "name": name,
+            "path": table_path,
+            "field_definitions": table.get("field_definitions") or field_definitions_from_records(records),
+            "records": records,
+        }
+        write_json(parse_dir / json_file, table_obj)
+        csv_file = f"{Path(json_file).stem}.csv"
+        write_csv(parse_dir / "csv" / csv_file, records)
+        summary_tables.append({
+            "path": table_path,
+            "name": name,
+            "records_parsed": len(records),
+            "field_count": len(table_obj["field_definitions"]),
+            "json_file": json_file,
+            "csv_file": csv_file,
+        })
+    visuals_meta = {
+        "parsed": False,
+        "supported": False,
+        "warnings": [],
+        "note": "Character Visuals are not available for this file type.",
+    }
+    write_json(base / "visuals" / "character_visuals_meta.json", visuals_meta)
+    write_json(parse_dir / f"{input_path.stem}_summary.json", {
+        "parser": parser_name,
+        "table_count": len(summary_tables),
+        "warnings": warnings or [],
+        "tables": summary_tables,
+    })
+    write_json(base / "session.json", {
+        "session_id": session_id,
+        "session_kind": "generic",
+        "input_file": input_path.name,
+        "input_stem": input_path.stem,
+        "input_size_bytes": input_path.stat().st_size,
+        "input_container": parse_format,
+        "input_container_label": input_label,
+        "parse_input_file": input_path.name,
+        "parse_format": parse_format,
+        "parse_table_count": len(summary_tables),
+        "parse_warnings": warnings or [],
+        "visuals": visuals_meta,
+        "notes": notes,
+    })
+    return session_overview(session_id)
+
+
+def parse_ftx_schema_tables(input_path: Path) -> List[Dict[str, Any]]:
+    text = input_path.read_text(encoding="utf-8", errors="ignore")
+    root = ET.fromstring(text)
+    meta_row = {"_index": 0, **root.attrib, "tag": root.tag}
+    include_rows = []
+    for idx, include in enumerate(root.findall(".//IncludeFile")):
+        include_rows.append({"_index": idx, **include.attrib})
+    schema_rows: List[Dict[str, Any]] = []
+    attribute_rows: List[Dict[str, Any]] = []
+    enum_rows: List[Dict[str, Any]] = []
+    enum_member_rows: List[Dict[str, Any]] = []
+    for schema_idx, schema in enumerate(root.findall(".//schema")):
+        schema_name = schema.attrib.get("name", "")
+        schema_rows.append({"_index": schema_idx, **schema.attrib})
+        for attr_idx, attr in enumerate(schema.findall("attribute")):
+            attribute_rows.append({
+                "_index": len(attribute_rows),
+                "schema": schema_name,
+                "attributeIndex": attr_idx,
+                **attr.attrib,
+            })
+    for enum_idx, enum in enumerate(root.findall(".//enum")):
+        enum_name = enum.attrib.get("name", "")
+        enum_rows.append({"_index": enum_idx, **enum.attrib})
+        for member_idx, member in enumerate(enum.findall("attribute")):
+            enum_member_rows.append({
+                "_index": len(enum_member_rows),
+                "enum": enum_name,
+                "memberIndex": member_idx,
+                **member.attrib,
+            })
+    return [
+        {"name": "FTX_META", "path": "FTX.META", "records": [meta_row]},
+        {"name": "FTX_INCLUDES", "path": "FTX.INCLUDES", "records": include_rows},
+        {"name": "FTX_SCHEMAS", "path": "FTX.SCHEMAS", "records": schema_rows},
+        {"name": "FTX_ATTRIBUTES", "path": "FTX.ATTRIBUTES", "records": attribute_rows},
+        {"name": "FTX_ENUMS", "path": "FTX.ENUMS", "records": enum_rows},
+        {"name": "FTX_ENUM_MEMBERS", "path": "FTX.ENUM_MEMBERS", "records": enum_member_rows},
+    ]
+
+
+def parse_json_tables(input_path: Path) -> List[Dict[str, Any]]:
+    value = json.loads(input_path.read_text(encoding="utf-8-sig", errors="replace"))
+    if isinstance(value, dict) and isinstance(value.get("records"), list):
+        records = [row if isinstance(row, dict) else {"value": row} for row in value["records"]]
+        return [{"name": "JSON_RECORDS", "path": "JSON.RECORDS", "records": records}]
+    if isinstance(value, list):
+        records = [row if isinstance(row, dict) else {"_index": idx, "value": row} for idx, row in enumerate(value)]
+        return [{"name": "JSON_ARRAY", "path": "JSON.ARRAY", "records": records}]
+    if isinstance(value, dict):
+        records = []
+        for idx, (key, item) in enumerate(value.items()):
+            records.append({
+                "_index": idx,
+                "key": key,
+                "valueType": type(item).__name__,
+                "value": compact_json_value(item),
+            })
+        return [{"name": "JSON_OBJECT", "path": "JSON.OBJECT", "records": records}]
+    return [{"name": "JSON_VALUE", "path": "JSON.VALUE", "records": [{"_index": 0, "value": value}]}]
+
+
+def parse_binary_tables(input_path: Path) -> List[Dict[str, Any]]:
+    data = input_path.read_bytes()
+    meta_records = [{
+        "_index": 0,
+        "fileName": input_path.name,
+        "sizeBytes": len(data),
+        "extension": input_path.suffix,
+        "magicHex": data[:32].hex(" "),
+    }]
+    strings = []
+    for idx, match in enumerate(re.finditer(rb"[\x20-\x7E]{4,}", data)):
+        if idx >= 5000:
+            break
+        strings.append({
+            "_index": idx,
+            "offset": match.start(),
+            "offsetHex": f"0x{match.start():X}",
+            "length": len(match.group(0)),
+            "text": match.group(0).decode("ascii", errors="replace"),
+        })
+    chunks = []
+    max_chunks = min((len(data) + 15) // 16, 8192)
+    for chunk_index in range(max_chunks):
+        offset = chunk_index * 16
+        chunk = data[offset:offset + 16]
+        chunks.append({
+            "_index": chunk_index,
+            "offset": offset,
+            "offsetHex": f"0x{offset:X}",
+            "hex": chunk.hex(" "),
+            "ascii": "".join(chr(b) if 32 <= b <= 126 else "." for b in chunk),
+        })
+    return [
+        {"name": "BINARY_META", "path": "BINARY.META", "records": meta_records},
+        {"name": "BINARY_STRINGS", "path": "BINARY.STRINGS", "records": strings},
+        {"name": "BINARY_HEX", "path": "BINARY.HEX", "records": chunks},
+    ]
+
+
+def detect_generic_upload_kind(input_path: Path, data: bytes) -> str:
+    suffix = input_path.suffix.lower()
+    if suffix == ".ftx":
+        return "ftx"
+    if suffix == ".json":
+        return "json"
+    if suffix == ".bin" and not looks_like_franchise_payload(data[:8]):
+        return "bin"
+    return ""
+
+
+def parse_generic_upload_session(session_id: str, input_path: Path, data: bytes, kind: str) -> Dict[str, Any]:
+    if kind == "ftx":
+        tables = parse_ftx_schema_tables(input_path)
+        return write_generic_session(
+            session_id,
+            input_path,
+            parser_name="ftx-schema",
+            parse_format="ftx",
+            input_label="FTX schema file",
+            tables=tables,
+            notes=["Opened as a readable FTX schema/include/attribute table set."],
+        )
+    if kind == "json":
+        tables = parse_json_tables(input_path)
+        return write_generic_session(
+            session_id,
+            input_path,
+            parser_name="json",
+            parse_format="json",
+            input_label="JSON data file",
+            tables=tables,
+            notes=["Opened as a generic JSON table session."],
+        )
+    if kind == "bin":
+        tables = parse_binary_tables(input_path)
+        return write_generic_session(
+            session_id,
+            input_path,
+            parser_name="binary-inspector",
+            parse_format="bin",
+            input_label="Binary support file",
+            tables=tables,
+            notes=["Opened as binary metadata, extracted ASCII strings, and hex chunks."],
+        )
+    raise HTTPException(400, f"Unsupported generic file kind: {kind}")
+
+
 @app.get("/api/health")
 def health():
     return {"ok": True, "app": "FB Roster Editor API"}
@@ -1366,6 +1864,9 @@ async def parse_roster(file: UploadFile = File(...)):
     with input_path.open("wb") as f:
         shutil.copyfileobj(file.file, f)
     input_bytes = input_path.read_bytes()
+    kind = detect_generic_upload_kind(input_path, input_bytes)
+    if kind:
+        return parse_generic_upload_session(session_id, input_path, input_bytes, kind)
     fmt = detect_input_format(input_bytes[:64])
     fbchunks_title = fbchunks_title_string(input_bytes) if fmt["container"] == "fbchunks" else ""
     parse_input_path = base / "parse_input.db"

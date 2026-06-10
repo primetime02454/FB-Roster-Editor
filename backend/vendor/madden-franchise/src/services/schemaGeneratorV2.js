@@ -219,7 +219,7 @@ export async function generateSchemaV2({ fileMap, extraSchemas }) {
     const majorVersion = schemaMeta.dataMajorVersion;
     const minorVersion = schemaMeta.dataMinorVersion;
     const databaseName = schemaMeta.databaseName;
-    const gameYearMatch = /Madden(\d{2})/.exec(databaseName);
+    const gameYearMatch = /(?:Madden|CollegeFB)(\d{2})/i.exec(databaseName || '');
     const gameYear = gameYearMatch ? parseInt(gameYearMatch[1]) : null;
     const root = {
         enums,
