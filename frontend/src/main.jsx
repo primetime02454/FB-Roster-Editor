@@ -470,6 +470,90 @@ function teamLogoUrl(rowIndex) {
   return `/team-logos/${rowIndex}.png`;
 }
 
+const COLLEGE_TEAM_LOGO_NAMES = [
+  'Air Force', 'Akron', 'Alabama', 'Appalachian State', 'Arizona', 'Arizona State', 'Arkansas', 'Arkansas State',
+  'Army', 'Auburn', 'Ball State', 'Baylor', 'Boise State', 'Boston College', 'Bowling Green', 'Buffalo', 'BYU',
+  'California', 'Central Michigan', 'Charlotte', 'Cincinnati', 'Clemson', 'Coastal Carolina', 'Colorado',
+  'Colorado State', 'Duke', 'East Carolina', 'Eastern Michigan', 'Florida', 'Florida Atlantic',
+  'Florida International', 'Florida State', 'Fresno State', 'Georgia', 'Georgia Southern', 'Georgia State',
+  'Georgia Tech', "Hawai'i", 'Houston', 'Illinois', 'Indiana', 'Iowa', 'Iowa State', 'Jacksonville State',
+  'James Madison', 'Kansas', 'Kansas State', 'Kennesaw State', 'Kent State', 'Kentucky', 'Liberty', 'Louisiana',
+  'Louisiana Tech', 'Louisville', 'LSU', 'Marshall', 'Maryland', 'Memphis', 'Miami', 'Miami University',
+  'Michigan', 'Michigan State', 'Middle Tennessee St', 'Minnesota', 'Mississippi State', 'Missouri', 'Navy',
+  'NC State', 'Nebraska', 'Nevada', 'New Mexico', 'New Mexico State', 'North Carolina', 'North Texas',
+  'Northern Illinois', 'Northwestern', 'Notre Dame', 'Ohio', 'Ohio State', 'Oklahoma', 'Oklahoma State',
+  'Old Dominion', 'Ole Miss', 'Oregon', 'Oregon State', 'Penn State', 'Pittsburgh', 'Purdue', 'Rice', 'Rutgers',
+  'Sam Houston', 'San Diego State', 'San Jose State', 'SMU', 'South Alabama', 'South Carolina',
+  'Southern Mississippi', 'Stanford', 'Syracuse', 'TCU', 'Temple', 'Tennessee', 'Texas', 'Texas A&M',
+  'Texas State', 'Texas Tech', 'Toledo', 'Troy', 'Tulane', 'Tulsa', 'UAB', 'UCF', 'UCLA', 'UConn', 'UL Monroe',
+  'UMass', 'UNLV', 'USC', 'USF', 'Utah', 'Utah State', 'UTEP', 'UTSA', 'Vanderbilt', 'Virginia',
+  'Virginia Tech', 'Wake Forest', 'Washington', 'Washington State', 'West Virginia', 'Western Kentucky',
+  'Western Michigan', 'Wisconsin', 'Wyoming',
+];
+
+function normalizeCollegeLogoKey(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/\bst\.?\b/g, 'state')
+    .replace(/\buniv(?:ersity)?\b/g, '')
+    .replace(/[^a-z0-9]+/g, '')
+    .trim();
+}
+
+const COLLEGE_TEAM_LOGO_ALIASES = {
+  appstate: 3,
+  appalachianst: 3,
+  cal: 17,
+  calgoldenbears: 17,
+  hawaii: 37,
+  louisianalafayette: 51,
+  ull: 51,
+  miamifl: 58,
+  miamihurricanes: 58,
+  miamioh: 59,
+  miamiredhawks: 59,
+  middletennessee: 62,
+  middletennesseestate: 62,
+  ncstate: 67,
+  northcarolinastate: 67,
+  olemiss: 82,
+  mississippi: 82,
+  southernmiss: 96,
+  southernmississippi: 96,
+  ulm: 114,
+  louisianamonroe: 114,
+  uconn: 113,
+  connecticut: 113,
+  ohiost: 78,
+  ohiostatebuckeyes: 78,
+};
+
+const COLLEGE_TEAM_LOGO_BY_NAME = COLLEGE_TEAM_LOGO_NAMES.reduce((out, name, index) => {
+  out[normalizeCollegeLogoKey(name)] = index;
+  return out;
+}, Object.fromEntries(Object.entries(COLLEGE_TEAM_LOGO_ALIASES).map(([key, value]) => [normalizeCollegeLogoKey(key), value])));
+
+function collegeLogoUrlForOption(option) {
+  const candidates = [
+    option?.teamLogoId,
+    option?.logoAssetId,
+    option?.teamDbName,
+    option?.displayName,
+    option?.longName,
+    option?.label,
+    option?.nickname ? `${option?.displayName || option?.label || ''} ${option.nickname}` : '',
+    option?.abbrev,
+  ];
+  for (const candidate of candidates) {
+    const key = normalizeCollegeLogoKey(candidate);
+    if (Object.prototype.hasOwnProperty.call(COLLEGE_TEAM_LOGO_BY_NAME, key)) {
+      return teamLogoUrl(COLLEGE_TEAM_LOGO_BY_NAME[key]);
+    }
+  }
+  return teamLogoUrl(option?.rowIndex);
+}
+
 function conferenceLogoForCgid(cgid, rosterFamily = 'college') {
   const conference = rosterFamily === 'madden'
     ? MADDEN_CONFERENCE_LOGOS_BY_CGID[String(cgid)]
@@ -499,11 +583,12 @@ function teamLogoUrlForRoster(option, rosterFamily = 'college') {
     }
     return `/NFL_Logos/${logoId}.png?v=${CONFERENCE_LOGO_ASSET_VERSION}`;
   }
-  return teamLogoUrl(option.rowIndex);
+  return collegeLogoUrlForOption(option);
 }
 
 function fallbackLogoUrlForRoster(option, rosterFamily = 'college') {
-  if (!option || rosterFamily !== 'madden') return '';
+  if (!option) return '';
+  if (rosterFamily !== 'madden') return teamLogoUrl(option.rowIndex);
   const rawFallbackKey = String(option.teamDbName || option.displayName || option.label || '').toLowerCase().trim();
   const normalizedFallbackKey = rawFallbackKey.startsWith('teamdb_') ? rawFallbackKey.slice('teamdb_'.length) : rawFallbackKey;
   const fallbackId = NFL_TEAM_LOGO_FALLBACKS[normalizedFallbackKey] ?? NFL_TEAM_LOGO_FALLBACKS[rawFallbackKey] ?? '';
@@ -713,6 +798,7 @@ function App() {
   const [tableFilterValue, setTableFilterValue] = useState('');
   const [tableListQuery, setTableListQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [tableLoadingProgress, setTableLoadingProgress] = useState(null);
   const [status, setStatus] = useState('Open a roster DB to begin.');
   const [selectedCell, setSelectedCell] = useState(null);
   const [tableMeta, setTableMeta] = useState({ labels: {} });
@@ -1148,6 +1234,17 @@ function App() {
     if (cached) {
       React.startTransition(() => setTableData(cached));
     }
+    setTableLoadingProgress(cached ? 35 : 8);
+    const progressTimer = window.setInterval(() => {
+      if (requestSeq !== tableRequestSeqRef.current) return;
+      setTableLoadingProgress(current => {
+        if (current === null) return current;
+        if (current < 55) return current + 7;
+        if (current < 82) return current + 4;
+        if (current < 94) return current + 1;
+        return current;
+      });
+    }, 350);
     const loadingTimer = window.setTimeout(() => {
       if (requestSeq === tableRequestSeqRef.current) setLoading(true);
     }, cached ? 250 : 80);
@@ -1156,14 +1253,34 @@ function App() {
       const data = await fetchJson(`/session/${session.session_id}/table/${encodeURIComponent(path)}?${q}`);
       if (requestSeq !== tableRequestSeqRef.current) return;
       rememberLimited(tablePageCacheRef.current, cacheKey, data);
+      setTableLoadingProgress(100);
       React.startTransition(() => setTableData(data));
     } catch (err) {
       if (requestSeq !== tableRequestSeqRef.current) return;
       handleSessionError(err, 'Load table failed');
     } finally {
+      window.clearInterval(progressTimer);
       window.clearTimeout(loadingTimer);
-      if (requestSeq === tableRequestSeqRef.current) setLoading(false);
+      if (requestSeq === tableRequestSeqRef.current) {
+        setLoading(false);
+        window.setTimeout(() => {
+          if (requestSeq === tableRequestSeqRef.current) setTableLoadingProgress(null);
+        }, 350);
+      }
     }
+  }
+
+  function selectTable(path) {
+    if (!path) return;
+    setCurrentTable(path);
+    setView('table');
+    setTableSearch('');
+    setTableSortBy('');
+    setTableSortDir('asc');
+    setTableFilterColumn('');
+    setTableFilterValue('');
+    setSelectedCell(null);
+    setTableData({ records: [], columns: [], total: 0, offset: 0 });
   }
 
   async function patchCell(tablePath, rowIndex, column, value, pushHistory = true, before = undefined) {
@@ -1224,7 +1341,13 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ table_path: currentTable, start_row_index: selectedCell.rowIndex, start_column: selectedCell.column, rows }),
     });
-    await loadTable(currentTable, tableData.offset, tableSearch);
+    await loadTable(currentTable, tableData.offset, {
+      search: tableSearch,
+      sortBy: tableSortBy,
+      sortDir: tableSortDir,
+      filterColumn: tableFilterColumn,
+      filterValue: tableFilterValue,
+    });
     scheduleAutosave();
     setStatus('Pasted grid data.');
   }
@@ -1238,7 +1361,13 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ table_path: currentTable, find: replaceFind, replace: replaceWith }),
       });
-      await loadTable(currentTable, tableData.offset, tableSearch);
+      await loadTable(currentTable, tableData.offset, {
+        search: tableSearch,
+        sortBy: tableSortBy,
+        sortDir: tableSortDir,
+        filterColumn: tableFilterColumn,
+        filterValue: tableFilterValue,
+      });
       scheduleAutosave();
       setStatus(`Replaced ${res.replacements} values.`);
       setReplaceOpen(false);
@@ -1423,8 +1552,7 @@ function App() {
               className="table-list-select"
               value={currentTable}
               onChange={e => {
-                setCurrentTable(e.target.value);
-                setView('table');
+                selectTable(e.target.value);
               }}
             >
               <option value="">Jump to table...</option>
@@ -1435,7 +1563,7 @@ function App() {
           </div>
           <div className="table-list">
             {filteredTables.map(t => (
-              <button key={t.path} className={currentTable === t.path ? 'active' : ''} onClick={() => { setCurrentTable(t.path); setView('table'); }}>
+              <button key={t.path} className={currentTable === t.path ? 'active' : ''} onClick={() => selectTable(t.path)}>
                 <b>{tableDisplayName(t)}</b>
                 <span>{t.records?.toLocaleString()} rows</span>
               </button>
@@ -1449,7 +1577,7 @@ function App() {
               <button
                 key={`mobile-${t.path}`}
                 className={currentTable === t.path ? 'active' : ''}
-                onClick={() => { setCurrentTable(t.path); setView('table'); }}
+                onClick={() => selectTable(t.path)}
               >
                 {tableDisplayName(t)}
               </button>
@@ -1480,6 +1608,7 @@ function App() {
               pageSize={PAGE_SIZE}
               findReplaceAction={() => setReplaceOpen(true)}
               selectionScope="table"
+              loadingProgress={tableLoadingProgress}
             />
           )}
           {view === 'player' && <RecordEditor kind="Player" tablePath={playTable} session={session} patchCell={patchCell} setStatus={setStatus} onDirty={scheduleAutosave} onSessionInvalid={handleEditorSessionInvalid} />}
@@ -1565,6 +1694,7 @@ function TableView({
   findReplaceAction,
   selectionScope,
   headerActions,
+  loadingProgress,
 }) {
   const [draftSearch, setDraftSearch] = useState(search);
   const [draftFilterValue, setDraftFilterValue] = useState(filterValue || '');
@@ -1639,18 +1769,30 @@ function TableView({
     const nextSortBy = next.sortBy ?? sortBy;
     const nextSortDir = next.sortDir ?? sortDir;
     const nextFilterColumn = next.filterColumn ?? filterColumn;
-    const nextFilterValue = next.filterValue ?? draftFilterValue;
+    const nextFilterValue = nextFilterColumn ? (next.filterValue ?? draftFilterValue) : '';
     setSearch(nextSearch);
     setSortBy?.(nextSortBy);
     setSortDir?.(nextSortDir);
     setFilterColumn?.(nextFilterColumn);
     setFilterValue?.(nextFilterValue);
+    setDraftSearch(nextSearch);
+    setDraftFilterValue(nextFilterValue);
     loadPage(offset, {
       search: nextSearch,
       sortBy: nextSortBy,
       sortDir: nextSortDir,
       filterColumn: nextFilterColumn,
       filterValue: nextFilterValue,
+    });
+  }
+
+  function resetQuery() {
+    runQuery(0, {
+      search: '',
+      sortBy: '',
+      sortDir: 'asc',
+      filterColumn: '',
+      filterValue: '',
     });
   }
 
@@ -1680,7 +1822,7 @@ function TableView({
         </label>
         <label>
           <span>Filter Column</span>
-          <select value={filterColumn} onChange={e => runQuery(0, { filterColumn: e.target.value })}>
+          <select value={filterColumn} onChange={e => runQuery(0, { filterColumn: e.target.value, filterValue: e.target.value ? draftFilterValue : '' })}>
             <option value="">Any column</option>
             {filterableColumns.map(column => <option key={column} value={column}>{showLabel(column)}</option>)}
           </select>
@@ -1712,6 +1854,7 @@ function TableView({
         <button onClick={() => runQuery(0, { search: draftSearch })}>Find</button>
         {findReplaceAction && <button onClick={findReplaceAction}>Find/Replace</button>}
         <button onClick={() => runQuery(0, { filterValue: draftFilterValue })}>Apply</button>
+        <button onClick={resetQuery}>Reset</button>
         <button disabled={data.offset <= 0} onClick={() => runQuery(Math.max(0, data.offset - pageSize))}>Prev</button>
         <button disabled={pageEnd >= data.total} onClick={() => runQuery(data.offset + pageSize)}>Next</button>
       </div>
@@ -1720,6 +1863,17 @@ function TableView({
         ref={gridWrapRef}
         onScroll={event => setScrollTop(event.currentTarget.scrollTop)}
       >
+        {loadingProgress !== null && (
+          <div className="table-loading-progress" role="status" aria-live="polite">
+            <div className="table-loading-progress-card">
+              <strong>Loading table data...</strong>
+              <span>{Math.round(loadingProgress)}%</span>
+              <div className="table-loading-progress-track">
+                <div style={{ width: `${clampNumber(loadingProgress, 0, 100)}%` }} />
+              </div>
+            </div>
+          </div>
+        )}
         <table className="data-grid">
           <thead>
             <tr>

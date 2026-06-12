@@ -229,7 +229,7 @@ p { margin: 0; color: var(--muted); font-size: 12px; }
 .compact-tools button, .compact-tools input { min-height: 34px; }
 .table-toolbar {
   display: grid;
-  grid-template-columns: 150px 140px 180px minmax(180px, 1fr) minmax(180px, 1fr) auto auto auto auto auto;
+  grid-template-columns: 150px 140px 180px minmax(180px, 1fr) minmax(180px, 1fr) repeat(6, auto);
   gap: 8px;
   padding: 8px 12px;
   border-bottom: 1px solid var(--border);
@@ -242,7 +242,42 @@ p { margin: 0; color: var(--muted); font-size: 12px; }
 .toolbar-grow { min-width: 0; }
 .table-range { align-self: center; justify-self: end; white-space: nowrap; }
 .muted { color: var(--muted); font-size: 12px; }
-.grid-wrap { flex: 1; min-height: 0; overflow: auto; background: var(--scratch-panel); contain: strict; }
+.grid-wrap { flex: 1; min-height: 0; overflow: auto; background: var(--scratch-panel); contain: strict; position: relative; }
+.table-loading-progress {
+  position: sticky;
+  top: 48px;
+  left: 0;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.table-loading-progress-card {
+  width: min(360px, calc(100vw - 48px));
+  margin-top: 16px;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  align-items: center;
+  background: rgba(11, 13, 16, .92);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .35);
+}
+.table-loading-progress-card strong { font-size: 13px; }
+.table-loading-progress-card span { color: #dfe6ef; font-size: 13px; font-weight: 800; }
+.table-loading-progress-track {
+  grid-column: 1 / -1;
+  height: 7px;
+  overflow: hidden;
+  background: #090b0e;
+  border: 1px solid #2b313a;
+}
+.table-loading-progress-track div {
+  height: 100%;
+  background: linear-gradient(90deg, #4d8dff, #c8d7f4);
+  transition: width .22s ease;
+}
 .data-grid { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: 12px; }
 .data-grid th {
   position: sticky;

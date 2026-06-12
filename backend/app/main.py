@@ -89,6 +89,13 @@ def resolve_node_executable() -> str:
     )
 
 
+def bridge_subprocess_kwargs() -> Dict[str, Any]:
+    kwargs: Dict[str, Any] = {}
+    if os.name == "nt" and hasattr(subprocess, "CREATE_NO_WINDOW"):
+        kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+    return kwargs
+
+
 def portrait_search_roots() -> List[Path]:
     roots: List[Path] = []
     for candidate in (PORTRAIT_ROOT, PORTRAIT_FALLBACK_ROOT):
@@ -436,10 +443,17 @@ def detect_input_format(data: bytes) -> Dict[str, str]:
 def fbchunks_title_string(data: bytes) -> str:
     if not data.startswith(b"FBCHUNKS"):
         return ""
-    text = data[0x20:0x80].decode("utf-16le", errors="ignore").split("\x00", 1)[0].strip()
+    header = data[0x20:0xC0]
+    for match in re.finditer(rb"[ -~]{8,}", header):
+        ascii_text = match.group(0).decode("ascii", errors="ignore").strip()
+        if "Madden" in ascii_text or "College" in ascii_text:
+            return ascii_text
+    ascii_text = header.decode("ascii", errors="ignore").split("\x00", 1)[0].strip()
+    if ascii_text and sum(1 for ch in ascii_text if 32 <= ord(ch) <= 126) >= max(4, len(ascii_text) // 2):
+        return ascii_text
+    text = header.decode("utf-16le", errors="ignore").split("\x00", 1)[0].strip()
     if text:
         return text
-    ascii_text = data[0x20:0x80].decode("ascii", errors="ignore").split("\x00", 1)[0].strip()
     return ascii_text
 
 
@@ -486,7 +500,35 @@ def find_fbchunks_payload_start(data: bytes, year: int) -> int:
     for off in range(0x20, min(len(data) - 1, 0x400)):
         if data[off] == 0x78 and data[off + 1] in (0x01, 0x5E, 0x9C, 0xDA):
             return off
+        if data[off] == 0x1F and data[off + 1] == 0x8B:
+            return off
     return modern_roster_data_start(year)
+
+
+def decompress_fbchunks_payload(data: bytes, data_start: int) -> tuple[bytes, str]:
+    try:
+        return zlib.decompress(data[data_start:]), "zlib"
+    except zlib.error as zlib_exc:
+        gzip_members: List[bytes] = []
+        pos = data_start
+        while True:
+            member_start = data.find(b"\x1f\x8b", pos)
+            if member_start < 0:
+                break
+            try:
+                decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
+                chunk = decompressor.decompress(data[member_start:]) + decompressor.flush()
+                consumed = len(data[member_start:]) - len(decompressor.unused_data)
+                if consumed <= 0:
+                    pos = member_start + 1
+                    continue
+                gzip_members.append(chunk)
+                pos = member_start + consumed
+            except zlib.error:
+                pos = member_start + 1
+        if gzip_members:
+            return b"".join(gzip_members), "gzip-chunks"
+        raise zlib_exc
 
 
 def looks_like_franchise_payload(data: bytes) -> bool:
@@ -546,14 +588,20 @@ def extract_roster_payload(input_path: Path, fmt: Dict[str, str], output_path: P
         data_start = find_fbchunks_payload_start(data, year)
         header = data[:data_start]
         try:
-            payload = zlib.decompress(data[data_start:])
+            payload, compression = decompress_fbchunks_payload(data, data_start)
         except zlib.error as exc:
             raise HTTPException(
                 400,
                 f"FBCHUNKS wrapper did not contain a readable roster payload (start=0x{data_start:X}): {exc}",
             ) from exc
         output_path.write_bytes(payload)
-        return {"year": year, "data_start": data_start, "payload_size": len(payload), "header_path": str((output_path.parent / "wrapper_header.bin").name)}
+        return {
+            "year": year,
+            "data_start": data_start,
+            "payload_size": len(payload),
+            "compression": compression,
+            "header_path": str((output_path.parent / "wrapper_header.bin").name),
+        }
     output_path.write_bytes(data)
     return {"payload_size": len(data)}
 
@@ -573,6 +621,7 @@ def run_franchise_bridge(args: List[str]) -> None:
         capture_output=True,
         text=True,
         env=env,
+        **bridge_subprocess_kwargs(),
     )
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout or "unknown franchise bridge failure").strip()
@@ -747,7 +796,7 @@ def run_hc09_save_bridge(session_id: str, mode: str, output_path: Path) -> None:
         str(output_path),
     ]
     try:
-        completed = subprocess.run(cmd, capture_output=True, text=True, check=False, cwd=str(PROJECT_ROOT))
+        completed = subprocess.run(cmd, capture_output=True, text=True, check=False, cwd=str(PROJECT_ROOT), **bridge_subprocess_kwargs())
     except FileNotFoundError as e:
         raise HTTPException(500, f"Node.js is required for HC09 save bridge: {e}")
     if completed.returncode != 0:
@@ -776,7 +825,7 @@ def run_tdb_bridge_summary(input_path: Path, outdir: Path) -> Dict[str, Any]:
         str(outdir),
     ]
     try:
-        completed = subprocess.run(cmd, capture_output=True, text=True, check=False, cwd=str(PROJECT_ROOT))
+        completed = subprocess.run(cmd, capture_output=True, text=True, check=False, cwd=str(PROJECT_ROOT), **bridge_subprocess_kwargs())
     except FileNotFoundError as e:
         raise HTTPException(500, f"Node.js is required for TDB bridge: {e}")
     if completed.returncode != 0:
@@ -813,7 +862,7 @@ def run_tdb_bridge_save(session_id: str, output_path: Path) -> None:
         str(output_path),
     ]
     try:
-        completed = subprocess.run(cmd, capture_output=True, text=True, check=False, cwd=str(PROJECT_ROOT))
+        completed = subprocess.run(cmd, capture_output=True, text=True, check=False, cwd=str(PROJECT_ROOT), **bridge_subprocess_kwargs())
     except FileNotFoundError as e:
         raise HTTPException(500, f"Node.js is required for TDB bridge: {e}")
     if completed.returncode != 0:
@@ -2515,7 +2564,7 @@ def get_team_options(session_id: str):
             "teamDbName": team_db_name,
             "teamLogoId": rec.get("TLGO"),
             "logoAssetId": logo_asset_id,
-            "abbrev": rec.get("TABB") or rec.get("TABC"),
+            "abbrev": rec.get("TMAN") or rec.get("TABB") or rec.get("TABC"),
             "ovr": rec.get("TROV"),
             "primaryColor": {
                 "r": rec.get("TBCR") if rec.get("TBCR") is not None else rec.get("THSC"),

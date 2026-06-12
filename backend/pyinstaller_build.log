@@ -1,8 +1,8 @@
-277 INFO: PyInstaller: 6.14.2, contrib hooks: 2026.6
-277 INFO: Python: 3.12.13
-310 INFO: Platform: Windows-11-10.0.22631-SP0
-310 INFO: Python environment: C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\.venv
-1482 INFO: Module search paths (PYTHONPATH):
+200 INFO: PyInstaller: 6.14.2, contrib hooks: 2026.6
+200 INFO: Python: 3.12.13
+238 INFO: Platform: Windows-11-10.0.22631-SP0
+238 INFO: Python environment: C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\.venv
+1127 INFO: Module search paths (PYTHONPATH):
 ['C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend',
  'C:\\Users\\Shadow\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python312.zip',
  'C:\\Users\\Shadow\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs',
@@ -12,108 +12,108 @@
  'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages',
  'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend',
  'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend']
-2104 INFO: Appending 'binaries' from .spec
-2108 INFO: Appending 'datas' from .spec
-5370 INFO: checking Analysis
-5371 INFO: Building Analysis because Analysis-00.toc is non existent
-5371 INFO: Running Analysis Analysis-00.toc
-5371 INFO: Target bytecode optimization level: 0
-5371 INFO: Initializing module dependency graph...
-5373 INFO: Initializing module graph hook caches...
-5453 INFO: Analyzing modules for base_library.zip ...
-6932 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-7962 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-8993 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-10715 INFO: Caching module dependency graph...
-10767 INFO: Looking for Python shared library...
-10781 INFO: Using Python shared library: C:\Users\Shadow\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python312.dll
-10781 INFO: Analyzing C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\desktop_app.py
-11126 INFO: Processing standard module hook 'hook-uvicorn.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
-12159 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-12310 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-13680 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-13754 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-13757 INFO: SetuptoolsInfo: initializing cached setuptools info...
-15311 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-16167 INFO: Processing standard module hook 'hook-websockets.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
-17117 INFO: Processing standard module hook 'hook-anyio.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
-18414 INFO: Processing standard module hook 'hook-webview.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\webview\\__pyinstaller'
-19186 INFO: Processing pre-safe-import-module hook 'hook-gi.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-19364 INFO: Processing standard module hook 'hook-clr.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\pythonnet\\_pyinstaller'
-19593 INFO: Processing standard module hook 'hook-clr_loader.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
-19760 INFO: Processing standard module hook 'hook-pycparser.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
-20006 INFO: Processing standard module hook 'hook-setuptools.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-20022 INFO: Processing pre-safe-import-module hook 'hook-distutils.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-20115 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-20128 INFO: Processing pre-safe-import-module hook 'hook-jaraco.functools.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-20129 INFO: Setuptools: 'jaraco.functools' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco.functools'!
-20146 INFO: Processing pre-safe-import-module hook 'hook-more_itertools.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-20147 INFO: Setuptools: 'more_itertools' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.more_itertools'!
-20400 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-20620 INFO: Processing pre-safe-import-module hook 'hook-jaraco.text.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-20621 INFO: Setuptools: 'jaraco.text' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco.text'!
-20634 INFO: Processing standard module hook 'hook-setuptools._vendor.jaraco.text.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-20637 INFO: Processing pre-safe-import-module hook 'hook-importlib_resources.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-20639 INFO: Processing pre-safe-import-module hook 'hook-jaraco.context.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-20639 INFO: Setuptools: 'jaraco.context' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco.context'!
-20763 INFO: Processing pre-safe-import-module hook 'hook-importlib_metadata.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-20763 INFO: Setuptools: 'importlib_metadata' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.importlib_metadata'!
-20801 INFO: Processing standard module hook 'hook-setuptools._vendor.importlib_metadata.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-20835 INFO: Processing pre-safe-import-module hook 'hook-zipp.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-20836 INFO: Setuptools: 'zipp' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.zipp'!
-21161 INFO: Processing pre-safe-import-module hook 'hook-tomli.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-21162 INFO: Setuptools: 'tomli' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.tomli'!
-22430 INFO: Processing pre-safe-import-module hook 'hook-wheel.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
-22431 INFO: Setuptools: 'wheel' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.wheel'!
-23748 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-24212 INFO: Processing standard module hook 'hook-pydantic.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+1636 INFO: Appending 'binaries' from .spec
+1637 INFO: Appending 'datas' from .spec
+5246 INFO: checking Analysis
+5247 INFO: Building Analysis because Analysis-00.toc is non existent
+5247 INFO: Running Analysis Analysis-00.toc
+5247 INFO: Target bytecode optimization level: 0
+5247 INFO: Initializing module dependency graph...
+5249 INFO: Initializing module graph hook caches...
+5273 INFO: Analyzing modules for base_library.zip ...
+7174 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+8944 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+9855 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+10548 INFO: Caching module dependency graph...
+10623 INFO: Looking for Python shared library...
+10633 INFO: Using Python shared library: C:\Users\Shadow\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python312.dll
+10633 INFO: Analyzing C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\desktop_app.py
+11066 INFO: Processing standard module hook 'hook-uvicorn.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+11908 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+12004 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+12856 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+12907 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+12909 INFO: SetuptoolsInfo: initializing cached setuptools info...
+13887 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+14772 INFO: Processing standard module hook 'hook-websockets.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+15865 INFO: Processing standard module hook 'hook-anyio.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+17062 INFO: Processing standard module hook 'hook-webview.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\webview\\__pyinstaller'
+17571 INFO: Processing pre-safe-import-module hook 'hook-gi.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+17702 INFO: Processing standard module hook 'hook-clr.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\pythonnet\\_pyinstaller'
+17819 INFO: Processing standard module hook 'hook-clr_loader.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+17923 INFO: Processing standard module hook 'hook-pycparser.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+18103 INFO: Processing standard module hook 'hook-setuptools.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+18121 INFO: Processing pre-safe-import-module hook 'hook-distutils.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+18205 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+18228 INFO: Processing pre-safe-import-module hook 'hook-jaraco.functools.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+18229 INFO: Setuptools: 'jaraco.functools' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco.functools'!
+18245 INFO: Processing pre-safe-import-module hook 'hook-more_itertools.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+18246 INFO: Setuptools: 'more_itertools' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.more_itertools'!
+18780 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+19126 INFO: Processing pre-safe-import-module hook 'hook-jaraco.text.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+19127 INFO: Setuptools: 'jaraco.text' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco.text'!
+19141 INFO: Processing standard module hook 'hook-setuptools._vendor.jaraco.text.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+19143 INFO: Processing pre-safe-import-module hook 'hook-importlib_resources.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+19146 INFO: Processing pre-safe-import-module hook 'hook-jaraco.context.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+19147 INFO: Setuptools: 'jaraco.context' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco.context'!
+19286 INFO: Processing pre-safe-import-module hook 'hook-importlib_metadata.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+19287 INFO: Setuptools: 'importlib_metadata' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.importlib_metadata'!
+19325 INFO: Processing standard module hook 'hook-setuptools._vendor.importlib_metadata.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+19366 INFO: Processing pre-safe-import-module hook 'hook-zipp.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+19366 INFO: Setuptools: 'zipp' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.zipp'!
+19715 INFO: Processing pre-safe-import-module hook 'hook-tomli.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+19716 INFO: Setuptools: 'tomli' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.tomli'!
+20824 INFO: Processing pre-safe-import-module hook 'hook-wheel.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+20825 INFO: Setuptools: 'wheel' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.wheel'!
+21745 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+22125 INFO: Processing standard module hook 'hook-pydantic.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
 C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\.venv\Lib\site-packages\pydantic\experimental\__init__.py:7: PydanticExperimentalWarning: This module is experimental, its contents are subject to change and deprecation.
   warnings.warn(
-25769 INFO: Processing standard module hook 'hook-zoneinfo.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
-27032 INFO: Analyzing hidden import 'webview.__pyinstaller'
-27034 INFO: Analyzing hidden import 'webview.__pyinstaller.hook-webview'
-27081 INFO: Processing standard module hook 'hook-win32ctypes.core.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
-28936 INFO: Analyzing hidden import 'webview._version'
-28937 INFO: Processing module hooks (post-graph stage)...
-29148 WARNING: Hidden import "pycparser.lextab" not found!
-29148 WARNING: Hidden import "pycparser.yacctab" not found!
-29511 WARNING: Hidden import "tzdata" not found!
-30013 INFO: Performing binary vs. data reclassification (22077 entries)
-39966 INFO: Looking for ctypes DLLs
-40083 INFO: Analyzing run-time hooks ...
-40089 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
-40094 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
-40096 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
-40100 INFO: Including run-time hook 'pyi_rth_setuptools.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
-40968 INFO: Creating base_library.zip...
-41089 INFO: Looking for dynamic libraries
+23310 INFO: Processing standard module hook 'hook-zoneinfo.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+24282 INFO: Analyzing hidden import 'webview.__pyinstaller'
+24283 INFO: Analyzing hidden import 'webview.__pyinstaller.hook-webview'
+24316 INFO: Processing standard module hook 'hook-win32ctypes.core.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+25786 INFO: Analyzing hidden import 'webview._version'
+25787 INFO: Processing module hooks (post-graph stage)...
+25936 WARNING: Hidden import "pycparser.lextab" not found!
+25936 WARNING: Hidden import "pycparser.yacctab" not found!
+26169 WARNING: Hidden import "tzdata" not found!
+26533 INFO: Performing binary vs. data reclassification (22077 entries)
+33994 INFO: Looking for ctypes DLLs
+34101 INFO: Analyzing run-time hooks ...
+34105 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+34108 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+34110 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+34112 INFO: Including run-time hook 'pyi_rth_setuptools.py' from 'C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+34712 INFO: Creating base_library.zip...
+34779 INFO: Looking for dynamic libraries
 C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\.venv\Lib\site-packages\pydantic\experimental\__init__.py:7: PydanticExperimentalWarning: This module is experimental, its contents are subject to change and deprecation.
   warnings.warn(
-43127 INFO: Extra DLL search directories (AddDllDirectory): []
-43128 INFO: Extra DLL search directories (PATH): []
-47928 INFO: Warnings written to C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\warn-FB Roster Editor.txt
-48074 INFO: Graph cross-reference written to C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\xref-FB Roster Editor.html
-49750 INFO: checking PYZ
-49750 INFO: Building PYZ because PYZ-00.toc is non existent
-49750 INFO: Building PYZ (ZlibArchive) C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\PYZ-00.pyz
-51513 INFO: Building PYZ (ZlibArchive) C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\PYZ-00.pyz completed successfully.
-51565 INFO: checking PKG
-51565 INFO: Building PKG because PKG-00.toc is non existent
-51565 INFO: Building PKG (CArchive) FB Roster Editor.pkg
-51610 INFO: Building PKG (CArchive) FB Roster Editor.pkg completed successfully.
-51611 INFO: Bootloader C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\.venv\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\runw.exe
-51611 INFO: checking EXE
-51611 INFO: Building EXE because EXE-00.toc is non existent
-51611 INFO: Building EXE from EXE-00.toc
-51612 INFO: Copying bootloader EXE to C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\FB Roster Editor.exe
-51687 INFO: Copying icon to EXE
-51747 INFO: Copying 0 resources to EXE
-51747 INFO: Embedding manifest in EXE
-51806 INFO: Appending PKG archive to EXE
-51902 INFO: Fixing EXE headers
-52281 INFO: Building EXE from EXE-00.toc completed successfully.
-52611 INFO: checking COLLECT
-52612 INFO: Building COLLECT because COLLECT-00.toc is non existent
-52613 INFO: Building COLLECT COLLECT-00.toc
-99856 INFO: Building COLLECT COLLECT-00.toc completed successfully.
-100376 INFO: Build complete! The results are available in: C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\dist
+36177 INFO: Extra DLL search directories (AddDllDirectory): []
+36177 INFO: Extra DLL search directories (PATH): []
+38996 INFO: Warnings written to C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\warn-FB Roster Editor.txt
+39092 INFO: Graph cross-reference written to C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\xref-FB Roster Editor.html
+40151 INFO: checking PYZ
+40151 INFO: Building PYZ because PYZ-00.toc is non existent
+40151 INFO: Building PYZ (ZlibArchive) C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\PYZ-00.pyz
+41415 INFO: Building PYZ (ZlibArchive) C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\PYZ-00.pyz completed successfully.
+41441 INFO: checking PKG
+41441 INFO: Building PKG because PKG-00.toc is non existent
+41441 INFO: Building PKG (CArchive) FB Roster Editor.pkg
+41477 INFO: Building PKG (CArchive) FB Roster Editor.pkg completed successfully.
+41478 INFO: Bootloader C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\.venv\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\runw.exe
+41478 INFO: checking EXE
+41478 INFO: Building EXE because EXE-00.toc is non existent
+41478 INFO: Building EXE from EXE-00.toc
+41479 INFO: Copying bootloader EXE to C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\build\FB Roster Editor\FB Roster Editor.exe
+41528 INFO: Copying icon to EXE
+41567 INFO: Copying 0 resources to EXE
+41567 INFO: Embedding manifest in EXE
+41607 INFO: Appending PKG archive to EXE
+41679 INFO: Fixing EXE headers
+41935 INFO: Building EXE from EXE-00.toc completed successfully.
+42159 INFO: checking COLLECT
+42159 INFO: Building COLLECT because COLLECT-00.toc is non existent
+42160 INFO: Building COLLECT COLLECT-00.toc
+86335 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+86808 INFO: Build complete! The results are available in: C:\Users\Shadow\Desktop\Coding\fb-roster-editor-webapp\backend\dist
