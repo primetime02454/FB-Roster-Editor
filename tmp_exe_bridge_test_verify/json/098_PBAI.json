@@ -1,0 +1,46 @@
+{
+  "path": "PBAI",
+  "name": "PBAI",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 542080,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "BOKL",
+      "type": 3
+    },
+    {
+      "name": "PBPL",
+      "type": 3
+    },
+    {
+      "name": "SETL",
+      "type": 3
+    },
+    {
+      "name": "AIGR",
+      "type": 3
+    },
+    {
+      "name": "PLYT",
+      "type": 3
+    },
+    {
+      "name": "PLF_",
+      "type": 3
+    },
+    {
+      "name": "vpos",
+      "type": 3
+    },
+    {
+      "name": "prct",
+      "type": 3
+    }
+  ],
+  "records": []
+}

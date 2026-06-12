@@ -1,0 +1,54 @@
+{
+  "path": "IGAM",
+  "name": "IGAM",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 89424,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "INJE",
+      "type": 3
+    },
+    {
+      "name": "IIIG",
+      "type": 3
+    },
+    {
+      "name": "IJSK",
+      "type": 3
+    },
+    {
+      "name": "INJL",
+      "type": 3
+    },
+    {
+      "name": "INIR",
+      "type": 3
+    },
+    {
+      "name": "INJR",
+      "type": 3
+    },
+    {
+      "name": "INJT",
+      "type": 3
+    },
+    {
+      "name": "INTT",
+      "type": 3
+    },
+    {
+      "name": "ITUt",
+      "type": 3
+    }
+  ],
+  "records": []
+}

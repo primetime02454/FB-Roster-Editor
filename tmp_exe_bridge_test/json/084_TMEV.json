@@ -1,0 +1,290 @@
+{
+  "path": "TMEV",
+  "name": "TMEV",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 483812,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "EGAA",
+      "type": 3
+    },
+    {
+      "name": "ETAA",
+      "type": 3
+    },
+    {
+      "name": "ECBA",
+      "type": 3
+    },
+    {
+      "name": "EFBA",
+      "type": 3
+    },
+    {
+      "name": "EHBA",
+      "type": 3
+    },
+    {
+      "name": "EMBA",
+      "type": 3
+    },
+    {
+      "name": "EOBA",
+      "type": 3
+    },
+    {
+      "name": "EQBA",
+      "type": 3
+    },
+    {
+      "name": "ECEA",
+      "type": 3
+    },
+    {
+      "name": "EDEA",
+      "type": 3
+    },
+    {
+      "name": "ETEA",
+      "type": 3
+    },
+    {
+      "name": "EKIA",
+      "type": 3
+    },
+    {
+      "name": "EWRA",
+      "type": 3
+    },
+    {
+      "name": "EFSA",
+      "type": 3
+    },
+    {
+      "name": "ESSA",
+      "type": 3
+    },
+    {
+      "name": "EDTA",
+      "type": 3
+    },
+    {
+      "name": "EPUA",
+      "type": 3
+    },
+    {
+      "name": "EGAC",
+      "type": 3
+    },
+    {
+      "name": "ETAC",
+      "type": 3
+    },
+    {
+      "name": "ECBC",
+      "type": 3
+    },
+    {
+      "name": "EFBC",
+      "type": 3
+    },
+    {
+      "name": "EHBC",
+      "type": 3
+    },
+    {
+      "name": "EMBC",
+      "type": 3
+    },
+    {
+      "name": "EOBC",
+      "type": 3
+    },
+    {
+      "name": "EQBC",
+      "type": 3
+    },
+    {
+      "name": "ECEC",
+      "type": 3
+    },
+    {
+      "name": "EDEC",
+      "type": 3
+    },
+    {
+      "name": "ETEC",
+      "type": 3
+    },
+    {
+      "name": "EKIC",
+      "type": 3
+    },
+    {
+      "name": "EWRC",
+      "type": 3
+    },
+    {
+      "name": "EFSC",
+      "type": 3
+    },
+    {
+      "name": "ESSC",
+      "type": 3
+    },
+    {
+      "name": "EDTC",
+      "type": 3
+    },
+    {
+      "name": "EPUC",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "EGAR",
+      "type": 3
+    },
+    {
+      "name": "ETAR",
+      "type": 3
+    },
+    {
+      "name": "ECBR",
+      "type": 3
+    },
+    {
+      "name": "EFBR",
+      "type": 3
+    },
+    {
+      "name": "EHBR",
+      "type": 3
+    },
+    {
+      "name": "EMBR",
+      "type": 3
+    },
+    {
+      "name": "EOBR",
+      "type": 3
+    },
+    {
+      "name": "EQBR",
+      "type": 3
+    },
+    {
+      "name": "ECER",
+      "type": 3
+    },
+    {
+      "name": "EDER",
+      "type": 3
+    },
+    {
+      "name": "ETER",
+      "type": 3
+    },
+    {
+      "name": "EKIR",
+      "type": 3
+    },
+    {
+      "name": "EWRR",
+      "type": 3
+    },
+    {
+      "name": "EFSR",
+      "type": 3
+    },
+    {
+      "name": "ESSR",
+      "type": 3
+    },
+    {
+      "name": "EDTR",
+      "type": 3
+    },
+    {
+      "name": "EPUR",
+      "type": 3
+    },
+    {
+      "name": "EGAV",
+      "type": 3
+    },
+    {
+      "name": "ETAV",
+      "type": 3
+    },
+    {
+      "name": "ECBV",
+      "type": 3
+    },
+    {
+      "name": "EFBV",
+      "type": 3
+    },
+    {
+      "name": "EHBV",
+      "type": 3
+    },
+    {
+      "name": "EMBV",
+      "type": 3
+    },
+    {
+      "name": "EOBV",
+      "type": 3
+    },
+    {
+      "name": "EQBV",
+      "type": 3
+    },
+    {
+      "name": "ECEV",
+      "type": 3
+    },
+    {
+      "name": "EDEV",
+      "type": 3
+    },
+    {
+      "name": "ETEV",
+      "type": 3
+    },
+    {
+      "name": "EKIV",
+      "type": 3
+    },
+    {
+      "name": "EWRV",
+      "type": 3
+    },
+    {
+      "name": "EFSV",
+      "type": 3
+    },
+    {
+      "name": "ESSV",
+      "type": 3
+    },
+    {
+      "name": "EDTV",
+      "type": 3
+    },
+    {
+      "name": "EPUV",
+      "type": 3
+    }
+  ],
+  "records": []
+}

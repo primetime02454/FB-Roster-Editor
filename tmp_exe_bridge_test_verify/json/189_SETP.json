@@ -1,0 +1,74 @@
+{
+  "path": "SETP",
+  "name": "SETP",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 3829068,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "SETL",
+      "type": 3
+    },
+    {
+      "name": "SETP",
+      "type": 3
+    },
+    {
+      "name": "SGT_",
+      "type": 3
+    },
+    {
+      "name": "arti",
+      "type": 3
+    },
+    {
+      "name": "opnm",
+      "type": 3
+    },
+    {
+      "name": "tabo",
+      "type": 3
+    },
+    {
+      "name": "poso",
+      "type": 3
+    },
+    {
+      "name": "odep",
+      "type": 3
+    },
+    {
+      "name": "flas",
+      "type": 3
+    },
+    {
+      "name": "DPos",
+      "type": 3
+    },
+    {
+      "name": "EPos",
+      "type": 3
+    },
+    {
+      "name": "fmtx",
+      "type": 3
+    },
+    {
+      "name": "artx",
+      "type": 3
+    },
+    {
+      "name": "fmty",
+      "type": 3
+    },
+    {
+      "name": "arty",
+      "type": 3
+    }
+  ],
+  "records": []
+}

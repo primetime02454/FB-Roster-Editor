@@ -1,0 +1,58 @@
+{
+  "path": "SETG",
+  "name": "SETG",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 3802452,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "SETP",
+      "type": 3
+    },
+    {
+      "name": "SGF_",
+      "type": 3
+    },
+    {
+      "name": "SF__",
+      "type": 3
+    },
+    {
+      "name": "x___",
+      "type": 4
+    },
+    {
+      "name": "y___",
+      "type": 4
+    },
+    {
+      "name": "fx__",
+      "type": 4
+    },
+    {
+      "name": "fy__",
+      "type": 4
+    },
+    {
+      "name": "anm_",
+      "type": 3
+    },
+    {
+      "name": "dir_",
+      "type": 3
+    },
+    {
+      "name": "fanm",
+      "type": 3
+    },
+    {
+      "name": "fdir",
+      "type": 3
+    }
+  ],
+  "records": []
+}

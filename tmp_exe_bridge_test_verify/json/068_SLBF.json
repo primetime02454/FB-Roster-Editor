@@ -1,0 +1,18 @@
+{
+  "path": "SLBF",
+  "name": "SLBF",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 362248,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "SLBF",
+      "type": 1
+    }
+  ],
+  "records": []
+}

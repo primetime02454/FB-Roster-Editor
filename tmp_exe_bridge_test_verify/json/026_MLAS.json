@@ -1,0 +1,30 @@
+{
+  "path": "MLAS",
+  "name": "MLAS",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 92656,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "PMID",
+      "type": 3
+    },
+    {
+      "name": "MLTP",
+      "type": 3
+    }
+  ],
+  "records": []
+}

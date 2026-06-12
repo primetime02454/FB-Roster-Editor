@@ -1,0 +1,28 @@
+{
+  "path": "MLIN",
+  "name": "MLIN",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 96540,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "TNAI",
+      "type": 3
+    },
+    {
+      "name": "TNPI",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "TNAI": 0,
+      "TNPI": 0
+    }
+  ]
+}

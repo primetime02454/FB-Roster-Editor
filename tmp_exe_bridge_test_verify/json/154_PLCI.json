@@ -1,0 +1,54 @@
+{
+  "path": "PLCI",
+  "name": "PLCI",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1884208,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "INC1",
+      "type": 3
+    },
+    {
+      "name": "INC2",
+      "type": 3
+    },
+    {
+      "name": "INC3",
+      "type": 3
+    },
+    {
+      "name": "IN1A",
+      "type": 3
+    },
+    {
+      "name": "IN2A",
+      "type": 3
+    },
+    {
+      "name": "IN3A",
+      "type": 3
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "IN1a",
+      "type": 3
+    },
+    {
+      "name": "IN2a",
+      "type": 3
+    },
+    {
+      "name": "IN3a",
+      "type": 3
+    }
+  ],
+  "records": []
+}

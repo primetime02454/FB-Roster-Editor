@@ -1,0 +1,80 @@
+{
+  "path": "DRTT",
+  "name": "DRTT",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1018768,
+  "raw_key_hex": "",
+  "declared_entries_total": 7,
+  "records_parsed": 7,
+  "field_definitions": [
+    {
+      "name": "DRNB",
+      "type": 3
+    },
+    {
+      "name": "DRMN",
+      "type": 3
+    },
+    {
+      "name": "DRNT",
+      "type": 3
+    },
+    {
+      "name": "DRMX",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "DRNB": 1,
+      "DRMN": 0,
+      "DRNT": 10,
+      "DRMX": 1
+    },
+    {
+      "_index": 1,
+      "DRNB": 2,
+      "DRMN": 0,
+      "DRNT": 7,
+      "DRMX": 1
+    },
+    {
+      "_index": 2,
+      "DRNB": 3,
+      "DRMN": 0,
+      "DRNT": 5,
+      "DRMX": 1
+    },
+    {
+      "_index": 3,
+      "DRNB": 4,
+      "DRMN": 0,
+      "DRNT": 5,
+      "DRMX": 1
+    },
+    {
+      "_index": 4,
+      "DRNB": 5,
+      "DRMN": 0,
+      "DRNT": 5,
+      "DRMX": 1
+    },
+    {
+      "_index": 5,
+      "DRNB": 6,
+      "DRMN": 0,
+      "DRNT": 5,
+      "DRMX": 1
+    },
+    {
+      "_index": 6,
+      "DRNB": 7,
+      "DRMN": 0,
+      "DRNT": 5,
+      "DRMX": 1
+    }
+  ]
+}

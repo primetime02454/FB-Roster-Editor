@@ -1,0 +1,114 @@
+{
+  "path": "PGKI",
+  "name": "PGKI",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 102236,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "gka0",
+      "type": 3
+    },
+    {
+      "name": "gkm0",
+      "type": 3
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "gkfL",
+      "type": 3
+    },
+    {
+      "name": "gplN",
+      "type": 2
+    },
+    {
+      "name": "gkea",
+      "type": 3
+    },
+    {
+      "name": "gkfa",
+      "type": 3
+    },
+    {
+      "name": "gpya",
+      "type": 2
+    },
+    {
+      "name": "gkeb",
+      "type": 3
+    },
+    {
+      "name": "gkfb",
+      "type": 3
+    },
+    {
+      "name": "gktb",
+      "type": 3
+    },
+    {
+      "name": "gptb",
+      "type": 3
+    },
+    {
+      "name": "gkac",
+      "type": 3
+    },
+    {
+      "name": "gkmc",
+      "type": 3
+    },
+    {
+      "name": "gkad",
+      "type": 3
+    },
+    {
+      "name": "gkmd",
+      "type": 3
+    },
+    {
+      "name": "gkae",
+      "type": 3
+    },
+    {
+      "name": "gkme",
+      "type": 3
+    },
+    {
+      "name": "gknk",
+      "type": 3
+    },
+    {
+      "name": "gpbl",
+      "type": 3
+    },
+    {
+      "name": "gkem",
+      "type": 3
+    },
+    {
+      "name": "gkfm",
+      "type": 3
+    },
+    {
+      "name": "gpat",
+      "type": 3
+    },
+    {
+      "name": "gppt",
+      "type": 3
+    },
+    {
+      "name": "gpny",
+      "type": 2
+    }
+  ],
+  "records": []
+}

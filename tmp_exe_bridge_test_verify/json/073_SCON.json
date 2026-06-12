@@ -1,0 +1,30 @@
+{
+  "path": "SCON",
+  "name": "SCON",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 460280,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "SIF1",
+      "type": 3
+    },
+    {
+      "name": "SIF2",
+      "type": 3
+    },
+    {
+      "name": "SIF3",
+      "type": 3
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    }
+  ],
+  "records": []
+}

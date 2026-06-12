@@ -1,0 +1,75 @@
+{
+  "path": "DIVI",
+  "name": "DIVI",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 977032,
+  "raw_key_hex": "",
+  "declared_entries_total": 8,
+  "records_parsed": 8,
+  "field_definitions": [
+    {
+      "name": "CGID",
+      "type": 3
+    },
+    {
+      "name": "DGID",
+      "type": 3
+    },
+    {
+      "name": "DNAM",
+      "type": 0
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "CGID": 0,
+      "DGID": 0,
+      "DNAM": "AFC North"
+    },
+    {
+      "_index": 1,
+      "CGID": 0,
+      "DGID": 1,
+      "DNAM": "AFC South"
+    },
+    {
+      "_index": 2,
+      "CGID": 0,
+      "DGID": 2,
+      "DNAM": "AFC East"
+    },
+    {
+      "_index": 3,
+      "CGID": 0,
+      "DGID": 3,
+      "DNAM": "AFC West"
+    },
+    {
+      "_index": 4,
+      "CGID": 1,
+      "DGID": 4,
+      "DNAM": "NFC North"
+    },
+    {
+      "_index": 5,
+      "CGID": 1,
+      "DGID": 5,
+      "DNAM": "NFC South"
+    },
+    {
+      "_index": 6,
+      "CGID": 1,
+      "DGID": 6,
+      "DNAM": "NFC East"
+    },
+    {
+      "_index": 7,
+      "CGID": 1,
+      "DGID": 7,
+      "DNAM": "NFC West"
+    }
+  ]
+}

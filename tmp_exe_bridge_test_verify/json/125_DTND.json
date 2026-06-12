@@ -1,0 +1,113 @@
+{
+  "path": "DTND",
+  "name": "DTND",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1025532,
+  "raw_key_hex": "",
+  "declared_entries_total": 6,
+  "records_parsed": 6,
+  "field_definitions": [
+    {
+      "name": "PCTD",
+      "type": 3
+    },
+    {
+      "name": "PCBF",
+      "type": 3
+    },
+    {
+      "name": "PCBO",
+      "type": 3
+    },
+    {
+      "name": "DFTP",
+      "type": 3
+    },
+    {
+      "name": "PCBR",
+      "type": 3
+    },
+    {
+      "name": "PCBT",
+      "type": 3
+    },
+    {
+      "name": "PCBV",
+      "type": 3
+    },
+    {
+      "name": "USTi",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "PCTD": 1,
+      "PCBF": 2,
+      "PCBO": 85,
+      "DFTP": 2,
+      "PCBR": 4,
+      "PCBT": 7,
+      "PCBV": 1,
+      "USTi": 0
+    },
+    {
+      "_index": 1,
+      "PCTD": 0,
+      "PCBF": 1,
+      "PCBO": 90,
+      "DFTP": 0,
+      "PCBR": 3,
+      "PCBT": 5,
+      "PCBV": 1,
+      "USTi": 0
+    },
+    {
+      "_index": 2,
+      "PCTD": 10,
+      "PCBF": 1,
+      "PCBO": 80,
+      "DFTP": 1,
+      "PCBR": 3,
+      "PCBT": 5,
+      "PCBV": 1,
+      "USTi": 0
+    },
+    {
+      "_index": 3,
+      "PCTD": 95,
+      "PCBF": 1,
+      "PCBO": 1,
+      "DFTP": 2,
+      "PCBR": 1,
+      "PCBT": 1,
+      "PCBV": 1,
+      "USTi": 1
+    },
+    {
+      "_index": 4,
+      "PCTD": 95,
+      "PCBF": 1,
+      "PCBO": 1,
+      "DFTP": 0,
+      "PCBR": 1,
+      "PCBT": 1,
+      "PCBV": 1,
+      "USTi": 1
+    },
+    {
+      "_index": 5,
+      "PCTD": 100,
+      "PCBF": 0,
+      "PCBO": 0,
+      "DFTP": 1,
+      "PCBR": 0,
+      "PCBT": 0,
+      "PCBV": 0,
+      "USTi": 1
+    }
+  ]
+}

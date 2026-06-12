@@ -1,0 +1,50 @@
+{
+  "path": "PGKP",
+  "name": "PGKP",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 105676,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "grkL",
+      "type": 2
+    },
+    {
+      "name": "grpL",
+      "type": 2
+    },
+    {
+      "name": "grka",
+      "type": 3
+    },
+    {
+      "name": "grpa",
+      "type": 3
+    },
+    {
+      "name": "grkt",
+      "type": 3
+    },
+    {
+      "name": "grpt",
+      "type": 3
+    },
+    {
+      "name": "grky",
+      "type": 2
+    },
+    {
+      "name": "grpy",
+      "type": 2
+    }
+  ],
+  "records": []
+}

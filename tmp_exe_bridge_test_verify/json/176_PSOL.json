@@ -1,0 +1,54 @@
+{
+  "path": "PSOL",
+  "name": "PSOL",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 3490492,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "STKF",
+      "type": 3
+    },
+    {
+      "name": "SEYR",
+      "type": 2
+    },
+    {
+      "name": "sopa",
+      "type": 3
+    },
+    {
+      "name": "sosa",
+      "type": 3
+    },
+    {
+      "name": "sopb",
+      "type": 3
+    },
+    {
+      "name": "sorb",
+      "type": 3
+    },
+    {
+      "name": "sosb",
+      "type": 3
+    },
+    {
+      "name": "sors",
+      "type": 3
+    },
+    {
+      "name": "sory",
+      "type": 2
+    }
+  ],
+  "records": []
+}

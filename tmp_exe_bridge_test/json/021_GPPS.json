@@ -1,0 +1,58 @@
+{
+  "path": "GPPS",
+  "name": "GPPS",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 89100,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "FCPB",
+      "type": 3
+    },
+    {
+      "name": "MCPB",
+      "type": 3
+    },
+    {
+      "name": "FCID",
+      "type": 2
+    },
+    {
+      "name": "UTID",
+      "type": 3
+    },
+    {
+      "name": "MYID",
+      "type": 2
+    },
+    {
+      "name": "GPSR",
+      "type": 2
+    },
+    {
+      "name": "GPAS",
+      "type": 2
+    },
+    {
+      "name": "PRPT",
+      "type": 2
+    },
+    {
+      "name": "FPST",
+      "type": 3
+    },
+    {
+      "name": "MPST",
+      "type": 3
+    },
+    {
+      "name": "FCPY",
+      "type": 2
+    }
+  ],
+  "records": []
+}

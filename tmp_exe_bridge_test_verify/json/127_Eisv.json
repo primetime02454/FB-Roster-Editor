@@ -1,0 +1,45 @@
+{
+  "path": "Eisv",
+  "name": "Eisv",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1026788,
+  "raw_key_hex": "",
+  "declared_entries_total": 3,
+  "records_parsed": 3,
+  "field_definitions": [
+    {
+      "name": "BNMN",
+      "type": 2
+    },
+    {
+      "name": "ENUV",
+      "type": 3
+    },
+    {
+      "name": "BNMX",
+      "type": 2
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "BNMN": 7000,
+      "ENUV": 0,
+      "BNMX": 10000
+    },
+    {
+      "_index": 1,
+      "BNMN": 0,
+      "ENUV": 2,
+      "BNMX": 1999
+    },
+    {
+      "_index": 2,
+      "BNMN": 2000,
+      "ENUV": 1,
+      "BNMX": 6999
+    }
+  ]
+}

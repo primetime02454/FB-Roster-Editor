@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import csv
 import io
@@ -22,17 +22,18 @@ from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from pydantic import BaseModel
 
 from app.parsers.parse_madden_tdb2 import write_outputs, flatten_for_csv, TDB2ParserPy
-from app.parsers.parse_h2_visuals_json import parse_visuals, validate_visuals
+from app.parsers.parse_h2_visuals_json import parse_visuals, validate_visuals, SLOTS_26
 from app.parsers.encode_h2_visuals import encode_visuals_blbm_table
 from app.parsers.rebuild_madden_tdb2 import rebuild_roster_db
 from app.fallback_labels import FALLBACK_PLAY_LABELS, FALLBACK_TCPS_LABELS, FALLBACK_TEAM_LABELS
 
-BACKEND_ROOT = Path(__file__).resolve().parents[1]
-PROJECT_ROOT = BACKEND_ROOT.parent
-DATA_ROOT = BACKEND_ROOT / "data"
+BACKEND_ROOT = Path(os.environ.get("FB_EDITOR_BACKEND_ROOT") or Path(__file__).resolve().parents[1]).resolve()
+PROJECT_ROOT = Path(os.environ.get("FB_EDITOR_PROJECT_ROOT") or BACKEND_ROOT.parent).resolve()
+DATA_ROOT = Path(os.environ.get("FB_EDITOR_DATA_ROOT") or (BACKEND_ROOT / "data")).resolve()
 REFERENCE_OPTIONS_PATH = BACKEND_ROOT / "app" / "reference_options.json"
-SESSION_ROOT = DATA_ROOT / "sessions"
-FRONTEND_DIST = PROJECT_ROOT / "frontend" / "dist"
+SESSION_ROOT = Path(os.environ.get("FB_EDITOR_SESSION_ROOT") or (DATA_ROOT / "sessions")).resolve()
+FRONTEND_DIST = Path(os.environ.get("FB_EDITOR_FRONTEND_DIST") or (PROJECT_ROOT / "frontend" / "dist")).resolve()
+EXTERNAL_ASSET_ROOT = Path(os.environ.get("FB_EDITOR_EXTERNAL_ASSET_ROOT") or (PROJECT_ROOT / "frontend" / "public")).resolve()
 HC09_ROOT = PROJECT_ROOT.parent / "HC09-Roster-Editor-2.0--master"
 HC09_BRIDGE = BACKEND_ROOT / "tools" / "hc09_save_bridge.js"
 TDB_BRIDGE = BACKEND_ROOT / "tools" / "tdb_bridge.js"
@@ -42,6 +43,13 @@ MADDEN_FRANCHISE_ROOT = BACKEND_ROOT / "vendor" / "madden-franchise"
 MADDEN_FRANCHISE_FALLBACK_ROOT = Path.home() / "Downloads" / "madden-franchise-master"
 H2_PREFIX = bytes.fromhex("8acbe2040301")
 MADDEN_FRANCHISE_BRIDGE = BACKEND_ROOT / "tools" / "madden_franchise_bridge.mjs"
+PORTRAIT_ROOT = Path(os.environ.get("FB_EDITOR_PORTRAIT_ROOT") or (DATA_ROOT / "Player_Portraits")).resolve()
+PORTRAIT_FALLBACK_ROOT = (PROJECT_ROOT / "frontend" / "public" / "Player_Portraits").resolve()
+NODE_EXECUTABLE_CANDIDATES = [
+    Path(os.environ["FB_EDITOR_NODE_BIN"]).resolve() if os.environ.get("FB_EDITOR_NODE_BIN") else None,
+    (BACKEND_ROOT / "bin" / "node.exe").resolve(),
+    (BACKEND_ROOT / "node.exe").resolve(),
+]
 
 
 def cfb27_dynasty_files_root() -> Optional[Path]:
@@ -67,9 +75,81 @@ def cfb27_dynasty_files_root() -> Optional[Path]:
 
 SESSION_ROOT.mkdir(parents=True, exist_ok=True)
 
+
+def resolve_node_executable() -> str:
+    for candidate in NODE_EXECUTABLE_CANDIDATES:
+        if candidate and candidate.exists():
+            return str(candidate)
+    env_node = shutil.which("node")
+    if env_node:
+        return env_node
+    raise HTTPException(
+        500,
+        "Node.js runtime not found. Install Node.js or rebuild the desktop app with a bundled node.exe.",
+    )
+
+
+def portrait_search_roots() -> List[Path]:
+    roots: List[Path] = []
+    for candidate in (PORTRAIT_ROOT, PORTRAIT_FALLBACK_ROOT):
+        try:
+            if candidate.exists() and candidate not in roots:
+                roots.append(candidate)
+        except OSError:
+            continue
+    return roots
+
+
+ASSET_CATEGORY_FOLDERS = {
+    "portraits": "Player_Portraits",
+    "team-logos": "team-logos",
+    "conference-logos": "conference-logos",
+    "nfl-logos": "NFL_Logos",
+}
+
+
+def asset_search_roots(category: str) -> List[Path]:
+    folder = ASSET_CATEGORY_FOLDERS.get(category)
+    if not folder:
+        return []
+    roots: List[Path] = []
+    for candidate in (
+        DATA_ROOT / folder,
+        EXTERNAL_ASSET_ROOT / folder,
+        PROJECT_ROOT / "frontend" / "public" / folder,
+    ):
+        try:
+            if candidate.exists() and candidate not in roots:
+                roots.append(candidate.resolve())
+        except OSError:
+            continue
+    return roots
+
+
+def portrait_candidate_names(filename: str) -> List[str]:
+    safe_name = Path(filename).name
+    stem = Path(safe_name).stem
+    suffix = Path(safe_name).suffix.lower()
+    candidates = [safe_name]
+    if suffix != ".webp":
+        candidates.append(f"{stem}.webp")
+    if suffix != ".png":
+        candidates.append(f"{stem}.png")
+    if stem.lower() != "nilpp_blank":
+        candidates.extend(["nilpp_Blank.webp", "nilpp_Blank.png"])
+    seen = set()
+    out = []
+    for name in candidates:
+        key = name.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(name)
+    return out
+
 POSITION_MAP = {
     0: "QB", 1: "RB", 2: "FB", 3: "WR", 4: "TE", 5: "LT", 6: "LG", 7: "C", 8: "RG", 9: "RT",
-    10: "LE", 11: "RE", 12: "DT", 13: "LOLB", 14: "MLB", 15: "ROLB", 16: "CB", 17: "FS", 18: "SS", 19: "K", 20: "P",
+    10: "LE", 11: "RE", 12: "DT", 13: "SAM", 14: "MLB", 15: "WILL", 16: "CB", 17: "FS", 18: "SS", 19: "K", 20: "P",
 }
 
 AMP_ROOT = PROJECT_ROOT.parent / "AMP-SourceCode-master" / "MaddenEditor"
@@ -108,7 +188,10 @@ PLAYER_VISUAL_FIELDS = [
 ]
 
 NFL_LOGO_ASSET_BY_SOURCE = {}
-for xml_path in sorted((PROJECT_ROOT / "frontend" / "public" / "NFL_Logos" / "xml").glob("*.xml")):
+_nfl_logo_xml_root = EXTERNAL_ASSET_ROOT / "NFL_Logos" / "xml"
+if not _nfl_logo_xml_root.exists():
+    _nfl_logo_xml_root = PROJECT_ROOT / "frontend" / "public" / "NFL_Logos" / "xml"
+for xml_path in sorted(_nfl_logo_xml_root.glob("*.xml")):
     try:
         root = ET.parse(xml_path).getroot()
         source_path = None
@@ -294,6 +377,10 @@ VISUAL_SLOT_DISPLAY_ORDER = [
     "CharacterBodyType",
 ]
 
+# Tables included in the scoped "Import All" / "Export All" bundles. Character Visuals
+# are bundled separately (flat CSV / nested JSON) alongside these.
+BULK_TABLE_NAMES = {"COCH", "DCHT", "PLAY", "TCPS", "TEAM"}
+
 app = FastAPI(title="FB Roster Editor API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
@@ -472,6 +559,7 @@ def extract_roster_payload(input_path: Path, fmt: Dict[str, str], output_path: P
 
 
 def run_franchise_bridge(args: List[str]) -> None:
+    node_bin = resolve_node_executable()
     if not MADDEN_FRANCHISE_BRIDGE.exists():
         raise HTTPException(500, f"Madden franchise bridge not found: {MADDEN_FRANCHISE_BRIDGE}")
     franchise_root = MADDEN_FRANCHISE_ROOT if MADDEN_FRANCHISE_ROOT.exists() else MADDEN_FRANCHISE_FALLBACK_ROOT
@@ -480,7 +568,7 @@ def run_franchise_bridge(args: List[str]) -> None:
     env = dict(os.environ)
     env["MADDEN_FRANCHISE_ROOT"] = str(franchise_root)
     completed = subprocess.run(
-        ["node", str(MADDEN_FRANCHISE_BRIDGE), *args],
+        [node_bin, str(MADDEN_FRANCHISE_BRIDGE), *args],
         cwd=str(PROJECT_ROOT),
         capture_output=True,
         text=True,
@@ -633,6 +721,7 @@ def visual_field_to_slot_name(field_name: str) -> str:
 
 
 def run_hc09_save_bridge(session_id: str, mode: str, output_path: Path) -> None:
+    node_bin = resolve_node_executable()
     if not HC09_ROOT.exists():
         raise HTTPException(500, f"HC09 reference app not found at {HC09_ROOT}")
     if not HC09_BRIDGE.exists():
@@ -644,7 +733,7 @@ def run_hc09_save_bridge(session_id: str, mode: str, output_path: Path) -> None:
     if not input_path.exists():
         raise HTTPException(500, f"Original wrapped roster is missing for session {session_id}")
     cmd = [
-        "node",
+        node_bin,
         str(HC09_BRIDGE),
         "--hc09-root",
         str(HC09_ROOT),
@@ -667,6 +756,7 @@ def run_hc09_save_bridge(session_id: str, mode: str, output_path: Path) -> None:
 
 
 def run_tdb_bridge_summary(input_path: Path, outdir: Path) -> Dict[str, Any]:
+    node_bin = resolve_node_executable()
     mft_root = MADDEN_FILE_TOOLS_ROOT if MADDEN_FILE_TOOLS_ROOT.exists() else MADDEN_FILE_TOOLS_FALLBACK_ROOT
     if not mft_root.exists():
         raise HTTPException(500, f"madden-file-tools not found at {MADDEN_FILE_TOOLS_ROOT}")
@@ -674,7 +764,7 @@ def run_tdb_bridge_summary(input_path: Path, outdir: Path) -> Dict[str, Any]:
         raise HTTPException(500, f"TDB bridge script not found at {TDB_BRIDGE}")
     outdir.mkdir(parents=True, exist_ok=True)
     cmd = [
-        "node",
+        node_bin,
         str(TDB_BRIDGE),
         "--command",
         "summary",
@@ -696,6 +786,7 @@ def run_tdb_bridge_summary(input_path: Path, outdir: Path) -> Dict[str, Any]:
 
 
 def run_tdb_bridge_save(session_id: str, output_path: Path) -> None:
+    node_bin = resolve_node_executable()
     mft_root = MADDEN_FILE_TOOLS_ROOT if MADDEN_FILE_TOOLS_ROOT.exists() else MADDEN_FILE_TOOLS_FALLBACK_ROOT
     if not mft_root.exists():
         raise HTTPException(500, f"madden-file-tools not found at {MADDEN_FILE_TOOLS_ROOT}")
@@ -708,7 +799,7 @@ def run_tdb_bridge_save(session_id: str, output_path: Path) -> None:
     if not input_path.exists():
         raise HTTPException(500, f"Original parsed roster DB is missing for session {session_id}")
     cmd = [
-        "node",
+        node_bin,
         str(TDB_BRIDGE),
         "--command",
         "save",
@@ -989,13 +1080,37 @@ VISUAL_PLAYER_FIELDS = [
     ("Skin Tone Scale", "skinToneScale"),
     ("Weight Pounds", "weightPounds"),
 ]
+PLAYER_VISUAL_FIELD_LABELS = [label for label, _key in VISUAL_PLAYER_FIELDS]
 VISUAL_PLAYER_COLUMN_KEYS = {label: key for label, key in VISUAL_PLAYER_FIELDS}
 VISUAL_SLOT_RE = re.compile(r"^slotType: (\S+)(?: (\S+))?$")
+# Body-blend slots (numeric 43-49 / their decoded names) live in the base loadout
+# (loadoutType 0); everything else is uniform/equipment (loadoutType 1).
+BASE_LOADOUT_SLOT_NAMES = {SLOTS_26[code] for code in range(43, 50) if code in SLOTS_26}
+PLAYER_GEAR_FIELD_CACHE: Dict[str, tuple[float, List[str]]] = {}
 
 
 def visual_slot_sort_key(slot_type: str) -> tuple[int, Any]:
     text = str(slot_type)
     return (0, int(text)) if text.isdigit() else (1, text)
+
+
+def autosave_dir(session_id: str) -> Path:
+    path = sdir(session_id) / "autosave"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def autosave_target_path(session_id: str) -> Path:
+    meta = session_metadata(session_id)
+    stem = Path(meta.get("input_file", "roster")).stem
+    effective_mode = default_save_mode(meta)
+    if effective_mode in ("wrapped", "fbchunks"):
+        suffix = "".join(Path(meta.get("input_file", "roster")).suffixes) or ".fbchunks"
+    elif effective_mode == "cdb":
+        suffix = "".join(Path(meta.get("input_file", "roster")).suffixes) or ".db"
+    else:
+        suffix = ".db"
+    return autosave_dir(session_id) / f"{stem} (auto save){suffix}"
 
 
 def visuals_json_path(session_id: str) -> Path:
@@ -1006,12 +1121,29 @@ def load_visuals_obj(session_id: str) -> Dict[str, Any]:
     path = visuals_json_path(session_id)
     if not path.exists():
         raise HTTPException(404, "Character Visuals JSON not found for this session.")
-    return read_json(path)
+    try:
+        return read_json(path)
+    except json.JSONDecodeError:
+        meta = session_metadata(session_id)
+        source_name = meta.get("h2_input_file") or meta.get("parse_input_file") or meta.get("input_file")
+        if not source_name:
+            raise HTTPException(500, "Character Visuals JSON is invalid and no source file is available to rebuild it.")
+        source_path = sdir(session_id) / source_name
+        if not source_path.exists():
+            raise HTTPException(500, "Character Visuals JSON is invalid and the source file for rebuilding it is missing.")
+        corrupt_path = path.with_suffix(f"{path.suffix}.corrupt")
+        try:
+            shutil.copy2(path, corrupt_path)
+        except Exception:
+            pass
+        parse_visuals_for_session(session_id, source_path, export_csv=False)
+        return read_json(path)
 
 
 def save_visuals_obj(session_id: str, obj: Dict[str, Any]) -> None:
     path = visuals_json_path(session_id)
     write_json(path, obj)
+    PLAYER_GEAR_FIELD_CACHE.pop(session_id, None)
     export_visuals_csv(path, path.parent)
 
 
@@ -1048,9 +1180,15 @@ def build_visuals_table(data: Dict[str, Any], search: str = "") -> Dict[str, Any
     pmap = data.get("characterVisualsPlayerMap", {})
     slot_types = visual_slot_types_map(pmap)
     columns = [label for label, _ in VISUAL_PLAYER_FIELDS]
+    metric_columns: List[str] = []
+    gear_columns: List[str] = []
     for slot_type, props in slot_types.items():
         for prop in props:
-            columns.append(f"slotType: {slot_type}" if prop == "itemAssetName" else f"slotType: {slot_type} {prop.replace('blend_', '')}")
+            column = f"slotType: {slot_type}" if prop == "itemAssetName" else f"slotType: {slot_type} {prop.replace('blend_', '')}"
+            is_metric_slot = (slot_type.isdigit() and 43 <= int(slot_type) <= 49) or slot_type in BASE_LOADOUT_SLOT_NAMES
+            (metric_columns if is_metric_slot else gear_columns).append(column)
+    columns.extend(metric_columns)
+    columns.extend(gear_columns)
 
     needle = search.lower().strip()
     rows: List[Dict[str, Any]] = []
@@ -1058,17 +1196,18 @@ def build_visuals_table(data: Dict[str, Any], search: str = "") -> Dict[str, Any
         row = {label: 0 for label, _ in VISUAL_PLAYER_FIELDS}
         row["Player ID"] = player_id
         for label, key in VISUAL_PLAYER_FIELDS[1:]:
-            row[label] = player.get(key, 0)
+            value = player.get(key, 0)
+            row[label] = 0 if value is None else value
         for slot_type, props in slot_types.items():
             values: Dict[str, Any] = {}
             for loadout in player.get("loadouts") or []:
                 element = next((item for item in (loadout.get("loadoutElements") or []) if str(item.get("slotType")) == slot_type), None)
                 if not element:
                     continue
-                values["itemAssetName"] = element.get("itemAssetName", 0)
+                values["itemAssetName"] = 0 if element.get("itemAssetName") is None else element.get("itemAssetName", 0)
                 for blend in element.get("blends") or []:
                     for key, value in blend.items():
-                        values[f"blend_{key}"] = value
+                        values[f"blend_{key}"] = 0 if value is None else value
             for prop in props:
                 column = f"slotType: {slot_type}" if prop == "itemAssetName" else f"slotType: {slot_type} {prop.replace('blend_', '')}"
                 row[column] = values.get(prop, 0)
@@ -1078,6 +1217,78 @@ def build_visuals_table(data: Dict[str, Any], search: str = "") -> Dict[str, Any
                 continue
         rows.append(row)
     return {"columns": columns, "rows": rows}
+
+
+def player_gear_fields(session_id: str) -> List[str]:
+    """Gear/visual columns shown on the player card: the scalar appearance fields plus
+    every equipment slot column. Slots come from the parsed visuals when available,
+    otherwise from the static slot list so the card still renders before parsing."""
+    fields: List[str] = list(PLAYER_VISUAL_FIELD_LABELS)
+    try:
+        json_path = visuals_json_path(session_id)
+        if json_path.exists():
+            mtime = json_path.stat().st_mtime
+            cached = PLAYER_GEAR_FIELD_CACHE.get(session_id)
+            if cached and cached[0] == mtime:
+                return list(cached[1])
+            columns = build_visuals_table(load_visuals_obj(session_id))["columns"]
+            slot_columns = [col for col in columns if str(col).startswith("slotType:")]
+        else:
+            slot_columns = list(PLAYER_VISUAL_FIELDS)
+    except Exception:
+        slot_columns = list(PLAYER_VISUAL_FIELDS)
+    for column in slot_columns:
+        if column not in fields:
+            fields.append(column)
+    try:
+        json_path = visuals_json_path(session_id)
+        if json_path.exists():
+            PLAYER_GEAR_FIELD_CACHE[session_id] = (json_path.stat().st_mtime, list(fields))
+    except Exception:
+        pass
+    return fields
+
+
+def build_single_player_visual_fields(session_id: str, player_id: str) -> Dict[str, Any]:
+    """Fast path for the player editor. Avoids rebuilding the full flat visuals table
+    every time the user clicks one player."""
+    data = load_visuals_obj(session_id)
+    player = (data.get("characterVisualsPlayerMap") or {}).get(str(player_id)) or {}
+    columns = player_gear_fields(session_id)
+    fields = {column: 0 for column in columns}
+    fields["Player ID"] = player_id
+    for label, key in VISUAL_PLAYER_FIELDS[1:]:
+        value = player.get(key, 0)
+        fields[label] = 0 if value is None else value
+    slot_values: Dict[str, Dict[str, Any]] = {}
+    for loadout in player.get("loadouts") or []:
+        for element in loadout.get("loadoutElements") or []:
+            slot_type = str(element.get("slotType", ""))
+            if not slot_type:
+                continue
+            values = slot_values.setdefault(slot_type, {})
+            values["itemAssetName"] = 0 if element.get("itemAssetName") is None else element.get("itemAssetName", 0)
+            for blend in element.get("blends") or []:
+                for key, value in blend.items():
+                    values[f"blend_{key}"] = 0 if value is None else value
+    for slot_type, values in slot_values.items():
+        item_column = f"slotType: {slot_type}"
+        if item_column in fields:
+            fields[item_column] = values.get("itemAssetName", 0)
+        for prop, value in values.items():
+            if not prop.startswith("blend_"):
+                continue
+            blend_column = f"slotType: {slot_type} {prop.replace('blend_', '')}"
+            if blend_column in fields:
+                fields[blend_column] = value
+    return {"playerId": player_id, "fields": fields, "columns": columns}
+
+
+def gear_field_label(field_name: str) -> str:
+    if not str(field_name).startswith("slotType:"):
+        return field_name
+    text = str(field_name).replace("slotType: ", "")
+    return re.sub(r"(?<=[a-z])(?=[A-Z])", " ", text)
 
 
 def ensure_visual_player_loadouts(player: Dict[str, Any]) -> None:
@@ -1101,21 +1312,35 @@ def set_visuals_cell(player: Dict[str, Any], column: str, value: Any) -> None:
     detail = match.group(2)
     ensure_visual_player_loadouts(player)
     slot_type = int(slot_key) if slot_key.isdigit() else slot_key
-    loadout_type = 0 if slot_key.isdigit() and 43 <= int(slot_key) <= 49 else 1
+    is_base_slot = (slot_key.isdigit() and 43 <= int(slot_key) <= 49) or slot_key in BASE_LOADOUT_SLOT_NAMES
+    loadout_type = 0 if is_base_slot else 1
     loadout = next((item for item in player["loadouts"] if item.get("loadoutType") == loadout_type), None)
     if loadout is None:
         loadout = {"loadoutType": loadout_type, "loadoutCategory": 5 if loadout_type == 0 else 0, "loadoutElements": []}
         player["loadouts"].append(loadout)
+    normalized_value = 0 if value in (None, "") else value
     element = next((item for item in loadout.get("loadoutElements") or [] if str(item.get("slotType")) == slot_key), None)
+    if element is None and normalized_value in (0, "0") and not detail:
+        return
     if element is None:
         element = {"slotType": slot_type}
         loadout.setdefault("loadoutElements", []).append(element)
     if detail:
         blends = element.setdefault("blends", [{"barycentricBlend": 0, "baseBlend": 0}])
-        blends[0][detail] = 0 if value in (None, "") else value
+        blends[0][detail] = normalized_value
     else:
-        element["itemAssetName"] = value
+        element["itemAssetName"] = normalized_value
     loadout["loadoutElements"].sort(key=lambda item: visual_slot_sort_key(str(item.get("slotType", ""))))
+
+
+def ensure_visuals_player_entry(obj: Dict[str, Any], player_id: str) -> Dict[str, Any]:
+    pmap = obj.setdefault("characterVisualsPlayerMap", {})
+    player = pmap.get(player_id)
+    if player is None:
+        player = {"loadouts": []}
+        pmap[player_id] = player
+    ensure_visual_player_loadouts(player)
+    return player
 
 
 def export_visuals_csv(json_path: Path, outdir: Path) -> None:
@@ -1169,6 +1394,28 @@ def export_visuals_csv(json_path: Path, outdir: Path) -> None:
     }
     for name, rows in csv_specs.items():
         write_csv(outdir / name, rows)
+
+
+def export_visuals_flat_csv(visuals_obj: Dict[str, Any], path: Path) -> None:
+    """Write the one-row-per-player flat sheet that matches the on-screen Character
+    Visuals grid (scalars + ``slotType: X`` + blend sub-columns). Slot cells with no
+    item are written blank (not 0) so they round-trip through the flat importer."""
+    table = build_visuals_table(visuals_obj)
+    cols = table["columns"]
+    scalar_labels = set(PLAYER_VISUAL_FIELD_LABELS)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+        writer.writeheader()
+        for row in table["rows"]:
+            out: Dict[str, Any] = {}
+            for col in cols:
+                value = row.get(col)
+                if col not in scalar_labels and (value in (0, None, "")):
+                    out[col] = ""
+                else:
+                    out[col] = flatten_for_csv(value)
+            writer.writerow(out)
 
 
 def write_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
@@ -1273,6 +1520,47 @@ def import_visuals_players_csv_bytes(csv_bytes: bytes, current_obj: Dict[str, An
             player["loadouts"] = sample_player.get("loadouts", [])
         imported_map[player_id] = player
     return {"characterVisualsPlayerMap": imported_map}
+
+
+def is_flat_visuals_csv_header(fieldnames: Optional[Iterable[str]]) -> bool:
+    names = list(fieldnames or [])
+    has_id = any(n in ("Player ID", "visualPlayerId") for n in names)
+    has_slot = any(str(n).startswith("slotType:") for n in names)
+    return has_id and has_slot
+
+
+def import_visuals_flat_csv_bytes(csv_bytes: bytes, current_obj: Dict[str, Any]) -> Dict[str, Any]:
+    """Rebuild the nested characterVisualsPlayerMap from the flat one-row-per-player
+    sheet. Mirrors the reference json-editor-app: players are updated in place, blank
+    scalar cells keep the existing value, and blank slot cells are skipped (so no empty
+    equipment elements are created). Players absent from the CSV are left untouched."""
+    text = csv_bytes.decode("utf-8-sig", errors="replace")
+    reader = csv.DictReader(io.StringIO(text))
+    current_map: Dict[str, Any] = dict(current_obj.get("characterVisualsPlayerMap", {}) or {})
+    for row in reader:
+        player_id = str(row.get("Player ID") or row.get("visualPlayerId") or "").strip()
+        if not player_id:
+            continue
+        player = current_map.get(player_id)
+        if player is None:
+            player = {}
+            current_map[player_id] = player
+        for label, key in VISUAL_PLAYER_FIELDS:
+            if label == "Player ID" or label not in row:
+                continue
+            raw = (row.get(label) or "").strip()
+            if raw == "":
+                continue
+            player[key] = parse_csv_cell(raw, player.get(key))
+        ensure_visual_player_loadouts(player)
+        for column, raw_value in row.items():
+            if not column or not str(column).startswith("slotType:"):
+                continue
+            cell = (raw_value or "").strip()
+            if cell == "":
+                continue
+            set_visuals_cell(player, column, parse_csv_cell(cell))
+    return {"characterVisualsPlayerMap": current_map}
 
 
 def read_csv_rows_from_bytes(csv_bytes: bytes) -> List[Dict[str, Any]]:
@@ -1976,6 +2264,43 @@ def health():
     return {"ok": True, "app": "FB Roster Editor API"}
 
 
+@app.get("/api/portraits/{filename:path}")
+def serve_portrait(filename: str):
+    safe_name = Path(filename).name
+    if not safe_name:
+        raise HTTPException(404, "Portrait file not specified.")
+    requested_names = portrait_candidate_names(safe_name)
+    for root in portrait_search_roots():
+        root_resolved = root.resolve()
+        for candidate_name in requested_names:
+            candidate = (root_resolved / candidate_name).resolve()
+            try:
+                candidate.relative_to(root_resolved)
+            except ValueError:
+                continue
+            if candidate.exists() and candidate.is_file():
+                media_type = "image/webp" if candidate.suffix.lower() == ".webp" else "image/png"
+                return FileResponse(candidate, media_type=media_type)
+    raise HTTPException(404, f"Portrait not found: {safe_name}")
+
+
+@app.get("/api/assets/{category}/{filename:path}")
+def serve_external_asset(category: str, filename: str):
+    safe_name = Path(filename).name
+    if not safe_name:
+        raise HTTPException(404, "Asset file not specified.")
+    for root in asset_search_roots(category):
+        candidate = (root / safe_name).resolve()
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            continue
+        if candidate.exists() and candidate.is_file():
+            media_type = "image/svg+xml" if candidate.suffix.lower() == ".svg" else "image/png"
+            return FileResponse(candidate, media_type=media_type)
+    raise HTTPException(404, f"Asset not found: {category}/{safe_name}")
+
+
 @app.post("/api/parse")
 async def parse_roster(file: UploadFile = File(...)):
     session_id = uuid.uuid4().hex[:12]
@@ -2231,15 +2556,17 @@ def get_player_options(session_id: str, team_id: Optional[int] = Query(default=N
             continue
         team_name = enriched.get("TeamName") or ""
         label = " ".join(part for part in [first, last] if part).strip() or f"Player {idx}"
-        detail = " • ".join(part for part in [team_name, position] if part)
+        detail = " â€¢ ".join(part for part in [team_name, position] if part)
         if needle and needle not in f"{label} {detail}".lower():
             continue
         options.append({
             "rowIndex": idx,
+            "playerId": enriched.get("PGID"),
             "teamId": enriched.get("TGID"),
             "teamName": team_name,
             "positionId": position_id,
             "position": position,
+            "jerseyNumber": enriched.get("PJEN"),
             "label": label,
             "detail": detail,
             "ovr": enriched.get("POVR"),
@@ -2261,30 +2588,32 @@ def get_editor_meta(session_id: str, table_name: str):
             "table": table_name,
             "labels": {},
             "selectOptions": editor_select_options(table_name),
-            "gearFields": PLAYER_VISUAL_FIELDS if table_name.upper() == "PLAY" else [],
+            "gearFields": player_gear_fields(session_id) if table_name.upper() == "PLAY" else [],
         }
     labels = get_field_labels_for_table(meta["name"])
     return {
         "table": meta["name"],
         "labels": labels,
         "selectOptions": editor_select_options(meta["name"]),
-        "gearFields": PLAYER_VISUAL_FIELDS if meta["name"].upper() == "PLAY" else [],
+        "gearFields": player_gear_fields(session_id) if meta["name"].upper() == "PLAY" else [],
     }
 
 
 @app.get("/api/session/{session_id}/visual-options")
 def get_visual_options(session_id: str):
     sdir(session_id)
-    return {
-        "fields": {
-            field_name: {
-                "slotName": visual_field_to_slot_name(field_name),
-                "label": visual_field_to_slot_name(field_name),
-                "options": load_visual_prefab_options().get(visual_field_to_slot_name(field_name), []),
-            }
-            for field_name in PLAYER_VISUAL_FIELDS
+    prefab = load_visual_prefab_options()
+    fields: Dict[str, Any] = {}
+    for field_name in player_gear_fields(session_id):
+        is_slot = str(field_name).startswith("slotType:")
+        slot_name = visual_field_to_slot_name(field_name)
+        is_blend = is_slot and (" baseBlend" in field_name or " barycentricBlend" in field_name)
+        fields[field_name] = {
+            "slotName": slot_name,
+            "label": gear_field_label(field_name),
+            "options": prefab.get(slot_name, []) if (is_slot and not is_blend) else [],
         }
-    }
+    return {"fields": fields}
 
 
 @app.get("/api/session/{session_id}/player-visuals/{player_id}")
@@ -2292,18 +2621,14 @@ def get_player_visuals(session_id: str, player_id: str):
     meta = session_metadata(session_id)
     visuals_meta = meta.get("visuals") or {}
     if visuals_meta.get("supported") is False:
-        return {"playerId": player_id, "fields": {}}
-    ensure_visuals_parsed(session_id)
-    table = build_visuals_table(load_visuals_obj(session_id))
-    row = next((record for record in table.get("rows", []) if str(record.get("Player ID")) == str(player_id)), None)
-    if row is None:
-        return {"playerId": player_id, "fields": {}}
-    fields = {}
-    for key in PLAYER_VISUAL_FIELDS:
-        if key in row:
-            fields[key] = row.get(key)
-    return {"playerId": player_id, "fields": fields}
-
+        return {"playerId": player_id, "fields": {}, "columns": []}
+    try:
+        ensure_visuals_parsed(session_id)
+        return build_single_player_visual_fields(session_id, player_id)
+    except HTTPException as exc:
+        if exc.status_code == 404:
+            return {"playerId": player_id, "fields": {"Player ID": player_id}, "columns": ["Player ID"]}
+        raise
 
 @app.get("/api/session/{session_id}/table/{table_path:path}")
 def get_table(
@@ -2529,16 +2854,25 @@ def get_visuals_json(session_id: str):
 @app.patch("/api/session/{session_id}/visuals-cell")
 def update_visuals_cell(session_id: str, edit: VisualsCellEdit):
     obj = load_visuals_obj(session_id)
-    pmap = obj.get("characterVisualsPlayerMap", {})
-    player = pmap.get(edit.player_id)
-    if player is None:
-        raise HTTPException(404, f"Visuals player not found: {edit.player_id}")
+    player = ensure_visuals_player_entry(obj, edit.player_id)
     before = build_visuals_table(obj)["rows"]
     before_row = next((row for row in before if str(row.get("Player ID")) == str(edit.player_id)), None) or {}
     before_value = before_row.get(edit.column)
     set_visuals_cell(player, edit.column, edit.value)
     save_visuals_obj(session_id, obj)
     return {"ok": True, "before": before_value, "after": edit.value}
+
+
+def clear_autosave_file(session_id: str) -> None:
+    path = autosave_target_path(session_id)
+    if path.exists():
+        path.unlink()
+
+
+@app.post("/api/session/{session_id}/autosave")
+def autosave_session(session_id: str):
+    path = save_roster_variant_to_path(session_id, "default", autosave_target_path(session_id), clear_autosave=False)
+    return {"ok": True, "path": str(path), "filename": path.name}
 
 
 @app.get("/api/session/{session_id}/export/table/{table_path:path}.{fmt}")
@@ -2605,7 +2939,14 @@ async def import_visuals_csv(session_id: str, file: UploadFile = File(...)):
         except zipfile.BadZipFile:
             raise HTTPException(400, "Uploaded visuals CSV bundle is not a valid zip archive.")
     else:
-        imported_obj = import_visuals_players_csv_bytes(payload, current_obj)
+        try:
+            header = next(csv.reader(io.StringIO(payload.decode("utf-8-sig", errors="replace"))), [])
+        except Exception:
+            header = []
+        if is_flat_visuals_csv_header(header):
+            imported_obj = import_visuals_flat_csv_bytes(payload, current_obj)
+        else:
+            imported_obj = import_visuals_players_csv_bytes(payload, current_obj)
     save_visuals_obj(session_id, imported_obj)
     return {
         "ok": True,
@@ -2617,6 +2958,7 @@ async def import_visuals_csv(session_id: str, file: UploadFile = File(...)):
 def export_visuals(session_id: str, name: str):
     allowed = {
         "nested.json": ("character_visuals_nested.json", "application/json"),
+        "flat.csv": ("character_visuals_players_flat.csv", "text/csv"),
         "players.csv": ("character_visuals_players.csv", "text/csv"),
         "loadouts.csv": ("character_visuals_loadouts.csv", "text/csv"),
         "elements.csv": ("character_visuals_loadout_elements.csv", "text/csv"),
@@ -2632,6 +2974,9 @@ def export_visuals(session_id: str, name: str):
         minified_path = visuals_dir / "character_visuals_nested_export.json"
         write_minified_json(minified_path, read_json(json_path))
         path = minified_path
+    elif name == "flat.csv":
+        path = visuals_dir / fname
+        export_visuals_flat_csv(read_json(json_path), path)
     else:
         if name.endswith(".csv"):
             export_visuals_csv(json_path, visuals_dir)
@@ -2647,6 +2992,25 @@ def export_all(session_id: str):
     return FileResponse(zip_path, media_type="application/zip", filename=zip_path.name)
 
 
+def bulk_table_entries(session_id: str) -> List[Dict[str, Any]]:
+    """Summary entries for the scoped bulk tables (COCH/DCHT/PLAY/TCPS/TEAM)."""
+    return [
+        table for table in summary(session_id).get("tables", [])
+        if str(table.get("name", "")).upper() in BULK_TABLE_NAMES
+    ]
+
+
+def session_supports_visuals(session_id: str) -> bool:
+    meta = session_metadata(session_id)
+    if meta.get("session_kind") == "franchise":
+        return False
+    return (meta.get("visuals") or {}).get("supported") is not False
+
+
+VISUALS_FLAT_CSV_ARCHIVE = "character_visuals_players_flat.csv"
+VISUALS_NESTED_JSON_ARCHIVE = "character_visuals_nested.json"
+
+
 @app.get("/api/session/{session_id}/export/all-csv.zip")
 def export_all_csv(session_id: str):
     base = sdir(session_id)
@@ -2654,12 +3018,14 @@ def export_all_csv(session_id: str):
     manifest = {
         "session_id": session_id,
         "input_file": session_metadata(session_id).get("input_file"),
+        "format": "csv",
         "tables": [],
+        "visuals": None,
     }
     if export_path.exists():
         export_path.unlink()
     with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as z:
-        for table in summary(session_id).get("tables", []):
+        for table in bulk_table_entries(session_id):
             table_path = table["path"]
             obj = load_table_obj(session_id, table_path)
             records = obj.get("records", [])
@@ -2679,6 +3045,54 @@ def export_all_csv(session_id: str):
                 "csv": archive_name,
                 "records": len(records),
             })
+        if session_supports_visuals(session_id):
+            try:
+                ensure_visuals_parsed(session_id)
+                flat_path = base / "visuals" / VISUALS_FLAT_CSV_ARCHIVE
+                export_visuals_flat_csv(read_json(visuals_json_path(session_id)), flat_path)
+                z.write(flat_path, VISUALS_FLAT_CSV_ARCHIVE)
+                manifest["visuals"] = {"format": "flat_csv", "csv": VISUALS_FLAT_CSV_ARCHIVE}
+            except Exception as exc:
+                manifest["visuals"] = {"error": str(exc)}
+        z.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+    return FileResponse(export_path, media_type="application/zip", filename=export_path.name)
+
+
+@app.get("/api/session/{session_id}/export/all-json.zip")
+def export_all_json(session_id: str):
+    base = sdir(session_id)
+    export_path = base / "madden_roster_editor_json_bundle.zip"
+    manifest = {
+        "session_id": session_id,
+        "input_file": session_metadata(session_id).get("input_file"),
+        "format": "json",
+        "tables": [],
+        "visuals": None,
+    }
+    if export_path.exists():
+        export_path.unlink()
+    with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as z:
+        for table in bulk_table_entries(session_id):
+            table_path = table["path"]
+            obj = load_table_obj(session_id, table_path)
+            archive_name = f"tables/{str(table.get('name') or table_path)}.json"
+            z.writestr(archive_name, json.dumps(obj, ensure_ascii=False, indent=2).encode("utf-8"))
+            manifest["tables"].append({
+                "path": table_path,
+                "name": table.get("name"),
+                "json": archive_name,
+                "records": len(obj.get("records", [])),
+            })
+        if session_supports_visuals(session_id):
+            try:
+                ensure_visuals_parsed(session_id)
+                z.writestr(
+                    VISUALS_NESTED_JSON_ARCHIVE,
+                    json.dumps(read_json(visuals_json_path(session_id)), ensure_ascii=False).encode("utf-8"),
+                )
+                manifest["visuals"] = {"format": "nested_json", "json": VISUALS_NESTED_JSON_ARCHIVE}
+            except Exception as exc:
+                manifest["visuals"] = {"error": str(exc)}
         z.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
     return FileResponse(export_path, media_type="application/zip", filename=export_path.name)
 
@@ -2701,6 +3115,8 @@ async def import_all_csv(session_id: str, file: UploadFile = File(...)):
                 csv_name = table_entry.get("csv")
                 if not table_path or not csv_name:
                     continue
+                if str(table_entry.get("name", "")).upper() not in BULK_TABLE_NAMES:
+                    continue
                 if csv_name not in names:
                     raise HTTPException(400, f"CSV zip is missing {csv_name}.")
                 obj = load_table_obj(session_id, table_path)
@@ -2713,6 +3129,16 @@ async def import_all_csv(session_id: str, file: UploadFile = File(...)):
                     "path": table_path,
                     "records": len(imported_records),
                 })
+            visuals_entry = manifest.get("visuals") or {}
+            visuals_csv = visuals_entry.get("csv")
+            if visuals_csv and visuals_csv in names and session_supports_visuals(session_id):
+                ensure_visuals_parsed(session_id)
+                imported_obj = import_visuals_flat_csv_bytes(z.read(visuals_csv), load_visuals_obj(session_id))
+                save_visuals_obj(session_id, imported_obj)
+                updated_tables.append({
+                    "path": "CharacterVisuals",
+                    "records": len(imported_obj.get("characterVisualsPlayerMap", {})),
+                })
     except HTTPException:
         raise
     except zipfile.BadZipFile:
@@ -2721,6 +3147,57 @@ async def import_all_csv(session_id: str, file: UploadFile = File(...)):
         raise HTTPException(400, f"CSV zip manifest is invalid: {e}")
     except Exception as e:
         raise HTTPException(500, f"CSV import failed: {e}")
+    return {"ok": True, "tables": updated_tables, "tableCount": len(updated_tables)}
+
+
+@app.post("/api/session/{session_id}/import/all-json")
+async def import_all_json(session_id: str, file: UploadFile = File(...)):
+    base = sdir(session_id)
+    payload = await file.read()
+    if not payload:
+        raise HTTPException(400, "JSON zip is empty.")
+    updated_tables = []
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload), "r") as z:
+            names = set(z.namelist())
+            if "manifest.json" not in names:
+                raise HTTPException(400, "JSON zip is missing manifest.json.")
+            manifest = json.loads(z.read("manifest.json").decode("utf-8"))
+            for table_entry in manifest.get("tables", []):
+                table_path = table_entry.get("path")
+                json_name = table_entry.get("json")
+                if not table_path or not json_name:
+                    continue
+                if str(table_entry.get("name", "")).upper() not in BULK_TABLE_NAMES:
+                    continue
+                if json_name not in names:
+                    raise HTTPException(400, f"JSON zip is missing {json_name}.")
+                imported_obj = json.loads(z.read(json_name).decode("utf-8"))
+                obj = load_table_obj(session_id, table_path)
+                obj["records"] = imported_obj.get("records", [])
+                save_table_obj(session_id, table_path, obj)
+                updated_tables.append({
+                    "path": table_path,
+                    "records": len(obj["records"]),
+                })
+            visuals_entry = manifest.get("visuals") or {}
+            visuals_json = visuals_entry.get("json")
+            if visuals_json and visuals_json in names and session_supports_visuals(session_id):
+                ensure_visuals_parsed(session_id)
+                imported_visuals = json.loads(z.read(visuals_json).decode("utf-8"))
+                save_visuals_obj(session_id, imported_visuals)
+                updated_tables.append({
+                    "path": "CharacterVisuals",
+                    "records": len(imported_visuals.get("characterVisualsPlayerMap", {})),
+                })
+    except HTTPException:
+        raise
+    except zipfile.BadZipFile:
+        raise HTTPException(400, "Uploaded file is not a valid zip archive.")
+    except json.JSONDecodeError as e:
+        raise HTTPException(400, f"JSON zip manifest is invalid: {e}")
+    except Exception as e:
+        raise HTTPException(500, f"JSON import failed: {e}")
     return {"ok": True, "tables": updated_tables, "tableCount": len(updated_tables)}
 
 
@@ -2740,6 +3217,11 @@ def save_roster_compressed(session_id: str):
 
 
 def save_roster_variant(session_id: str, mode: str):
+    output_path = save_roster_variant_to_path(session_id, mode)
+    return FileResponse(output_path, media_type="application/octet-stream", filename=output_path.name)
+
+
+def save_roster_variant_to_path(session_id: str, mode: str, output_path: Optional[Path] = None, *, clear_autosave: bool = True) -> Path:
     base = sdir(session_id)
     meta = session_metadata(session_id)
     if meta.get("session_kind") == "franchise":
@@ -2750,16 +3232,20 @@ def save_roster_variant(session_id: str, mode: str):
     effective_mode = default_save_mode(meta) if mode == "default" else mode
     if should_use_hc09_bridge(meta):
         if effective_mode in ("wrapped", "fbchunks"):
-            wrapped_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_wrapped"
+            wrapped_out_path = output_path or (base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_wrapped")
             run_hc09_save_bridge(session_id, "wrapped", wrapped_out_path)
-            return FileResponse(wrapped_out_path, media_type="application/octet-stream", filename=wrapped_out_path.name)
+            if clear_autosave:
+                clear_autosave_file(session_id)
+            return wrapped_out_path
         if effective_mode in ("raw", "tdb2"):
-            raw_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db"
+            raw_out_path = output_path or (base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db")
             run_hc09_save_bridge(session_id, "raw", raw_out_path)
-            return FileResponse(raw_out_path, media_type="application/octet-stream", filename=raw_out_path.name)
+            if clear_autosave:
+                clear_autosave_file(session_id)
+            return raw_out_path
         raise HTTPException(400, f"Unsupported save mode: {effective_mode}")
     if should_use_tdb_bridge(meta):
-        raw_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db"
+        raw_out_path = output_path or (base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db")
         run_tdb_bridge_save(session_id, raw_out_path)
         write_json(
             base / "last_binary_rebuild_summary.json",
@@ -2771,12 +3257,14 @@ def save_roster_variant(session_id: str, mode: str):
             },
         )
         if effective_mode in ("raw", "tdb"):
-            return FileResponse(raw_out_path, media_type="application/octet-stream", filename=raw_out_path.name)
+            if clear_autosave:
+                clear_autosave_file(session_id)
+            return raw_out_path
         if effective_mode == "cdb":
             h2_input_path = base / meta.get("h2_input_file", "")
             if not h2_input_path.exists():
                 raise HTTPException(400, "This session was not opened from a CDB file with an H2 payload.")
-            cdb_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited.db"
+            cdb_out_path = output_path or (base / f"{Path(meta.get('input_file', 'roster')).stem}_edited.db")
             version = int((meta.get("wrapper_meta") or {}).get("version") or 1)
             visuals_json = visuals_json_path(session_id)
             rebuilt_h2_path = base / "visuals" / "rebuilt_input_payload.h2"
@@ -2790,9 +3278,11 @@ def save_roster_variant(session_id: str, mode: str):
             rebuild_summary = read_json(base / "last_binary_rebuild_summary.json")
             rebuild_summary["visuals_h2"] = h2_meta
             write_json(base / "last_binary_rebuild_summary.json", rebuild_summary)
-            return FileResponse(cdb_out_path, media_type="application/octet-stream", filename=cdb_out_path.name)
+            if clear_autosave:
+                clear_autosave_file(session_id)
+            return cdb_out_path
         raise HTTPException(400, f"Unsupported save mode: {effective_mode}")
-    raw_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db"
+    raw_out_path = output_path or (base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db")
     try:
         rebuild_meta = rebuild_roster_db(raw_input_path, base / "parse", raw_out_path, visuals_dir=base / "visuals", rebuild_visuals=True)
         # Validate by parsing the rebuilt DB enough to make sure it is structurally readable,
@@ -2820,14 +3310,18 @@ def save_roster_variant(session_id: str, mode: str):
     except Exception as e:
         raise HTTPException(500, f"Binary rebuild failed: {e}")
     if effective_mode == "raw" or effective_mode == "tdb2":
-        return FileResponse(raw_out_path, media_type="application/octet-stream", filename=raw_out_path.name)
+        if clear_autosave:
+            clear_autosave_file(session_id)
+        return raw_out_path
     if effective_mode == "wrapped" or effective_mode == "fbchunks":
         header_path = base / "wrapper_header.bin"
         if not header_path.exists():
             raise HTTPException(400, "This session was not opened from an FBCHUNKS wrapped roster.")
-        wrapped_out_path = base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_wrapped"
+        wrapped_out_path = output_path or (base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_wrapped")
         wrapped_out_path.write_bytes(build_wrapped_roster(raw_out_path.read_bytes(), header_path.read_bytes()))
-        return FileResponse(wrapped_out_path, media_type="application/octet-stream", filename=wrapped_out_path.name)
+        if clear_autosave:
+            clear_autosave_file(session_id)
+        return wrapped_out_path
     raise HTTPException(400, f"Unsupported save mode: {effective_mode}")
 
 
@@ -2855,6 +3349,7 @@ def save_project_json(session_id: str):
     if vpath.exists():
         out["characterVisuals"] = read_json(vpath)
     write_json(project_path, out)
+    clear_autosave_file(session_id)
     return FileResponse(project_path, media_type="application/json", filename=project_path.name)
 
 class JsonUpdate(BaseModel):

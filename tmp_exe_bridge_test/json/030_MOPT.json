@@ -1,0 +1,353 @@
+{
+  "path": "MOPT",
+  "name": "MOPT",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 96624,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "OPBA",
+      "type": 3
+    },
+    {
+      "name": "OTCA",
+      "type": 3
+    },
+    {
+      "name": "OFFA",
+      "type": 3
+    },
+    {
+      "name": "MMFA",
+      "type": 3
+    },
+    {
+      "name": "ORFA",
+      "type": 3
+    },
+    {
+      "name": "OVSA",
+      "type": 3
+    },
+    {
+      "name": "OPTA",
+      "type": 3
+    },
+    {
+      "name": "OCRB",
+      "type": 3
+    },
+    {
+      "name": "OP2C",
+      "type": 3
+    },
+    {
+      "name": "MOAC",
+      "type": 3
+    },
+    {
+      "name": "MOEC",
+      "type": 3
+    },
+    {
+      "name": "MOOC",
+      "type": 3
+    },
+    {
+      "name": "OLRC",
+      "type": 3
+    },
+    {
+      "name": "OFSC",
+      "type": 3
+    },
+    {
+      "name": "OPCD",
+      "type": 3
+    },
+    {
+      "name": "OFFD",
+      "type": 3
+    },
+    {
+      "name": "OPFD",
+      "type": 3
+    },
+    {
+      "name": "OFTD",
+      "type": 3
+    },
+    {
+      "name": "OCUD",
+      "type": 3
+    },
+    {
+      "name": "OCCE",
+      "type": 3
+    },
+    {
+      "name": "OLLE",
+      "type": 3
+    },
+    {
+      "name": "OMRE",
+      "type": 3
+    },
+    {
+      "name": "MNSE",
+      "type": 3
+    },
+    {
+      "name": "OFCF",
+      "type": 3
+    },
+    {
+      "name": "OPTG",
+      "type": 3
+    },
+    {
+      "name": "OFDH",
+      "type": 3
+    },
+    {
+      "name": "OHFH",
+      "type": 3
+    },
+    {
+      "name": "OPGH",
+      "type": 3
+    },
+    {
+      "name": "OQSH",
+      "type": 3
+    },
+    {
+      "name": "OPEI",
+      "type": 3
+    },
+    {
+      "name": "SIMI",
+      "type": 3
+    },
+    {
+      "name": "OCRI",
+      "type": 3
+    },
+    {
+      "name": "OROL",
+      "type": 3
+    },
+    {
+      "name": "MCPL",
+      "type": 3
+    },
+    {
+      "name": "OFQL",
+      "type": 3
+    },
+    {
+      "name": "OFSL",
+      "type": 3
+    },
+    {
+      "name": "OMRM",
+      "type": 3
+    },
+    {
+      "name": "OPRM",
+      "type": 3
+    },
+    {
+      "name": "OFDN",
+      "type": 3
+    },
+    {
+      "name": "OFIN",
+      "type": 3
+    },
+    {
+      "name": "OOWN",
+      "type": 3
+    },
+    {
+      "name": "MOEO",
+      "type": 3
+    },
+    {
+      "name": "OGIO",
+      "type": 3
+    },
+    {
+      "name": "OSTO",
+      "type": 3
+    },
+    {
+      "name": "ODCP",
+      "type": 3
+    },
+    {
+      "name": "OSCP",
+      "type": 3
+    },
+    {
+      "name": "OWLP",
+      "type": 3
+    },
+    {
+      "name": "FNDR",
+      "type": 3
+    },
+    {
+      "name": "OIMR",
+      "type": 3
+    },
+    {
+      "name": "OINR",
+      "type": 3
+    },
+    {
+      "name": "OICS",
+      "type": 3
+    },
+    {
+      "name": "OSFS",
+      "type": 3
+    },
+    {
+      "name": "ODPS",
+      "type": 3
+    },
+    {
+      "name": "OSPS",
+      "type": 3
+    },
+    {
+      "name": "MORS",
+      "type": 3
+    },
+    {
+      "name": "OPRS",
+      "type": 3
+    },
+    {
+      "name": "OPSS",
+      "type": 3
+    },
+    {
+      "name": "OAUS",
+      "type": 3
+    },
+    {
+      "name": "OFFT",
+      "type": 3
+    },
+    {
+      "name": "OFNT",
+      "type": 3
+    },
+    {
+      "name": "OFPT",
+      "type": 3
+    },
+    {
+      "name": "OFST",
+      "type": 3
+    },
+    {
+      "name": "ORST",
+      "type": 3
+    },
+    {
+      "name": "ONWT",
+      "type": 3
+    },
+    {
+      "name": "OLEX",
+      "type": 3
+    },
+    {
+      "name": "OBOX",
+      "type": 3
+    },
+    {
+      "name": "OSHi",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "OPBA": 0,
+      "OTCA": 0,
+      "OFFA": 1,
+      "MMFA": 500,
+      "ORFA": 0,
+      "OVSA": 1,
+      "OPTA": 1,
+      "OCRB": 1,
+      "OP2C": 1,
+      "MOAC": 0,
+      "MOEC": 1,
+      "MOOC": 1,
+      "OLRC": 1,
+      "OFSC": 1,
+      "OPCD": 1,
+      "OFFD": 0,
+      "OPFD": 30,
+      "OFTD": 1,
+      "OCUD": 0,
+      "OCCE": 1,
+      "OLLE": 1,
+      "OMRE": 0,
+      "MNSE": 15,
+      "OFCF": 1,
+      "OPTG": 1,
+      "OFDH": 0,
+      "OHFH": 1,
+      "OPGH": 1,
+      "OQSH": 1,
+      "OPEI": 0,
+      "SIMI": 0,
+      "OCRI": 1,
+      "OROL": 0,
+      "MCPL": 128,
+      "OFQL": 5,
+      "OFSL": 1,
+      "OMRM": 0,
+      "OPRM": 0,
+      "OFDN": 49,
+      "OFIN": 1,
+      "OOWN": 0,
+      "MOEO": 1,
+      "OGIO": 0,
+      "OSTO": 0,
+      "ODCP": 0,
+      "OSCP": 1,
+      "OWLP": 0,
+      "FNDR": 7,
+      "OIMR": 0,
+      "OINR": 1,
+      "OICS": 0,
+      "OSFS": 0,
+      "ODPS": 0,
+      "OSPS": 0,
+      "MORS": 0,
+      "OPRS": 1,
+      "OPSS": 0,
+      "OAUS": 0,
+      "OFFT": 0,
+      "OFNT": 38,
+      "OFPT": 12,
+      "OFST": 120,
+      "ORST": 0,
+      "ONWT": 4,
+      "OLEX": 0,
+      "OBOX": 1,
+      "OSHi": 1
+    }
+  ]
+}

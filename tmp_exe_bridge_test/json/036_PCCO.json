@@ -1,0 +1,106 @@
+{
+  "path": "PCCO",
+  "name": "PCCO",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 98228,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "PCAP",
+      "type": 2
+    },
+    {
+      "name": "pcda",
+      "type": 2
+    },
+    {
+      "name": "pcma",
+      "type": 2
+    },
+    {
+      "name": "pcra",
+      "type": 2
+    },
+    {
+      "name": "pcsa",
+      "type": 2
+    },
+    {
+      "name": "pcya",
+      "type": 2
+    },
+    {
+      "name": "pcdc",
+      "type": 3
+    },
+    {
+      "name": "pcrc",
+      "type": 2
+    },
+    {
+      "name": "pcsc",
+      "type": 2
+    },
+    {
+      "name": "pctc",
+      "type": 3
+    },
+    {
+      "name": "pcrd",
+      "type": 2
+    },
+    {
+      "name": "pcrg",
+      "type": 2
+    },
+    {
+      "name": "pcsg",
+      "type": 2
+    },
+    {
+      "name": "pcri",
+      "type": 2
+    },
+    {
+      "name": "pcro",
+      "type": 2
+    },
+    {
+      "name": "pcpp",
+      "type": 3
+    },
+    {
+      "name": "pcrp",
+      "type": 3
+    },
+    {
+      "name": "pcpr",
+      "type": 3
+    },
+    {
+      "name": "pcot",
+      "type": 3
+    },
+    {
+      "name": "pcpt",
+      "type": 2
+    },
+    {
+      "name": "pcrt",
+      "type": 2
+    },
+    {
+      "name": "pcpy",
+      "type": 2
+    }
+  ],
+  "records": []
+}

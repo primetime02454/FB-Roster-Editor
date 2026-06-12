@@ -1,0 +1,30 @@
+{
+  "path": "PCLN",
+  "name": "PCLN",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 98636,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "pcps",
+      "type": 3
+    },
+    {
+      "name": "pcrs",
+      "type": 3
+    },
+    {
+      "name": "pcry",
+      "type": 2
+    }
+  ],
+  "records": []
+}

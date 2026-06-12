@@ -1,0 +1,48 @@
+{
+  "path": "TCCD",
+  "name": "TCCD",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 952068,
+  "raw_key_hex": "",
+  "declared_entries_total": 5,
+  "records_parsed": 5,
+  "field_definitions": [
+    {
+      "name": "TCCD",
+      "type": 3
+    },
+    {
+      "name": "MXPL",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "TCCD": 0,
+      "MXPL": 70
+    },
+    {
+      "_index": 1,
+      "TCCD": 1,
+      "MXPL": 65
+    },
+    {
+      "_index": 2,
+      "TCCD": 2,
+      "MXPL": 60
+    },
+    {
+      "_index": 3,
+      "TCCD": 3,
+      "MXPL": 57
+    },
+    {
+      "_index": 4,
+      "TCCD": 4,
+      "MXPL": 53
+    }
+  ]
+}

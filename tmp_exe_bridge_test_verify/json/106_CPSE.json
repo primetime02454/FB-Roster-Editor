@@ -1,0 +1,4672 @@
+{
+  "path": "CPSE",
+  "name": "CPSE",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 645628,
+  "raw_key_hex": "",
+  "declared_entries_total": 663,
+  "records_parsed": 663,
+  "field_definitions": [
+    {
+      "name": "PPIM",
+      "type": 3
+    },
+    {
+      "name": "PDRP",
+      "type": 3
+    },
+    {
+      "name": "CDPT",
+      "type": 3
+    },
+    {
+      "name": "PNid",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "PPIM": 72,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 3
+    },
+    {
+      "_index": 1,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 3
+    },
+    {
+      "_index": 2,
+      "PPIM": 91,
+      "PDRP": 8,
+      "CDPT": 2,
+      "PNid": 3
+    },
+    {
+      "_index": 3,
+      "PPIM": 87,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 3
+    },
+    {
+      "_index": 4,
+      "PPIM": 89,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 16
+    },
+    {
+      "_index": 5,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 16
+    },
+    {
+      "_index": 6,
+      "PPIM": 90,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 16
+    },
+    {
+      "_index": 7,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 16
+    },
+    {
+      "_index": 8,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 16
+    },
+    {
+      "_index": 9,
+      "PPIM": 90,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 16
+    },
+    {
+      "_index": 10,
+      "PPIM": 71,
+      "PDRP": 7,
+      "CDPT": 2,
+      "PNid": 17
+    },
+    {
+      "_index": 11,
+      "PPIM": 90,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 17
+    },
+    {
+      "_index": 12,
+      "PPIM": 90,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 17
+    },
+    {
+      "_index": 13,
+      "PPIM": 92,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 17
+    },
+    {
+      "_index": 14,
+      "PPIM": 70,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 17
+    },
+    {
+      "_index": 15,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 17
+    },
+    {
+      "_index": 16,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 17
+    },
+    {
+      "_index": 17,
+      "PPIM": 93,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 17
+    },
+    {
+      "_index": 18,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 17
+    },
+    {
+      "_index": 19,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 17
+    },
+    {
+      "_index": 20,
+      "PPIM": 88,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 17
+    },
+    {
+      "_index": 21,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 17
+    },
+    {
+      "_index": 22,
+      "PPIM": 93,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 17
+    },
+    {
+      "_index": 23,
+      "PPIM": 78,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 17
+    },
+    {
+      "_index": 24,
+      "PPIM": 91,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 17
+    },
+    {
+      "_index": 25,
+      "PPIM": 68,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 17
+    },
+    {
+      "_index": 26,
+      "PPIM": 89,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 17
+    },
+    {
+      "_index": 27,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 132
+    },
+    {
+      "_index": 28,
+      "PPIM": 89,
+      "PDRP": 12,
+      "CDPT": 2,
+      "PNid": 132
+    },
+    {
+      "_index": 29,
+      "PPIM": 94,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 132
+    },
+    {
+      "_index": 30,
+      "PPIM": 88,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 132
+    },
+    {
+      "_index": 31,
+      "PPIM": 69,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 132
+    },
+    {
+      "_index": 32,
+      "PPIM": 83,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 132
+    },
+    {
+      "_index": 33,
+      "PPIM": 85,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 132
+    },
+    {
+      "_index": 34,
+      "PPIM": 95,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 132
+    },
+    {
+      "_index": 35,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 132
+    },
+    {
+      "_index": 36,
+      "PPIM": 89,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 132
+    },
+    {
+      "_index": 37,
+      "PPIM": 88,
+      "PDRP": 10,
+      "CDPT": 1,
+      "PNid": 132
+    },
+    {
+      "_index": 38,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 132
+    },
+    {
+      "_index": 39,
+      "PPIM": 92,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 132
+    },
+    {
+      "_index": 40,
+      "PPIM": 81,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 132
+    },
+    {
+      "_index": 41,
+      "PPIM": 91,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 132
+    },
+    {
+      "_index": 42,
+      "PPIM": 72,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 132
+    },
+    {
+      "_index": 43,
+      "PPIM": 93,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 132
+    },
+    {
+      "_index": 44,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 2,
+      "PNid": 21
+    },
+    {
+      "_index": 45,
+      "PPIM": 95,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 21
+    },
+    {
+      "_index": 46,
+      "PPIM": 92,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 47,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 48,
+      "PPIM": 65,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 21
+    },
+    {
+      "_index": 49,
+      "PPIM": 82,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 50,
+      "PPIM": 83,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 51,
+      "PPIM": 89,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 52,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 53,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 54,
+      "PPIM": 91,
+      "PDRP": 10,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 55,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 56,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 21
+    },
+    {
+      "_index": 57,
+      "PPIM": 80,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 58,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 21
+    },
+    {
+      "_index": 59,
+      "PPIM": 71,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 21
+    },
+    {
+      "_index": 60,
+      "PPIM": 88,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 21
+    },
+    {
+      "_index": 61,
+      "PPIM": 68,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 22
+    },
+    {
+      "_index": 62,
+      "PPIM": 93,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 22
+    },
+    {
+      "_index": 63,
+      "PPIM": 95,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 22
+    },
+    {
+      "_index": 64,
+      "PPIM": 92,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 22
+    },
+    {
+      "_index": 65,
+      "PPIM": 71,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 22
+    },
+    {
+      "_index": 66,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 22
+    },
+    {
+      "_index": 67,
+      "PPIM": 80,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 22
+    },
+    {
+      "_index": 68,
+      "PPIM": 90,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 22
+    },
+    {
+      "_index": 69,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 22
+    },
+    {
+      "_index": 70,
+      "PPIM": 89,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 22
+    },
+    {
+      "_index": 71,
+      "PPIM": 88,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 22
+    },
+    {
+      "_index": 72,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 22
+    },
+    {
+      "_index": 73,
+      "PPIM": 94,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 22
+    },
+    {
+      "_index": 74,
+      "PPIM": 80,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 22
+    },
+    {
+      "_index": 75,
+      "PPIM": 87,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 22
+    },
+    {
+      "_index": 76,
+      "PPIM": 72,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 22
+    },
+    {
+      "_index": 77,
+      "PPIM": 92,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 22
+    },
+    {
+      "_index": 78,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 144
+    },
+    {
+      "_index": 79,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 144
+    },
+    {
+      "_index": 80,
+      "PPIM": 87,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 144
+    },
+    {
+      "_index": 81,
+      "PPIM": 88,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 144
+    },
+    {
+      "_index": 82,
+      "PPIM": 60,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 144
+    },
+    {
+      "_index": 83,
+      "PPIM": 78,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 144
+    },
+    {
+      "_index": 84,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 144
+    },
+    {
+      "_index": 85,
+      "PPIM": 95,
+      "PDRP": 1,
+      "CDPT": 2,
+      "PNid": 144
+    },
+    {
+      "_index": 86,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 0,
+      "PNid": 144
+    },
+    {
+      "_index": 87,
+      "PPIM": 89,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 144
+    },
+    {
+      "_index": 88,
+      "PPIM": 88,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 144
+    },
+    {
+      "_index": 89,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 144
+    },
+    {
+      "_index": 90,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 144
+    },
+    {
+      "_index": 91,
+      "PPIM": 77,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 144
+    },
+    {
+      "_index": 92,
+      "PPIM": 94,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 144
+    },
+    {
+      "_index": 93,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 144
+    },
+    {
+      "_index": 94,
+      "PPIM": 95,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 144
+    },
+    {
+      "_index": 95,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 96,
+      "PPIM": 89,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 97,
+      "PPIM": 90,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 98,
+      "PPIM": 92,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 99,
+      "PPIM": 63,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 24
+    },
+    {
+      "_index": 100,
+      "PPIM": 82,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 101,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 102,
+      "PPIM": 92,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 103,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 104,
+      "PPIM": 94,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 24
+    },
+    {
+      "_index": 105,
+      "PPIM": 91,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 24
+    },
+    {
+      "_index": 106,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 107,
+      "PPIM": 91,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 108,
+      "PPIM": 80,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 109,
+      "PPIM": 91,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 24
+    },
+    {
+      "_index": 110,
+      "PPIM": 73,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 24
+    },
+    {
+      "_index": 111,
+      "PPIM": 87,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 24
+    },
+    {
+      "_index": 112,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 25
+    },
+    {
+      "_index": 113,
+      "PPIM": 91,
+      "PDRP": 12,
+      "CDPT": 2,
+      "PNid": 25
+    },
+    {
+      "_index": 114,
+      "PPIM": 90,
+      "PDRP": 8,
+      "CDPT": 2,
+      "PNid": 25
+    },
+    {
+      "_index": 115,
+      "PPIM": 92,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 25
+    },
+    {
+      "_index": 116,
+      "PPIM": 68,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 25
+    },
+    {
+      "_index": 117,
+      "PPIM": 81,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 25
+    },
+    {
+      "_index": 118,
+      "PPIM": 86,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 25
+    },
+    {
+      "_index": 119,
+      "PPIM": 94,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 25
+    },
+    {
+      "_index": 120,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 0,
+      "PNid": 25
+    },
+    {
+      "_index": 121,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 25
+    },
+    {
+      "_index": 122,
+      "PPIM": 89,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 25
+    },
+    {
+      "_index": 123,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 0,
+      "PNid": 25
+    },
+    {
+      "_index": 124,
+      "PPIM": 90,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 25
+    },
+    {
+      "_index": 125,
+      "PPIM": 83,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 25
+    },
+    {
+      "_index": 126,
+      "PPIM": 91,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 25
+    },
+    {
+      "_index": 127,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 25
+    },
+    {
+      "_index": 128,
+      "PPIM": 88,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 25
+    },
+    {
+      "_index": 129,
+      "PPIM": 69,
+      "PDRP": 2,
+      "CDPT": 1,
+      "PNid": 3
+    },
+    {
+      "_index": 130,
+      "PPIM": 82,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 3
+    },
+    {
+      "_index": 131,
+      "PPIM": 88,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 3
+    },
+    {
+      "_index": 132,
+      "PPIM": 95,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 3
+    },
+    {
+      "_index": 133,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 3
+    },
+    {
+      "_index": 134,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 3
+    },
+    {
+      "_index": 135,
+      "PPIM": 86,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 3
+    },
+    {
+      "_index": 136,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 3
+    },
+    {
+      "_index": 137,
+      "PPIM": 92,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 3
+    },
+    {
+      "_index": 138,
+      "PPIM": 82,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 3
+    },
+    {
+      "_index": 139,
+      "PPIM": 89,
+      "PDRP": 5,
+      "CDPT": 0,
+      "PNid": 3
+    },
+    {
+      "_index": 140,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 3
+    },
+    {
+      "_index": 141,
+      "PPIM": 88,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 3
+    },
+    {
+      "_index": 142,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 118
+    },
+    {
+      "_index": 143,
+      "PPIM": 87,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 118
+    },
+    {
+      "_index": 144,
+      "PPIM": 91,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 118
+    },
+    {
+      "_index": 145,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 118
+    },
+    {
+      "_index": 146,
+      "PPIM": 60,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 118
+    },
+    {
+      "_index": 147,
+      "PPIM": 82,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 118
+    },
+    {
+      "_index": 148,
+      "PPIM": 85,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 118
+    },
+    {
+      "_index": 149,
+      "PPIM": 93,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 118
+    },
+    {
+      "_index": 150,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 0,
+      "PNid": 118
+    },
+    {
+      "_index": 151,
+      "PPIM": 89,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 118
+    },
+    {
+      "_index": 152,
+      "PPIM": 86,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 118
+    },
+    {
+      "_index": 153,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 118
+    },
+    {
+      "_index": 154,
+      "PPIM": 91,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 118
+    },
+    {
+      "_index": 155,
+      "PPIM": 80,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 118
+    },
+    {
+      "_index": 156,
+      "PPIM": 91,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 118
+    },
+    {
+      "_index": 157,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 118
+    },
+    {
+      "_index": 158,
+      "PPIM": 71,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 5
+    },
+    {
+      "_index": 159,
+      "PPIM": 93,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 5
+    },
+    {
+      "_index": 160,
+      "PPIM": 91,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 5
+    },
+    {
+      "_index": 161,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 5
+    },
+    {
+      "_index": 162,
+      "PPIM": 58,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 5
+    },
+    {
+      "_index": 163,
+      "PPIM": 82,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 5
+    },
+    {
+      "_index": 164,
+      "PPIM": 87,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 5
+    },
+    {
+      "_index": 165,
+      "PPIM": 90,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 5
+    },
+    {
+      "_index": 166,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 5
+    },
+    {
+      "_index": 167,
+      "PPIM": 92,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 5
+    },
+    {
+      "_index": 168,
+      "PPIM": 93,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 5
+    },
+    {
+      "_index": 169,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 5
+    },
+    {
+      "_index": 170,
+      "PPIM": 93,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 5
+    },
+    {
+      "_index": 171,
+      "PPIM": 84,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 5
+    },
+    {
+      "_index": 172,
+      "PPIM": 85,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 5
+    },
+    {
+      "_index": 173,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 5
+    },
+    {
+      "_index": 174,
+      "PPIM": 92,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 5
+    },
+    {
+      "_index": 175,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 176,
+      "PPIM": 89,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 177,
+      "PPIM": 92,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 178,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 179,
+      "PPIM": 60,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 248
+    },
+    {
+      "_index": 180,
+      "PPIM": 83,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 181,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 182,
+      "PPIM": 95,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 183,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 184,
+      "PPIM": 86,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 248
+    },
+    {
+      "_index": 185,
+      "PPIM": 84,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 248
+    },
+    {
+      "_index": 186,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 187,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 248
+    },
+    {
+      "_index": 188,
+      "PPIM": 82,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 189,
+      "PPIM": 91,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 248
+    },
+    {
+      "_index": 190,
+      "PPIM": 79,
+      "PDRP": 4,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 191,
+      "PPIM": 94,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 248
+    },
+    {
+      "_index": 192,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 11
+    },
+    {
+      "_index": 193,
+      "PPIM": 95,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 11
+    },
+    {
+      "_index": 194,
+      "PPIM": 91,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 11
+    },
+    {
+      "_index": 195,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 11
+    },
+    {
+      "_index": 196,
+      "PPIM": 69,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 11
+    },
+    {
+      "_index": 197,
+      "PPIM": 84,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 11
+    },
+    {
+      "_index": 198,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 11
+    },
+    {
+      "_index": 199,
+      "PPIM": 95,
+      "PDRP": 1,
+      "CDPT": 0,
+      "PNid": 11
+    },
+    {
+      "_index": 200,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 11
+    },
+    {
+      "_index": 201,
+      "PPIM": 95,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 11
+    },
+    {
+      "_index": 202,
+      "PPIM": 93,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 11
+    },
+    {
+      "_index": 203,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 11
+    },
+    {
+      "_index": 204,
+      "PPIM": 90,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 11
+    },
+    {
+      "_index": 205,
+      "PPIM": 81,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 11
+    },
+    {
+      "_index": 206,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 11
+    },
+    {
+      "_index": 207,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 11
+    },
+    {
+      "_index": 208,
+      "PPIM": 88,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 11
+    },
+    {
+      "_index": 209,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 12
+    },
+    {
+      "_index": 210,
+      "PPIM": 92,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 12
+    },
+    {
+      "_index": 211,
+      "PPIM": 89,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 12
+    },
+    {
+      "_index": 212,
+      "PPIM": 69,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 12
+    },
+    {
+      "_index": 213,
+      "PPIM": 81,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 12
+    },
+    {
+      "_index": 214,
+      "PPIM": 86,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 12
+    },
+    {
+      "_index": 215,
+      "PPIM": 90,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 12
+    },
+    {
+      "_index": 216,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 12
+    },
+    {
+      "_index": 217,
+      "PPIM": 89,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 12
+    },
+    {
+      "_index": 218,
+      "PPIM": 90,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 12
+    },
+    {
+      "_index": 219,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 12
+    },
+    {
+      "_index": 220,
+      "PPIM": 93,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 12
+    },
+    {
+      "_index": 221,
+      "PPIM": 85,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 12
+    },
+    {
+      "_index": 222,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 12
+    },
+    {
+      "_index": 223,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 12
+    },
+    {
+      "_index": 224,
+      "PPIM": 89,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 12
+    },
+    {
+      "_index": 225,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 12
+    },
+    {
+      "_index": 226,
+      "PPIM": 71,
+      "PDRP": 7,
+      "CDPT": 2,
+      "PNid": 261
+    },
+    {
+      "_index": 227,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 261
+    },
+    {
+      "_index": 228,
+      "PPIM": 89,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 261
+    },
+    {
+      "_index": 229,
+      "PPIM": 87,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 261
+    },
+    {
+      "_index": 230,
+      "PPIM": 70,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 261
+    },
+    {
+      "_index": 231,
+      "PPIM": 76,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 261
+    },
+    {
+      "_index": 232,
+      "PPIM": 83,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 261
+    },
+    {
+      "_index": 233,
+      "PPIM": 91,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 261
+    },
+    {
+      "_index": 234,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 261
+    },
+    {
+      "_index": 235,
+      "PPIM": 89,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 261
+    },
+    {
+      "_index": 236,
+      "PPIM": 88,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 261
+    },
+    {
+      "_index": 237,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 261
+    },
+    {
+      "_index": 238,
+      "PPIM": 96,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 261
+    },
+    {
+      "_index": 239,
+      "PPIM": 79,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 261
+    },
+    {
+      "_index": 240,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 261
+    },
+    {
+      "_index": 241,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 261
+    },
+    {
+      "_index": 242,
+      "PPIM": 91,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 261
+    },
+    {
+      "_index": 243,
+      "PPIM": 71,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 16
+    },
+    {
+      "_index": 244,
+      "PPIM": 93,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 16
+    },
+    {
+      "_index": 245,
+      "PPIM": 91,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 16
+    },
+    {
+      "_index": 246,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 16
+    },
+    {
+      "_index": 247,
+      "PPIM": 58,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 16
+    },
+    {
+      "_index": 248,
+      "PPIM": 84,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 16
+    },
+    {
+      "_index": 249,
+      "PPIM": 87,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 16
+    },
+    {
+      "_index": 250,
+      "PPIM": 95,
+      "PDRP": 1,
+      "CDPT": 0,
+      "PNid": 16
+    },
+    {
+      "_index": 251,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 0,
+      "PNid": 16
+    },
+    {
+      "_index": 252,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 16
+    },
+    {
+      "_index": 253,
+      "PPIM": 83,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 16
+    },
+    {
+      "_index": 254,
+      "PPIM": 68,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 99
+    },
+    {
+      "_index": 255,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 2,
+      "PNid": 99
+    },
+    {
+      "_index": 256,
+      "PPIM": 87,
+      "PDRP": 8,
+      "CDPT": 2,
+      "PNid": 99
+    },
+    {
+      "_index": 257,
+      "PPIM": 86,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 99
+    },
+    {
+      "_index": 258,
+      "PPIM": 61,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 99
+    },
+    {
+      "_index": 259,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 99
+    },
+    {
+      "_index": 260,
+      "PPIM": 83,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 99
+    },
+    {
+      "_index": 261,
+      "PPIM": 90,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 99
+    },
+    {
+      "_index": 262,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 99
+    },
+    {
+      "_index": 263,
+      "PPIM": 88,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 99
+    },
+    {
+      "_index": 264,
+      "PPIM": 85,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 99
+    },
+    {
+      "_index": 265,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 99
+    },
+    {
+      "_index": 266,
+      "PPIM": 93,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 99
+    },
+    {
+      "_index": 267,
+      "PPIM": 79,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 99
+    },
+    {
+      "_index": 268,
+      "PPIM": 93,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 99
+    },
+    {
+      "_index": 269,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 1,
+      "PNid": 99
+    },
+    {
+      "_index": 270,
+      "PPIM": 88,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 99
+    },
+    {
+      "_index": 271,
+      "PPIM": 69,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 272,
+      "PPIM": 90,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 27
+    },
+    {
+      "_index": 273,
+      "PPIM": 88,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 274,
+      "PPIM": 89,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 275,
+      "PPIM": 68,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 27
+    },
+    {
+      "_index": 276,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 277,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 278,
+      "PPIM": 93,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 279,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 0,
+      "PNid": 27
+    },
+    {
+      "_index": 280,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 281,
+      "PPIM": 89,
+      "PDRP": 10,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 282,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 283,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 27
+    },
+    {
+      "_index": 284,
+      "PPIM": 80,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 285,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 27
+    },
+    {
+      "_index": 286,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 27
+    },
+    {
+      "_index": 287,
+      "PPIM": 88,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 27
+    },
+    {
+      "_index": 288,
+      "PPIM": 72,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 28
+    },
+    {
+      "_index": 289,
+      "PPIM": 90,
+      "PDRP": 12,
+      "CDPT": 2,
+      "PNid": 28
+    },
+    {
+      "_index": 290,
+      "PPIM": 90,
+      "PDRP": 8,
+      "CDPT": 2,
+      "PNid": 28
+    },
+    {
+      "_index": 291,
+      "PPIM": 95,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 28
+    },
+    {
+      "_index": 292,
+      "PPIM": 70,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 28
+    },
+    {
+      "_index": 293,
+      "PPIM": 82,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 28
+    },
+    {
+      "_index": 294,
+      "PPIM": 86,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 28
+    },
+    {
+      "_index": 295,
+      "PPIM": 95,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 28
+    },
+    {
+      "_index": 296,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 28
+    },
+    {
+      "_index": 297,
+      "PPIM": 93,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 28
+    },
+    {
+      "_index": 298,
+      "PPIM": 96,
+      "PDRP": 10,
+      "CDPT": 1,
+      "PNid": 28
+    },
+    {
+      "_index": 299,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 0,
+      "PNid": 28
+    },
+    {
+      "_index": 300,
+      "PPIM": 90,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 28
+    },
+    {
+      "_index": 301,
+      "PPIM": 81,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 28
+    },
+    {
+      "_index": 302,
+      "PPIM": 89,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 28
+    },
+    {
+      "_index": 303,
+      "PPIM": 75,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 28
+    },
+    {
+      "_index": 304,
+      "PPIM": 92,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 28
+    },
+    {
+      "_index": 305,
+      "PPIM": 68,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 29
+    },
+    {
+      "_index": 306,
+      "PPIM": 89,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 29
+    },
+    {
+      "_index": 307,
+      "PPIM": 92,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 29
+    },
+    {
+      "_index": 308,
+      "PPIM": 88,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 29
+    },
+    {
+      "_index": 309,
+      "PPIM": 66,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 29
+    },
+    {
+      "_index": 310,
+      "PPIM": 79,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 29
+    },
+    {
+      "_index": 311,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 29
+    },
+    {
+      "_index": 312,
+      "PPIM": 91,
+      "PDRP": 1,
+      "CDPT": 0,
+      "PNid": 29
+    },
+    {
+      "_index": 313,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 29
+    },
+    {
+      "_index": 314,
+      "PPIM": 88,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 29
+    },
+    {
+      "_index": 315,
+      "PPIM": 87,
+      "PDRP": 10,
+      "CDPT": 1,
+      "PNid": 29
+    },
+    {
+      "_index": 316,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 29
+    },
+    {
+      "_index": 317,
+      "PPIM": 93,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 29
+    },
+    {
+      "_index": 318,
+      "PPIM": 80,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 29
+    },
+    {
+      "_index": 319,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 29
+    },
+    {
+      "_index": 320,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 29
+    },
+    {
+      "_index": 321,
+      "PPIM": 86,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 29
+    },
+    {
+      "_index": 322,
+      "PPIM": 71,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 30
+    },
+    {
+      "_index": 323,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 30
+    },
+    {
+      "_index": 324,
+      "PPIM": 86,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 30
+    },
+    {
+      "_index": 325,
+      "PPIM": 87,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 30
+    },
+    {
+      "_index": 326,
+      "PPIM": 66,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 30
+    },
+    {
+      "_index": 327,
+      "PPIM": 81,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 30
+    },
+    {
+      "_index": 328,
+      "PPIM": 85,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 30
+    },
+    {
+      "_index": 329,
+      "PPIM": 88,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 30
+    },
+    {
+      "_index": 330,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 30
+    },
+    {
+      "_index": 331,
+      "PPIM": 87,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 30
+    },
+    {
+      "_index": 332,
+      "PPIM": 90,
+      "PDRP": 10,
+      "CDPT": 1,
+      "PNid": 30
+    },
+    {
+      "_index": 333,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 30
+    },
+    {
+      "_index": 334,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 30
+    },
+    {
+      "_index": 335,
+      "PPIM": 79,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 30
+    },
+    {
+      "_index": 336,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 30
+    },
+    {
+      "_index": 337,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 30
+    },
+    {
+      "_index": 338,
+      "PPIM": 90,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 30
+    },
+    {
+      "_index": 339,
+      "PPIM": 72,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 340,
+      "PPIM": 94,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 63
+    },
+    {
+      "_index": 341,
+      "PPIM": 91,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 63
+    },
+    {
+      "_index": 342,
+      "PPIM": 89,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 63
+    },
+    {
+      "_index": 343,
+      "PPIM": 66,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 63
+    },
+    {
+      "_index": 344,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 345,
+      "PPIM": 83,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 346,
+      "PPIM": 90,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 347,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 348,
+      "PPIM": 93,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 349,
+      "PPIM": 90,
+      "PDRP": 10,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 350,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 351,
+      "PPIM": 92,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 63
+    },
+    {
+      "_index": 352,
+      "PPIM": 81,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 353,
+      "PPIM": 94,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 63
+    },
+    {
+      "_index": 354,
+      "PPIM": 73,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 63
+    },
+    {
+      "_index": 355,
+      "PPIM": 90,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 63
+    },
+    {
+      "_index": 356,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 357,
+      "PPIM": 89,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 358,
+      "PPIM": 90,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 359,
+      "PPIM": 88,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 360,
+      "PPIM": 60,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 34
+    },
+    {
+      "_index": 361,
+      "PPIM": 78,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 362,
+      "PPIM": 82,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 363,
+      "PPIM": 96,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 364,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 365,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 366,
+      "PPIM": 91,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 34
+    },
+    {
+      "_index": 367,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 368,
+      "PPIM": 93,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 369,
+      "PPIM": 82,
+      "PDRP": 14,
+      "CDPT": 2,
+      "PNid": 34
+    },
+    {
+      "_index": 370,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 34
+    },
+    {
+      "_index": 371,
+      "PPIM": 72,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 34
+    },
+    {
+      "_index": 372,
+      "PPIM": 93,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 34
+    },
+    {
+      "_index": 373,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 374,
+      "PPIM": 93,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 375,
+      "PPIM": 90,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 376,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 377,
+      "PPIM": 60,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 41
+    },
+    {
+      "_index": 378,
+      "PPIM": 78,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 379,
+      "PPIM": 86,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 380,
+      "PPIM": 93,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 381,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 382,
+      "PPIM": 88,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 383,
+      "PPIM": 86,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 41
+    },
+    {
+      "_index": 384,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 385,
+      "PPIM": 93,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 386,
+      "PPIM": 82,
+      "PDRP": 14,
+      "CDPT": 2,
+      "PNid": 41
+    },
+    {
+      "_index": 387,
+      "PPIM": 92,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 41
+    },
+    {
+      "_index": 388,
+      "PPIM": 72,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 41
+    },
+    {
+      "_index": 389,
+      "PPIM": 90,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 41
+    },
+    {
+      "_index": 390,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 391,
+      "PPIM": 91,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 392,
+      "PPIM": 90,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 393,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 394,
+      "PPIM": 60,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 44
+    },
+    {
+      "_index": 395,
+      "PPIM": 78,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 396,
+      "PPIM": 86,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 397,
+      "PPIM": 92,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 398,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 399,
+      "PPIM": 88,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 400,
+      "PPIM": 96,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 44
+    },
+    {
+      "_index": 401,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 402,
+      "PPIM": 93,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 403,
+      "PPIM": 84,
+      "PDRP": 14,
+      "CDPT": 2,
+      "PNid": 44
+    },
+    {
+      "_index": 404,
+      "PPIM": 92,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 44
+    },
+    {
+      "_index": 405,
+      "PPIM": 72,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 44
+    },
+    {
+      "_index": 406,
+      "PPIM": 93,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 44
+    },
+    {
+      "_index": 407,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 408,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 409,
+      "PPIM": 85,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 410,
+      "PPIM": 89,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 411,
+      "PPIM": 60,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 49
+    },
+    {
+      "_index": 412,
+      "PPIM": 82,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 413,
+      "PPIM": 85,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 414,
+      "PPIM": 93,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 415,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 416,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 417,
+      "PPIM": 86,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 49
+    },
+    {
+      "_index": 418,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 419,
+      "PPIM": 93,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 420,
+      "PPIM": 82,
+      "PDRP": 14,
+      "CDPT": 2,
+      "PNid": 49
+    },
+    {
+      "_index": 421,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 49
+    },
+    {
+      "_index": 422,
+      "PPIM": 72,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 49
+    },
+    {
+      "_index": 423,
+      "PPIM": 92,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 49
+    },
+    {
+      "_index": 424,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 50
+    },
+    {
+      "_index": 425,
+      "PPIM": 89,
+      "PDRP": 12,
+      "CDPT": 2,
+      "PNid": 50
+    },
+    {
+      "_index": 426,
+      "PPIM": 92,
+      "PDRP": 8,
+      "CDPT": 2,
+      "PNid": 50
+    },
+    {
+      "_index": 427,
+      "PPIM": 94,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 50
+    },
+    {
+      "_index": 428,
+      "PPIM": 65,
+      "PDRP": 2,
+      "CDPT": 1,
+      "PNid": 50
+    },
+    {
+      "_index": 429,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 50
+    },
+    {
+      "_index": 430,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 50
+    },
+    {
+      "_index": 431,
+      "PPIM": 90,
+      "PDRP": 1,
+      "CDPT": 0,
+      "PNid": 50
+    },
+    {
+      "_index": 432,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 50
+    },
+    {
+      "_index": 433,
+      "PPIM": 93,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 50
+    },
+    {
+      "_index": 434,
+      "PPIM": 86,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 50
+    },
+    {
+      "_index": 435,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 50
+    },
+    {
+      "_index": 436,
+      "PPIM": 90,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 50
+    },
+    {
+      "_index": 437,
+      "PPIM": 80,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 50
+    },
+    {
+      "_index": 438,
+      "PPIM": 91,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 50
+    },
+    {
+      "_index": 439,
+      "PPIM": 69,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 50
+    },
+    {
+      "_index": 440,
+      "PPIM": 86,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 50
+    },
+    {
+      "_index": 441,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 442,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 443,
+      "PPIM": 89,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 444,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 445,
+      "PPIM": 67,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 90
+    },
+    {
+      "_index": 446,
+      "PPIM": 79,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 447,
+      "PPIM": 80,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 448,
+      "PPIM": 92,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 449,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 450,
+      "PPIM": 89,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 90
+    },
+    {
+      "_index": 451,
+      "PPIM": 88,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 90
+    },
+    {
+      "_index": 452,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 453,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 90
+    },
+    {
+      "_index": 454,
+      "PPIM": 77,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 455,
+      "PPIM": 92,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 90
+    },
+    {
+      "_index": 456,
+      "PPIM": 71,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 90
+    },
+    {
+      "_index": 457,
+      "PPIM": 91,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 90
+    },
+    {
+      "_index": 458,
+      "PPIM": 69,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 267
+    },
+    {
+      "_index": 459,
+      "PPIM": 89,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 267
+    },
+    {
+      "_index": 460,
+      "PPIM": 90,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 267
+    },
+    {
+      "_index": 461,
+      "PPIM": 91,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 267
+    },
+    {
+      "_index": 462,
+      "PPIM": 68,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 267
+    },
+    {
+      "_index": 463,
+      "PPIM": 79,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 267
+    },
+    {
+      "_index": 464,
+      "PPIM": 81,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 267
+    },
+    {
+      "_index": 465,
+      "PPIM": 93,
+      "PDRP": 1,
+      "CDPT": 2,
+      "PNid": 267
+    },
+    {
+      "_index": 466,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 267
+    },
+    {
+      "_index": 467,
+      "PPIM": 88,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 267
+    },
+    {
+      "_index": 468,
+      "PPIM": 89,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 267
+    },
+    {
+      "_index": 469,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 267
+    },
+    {
+      "_index": 470,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 267
+    },
+    {
+      "_index": 471,
+      "PPIM": 77,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 267
+    },
+    {
+      "_index": 472,
+      "PPIM": 92,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 267
+    },
+    {
+      "_index": 473,
+      "PPIM": 71,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 267
+    },
+    {
+      "_index": 474,
+      "PPIM": 93,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 267
+    },
+    {
+      "_index": 475,
+      "PPIM": 68,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 476,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 97
+    },
+    {
+      "_index": 477,
+      "PPIM": 87,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 478,
+      "PPIM": 86,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 479,
+      "PPIM": 62,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 97
+    },
+    {
+      "_index": 480,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 481,
+      "PPIM": 83,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 97
+    },
+    {
+      "_index": 482,
+      "PPIM": 91,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 483,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 484,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 97
+    },
+    {
+      "_index": 485,
+      "PPIM": 91,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 97
+    },
+    {
+      "_index": 486,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 487,
+      "PPIM": 92,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 97
+    },
+    {
+      "_index": 488,
+      "PPIM": 78,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 489,
+      "PPIM": 93,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 97
+    },
+    {
+      "_index": 490,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 491,
+      "PPIM": 93,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 97
+    },
+    {
+      "_index": 492,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 115
+    },
+    {
+      "_index": 493,
+      "PPIM": 91,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 115
+    },
+    {
+      "_index": 494,
+      "PPIM": 92,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 115
+    },
+    {
+      "_index": 495,
+      "PPIM": 91,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 115
+    },
+    {
+      "_index": 496,
+      "PPIM": 63,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 115
+    },
+    {
+      "_index": 497,
+      "PPIM": 83,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 115
+    },
+    {
+      "_index": 498,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 2,
+      "PNid": 115
+    },
+    {
+      "_index": 499,
+      "PPIM": 92,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 115
+    },
+    {
+      "_index": 500,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 115
+    },
+    {
+      "_index": 501,
+      "PPIM": 95,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 115
+    },
+    {
+      "_index": 502,
+      "PPIM": 95,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 115
+    },
+    {
+      "_index": 503,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 115
+    },
+    {
+      "_index": 504,
+      "PPIM": 90,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 115
+    },
+    {
+      "_index": 505,
+      "PPIM": 81,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 115
+    },
+    {
+      "_index": 506,
+      "PPIM": 88,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 115
+    },
+    {
+      "_index": 507,
+      "PPIM": 69,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 115
+    },
+    {
+      "_index": 508,
+      "PPIM": 89,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 115
+    },
+    {
+      "_index": 509,
+      "PPIM": 69,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 510,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 124
+    },
+    {
+      "_index": 511,
+      "PPIM": 88,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 124
+    },
+    {
+      "_index": 512,
+      "PPIM": 89,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 513,
+      "PPIM": 63,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 124
+    },
+    {
+      "_index": 514,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 0,
+      "PNid": 124
+    },
+    {
+      "_index": 515,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 516,
+      "PPIM": 92,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 517,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 518,
+      "PPIM": 91,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 519,
+      "PPIM": 92,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 124
+    },
+    {
+      "_index": 520,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 521,
+      "PPIM": 92,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 522,
+      "PPIM": 78,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 523,
+      "PPIM": 93,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 124
+    },
+    {
+      "_index": 524,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 124
+    },
+    {
+      "_index": 525,
+      "PPIM": 93,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 124
+    },
+    {
+      "_index": 526,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 130
+    },
+    {
+      "_index": 527,
+      "PPIM": 91,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 130
+    },
+    {
+      "_index": 528,
+      "PPIM": 92,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 130
+    },
+    {
+      "_index": 529,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 130
+    },
+    {
+      "_index": 530,
+      "PPIM": 66,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 130
+    },
+    {
+      "_index": 531,
+      "PPIM": 81,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 130
+    },
+    {
+      "_index": 532,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 2,
+      "PNid": 130
+    },
+    {
+      "_index": 533,
+      "PPIM": 91,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 130
+    },
+    {
+      "_index": 534,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 130
+    },
+    {
+      "_index": 535,
+      "PPIM": 95,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 130
+    },
+    {
+      "_index": 536,
+      "PPIM": 96,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 130
+    },
+    {
+      "_index": 537,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 130
+    },
+    {
+      "_index": 538,
+      "PPIM": 92,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 130
+    },
+    {
+      "_index": 539,
+      "PPIM": 82,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 130
+    },
+    {
+      "_index": 540,
+      "PPIM": 88,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 130
+    },
+    {
+      "_index": 541,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 130
+    },
+    {
+      "_index": 542,
+      "PPIM": 89,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 130
+    },
+    {
+      "_index": 543,
+      "PPIM": 72,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 544,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 0
+    },
+    {
+      "_index": 545,
+      "PPIM": 87,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 546,
+      "PPIM": 88,
+      "PDRP": 9,
+      "CDPT": 0,
+      "PNid": 0
+    },
+    {
+      "_index": 547,
+      "PPIM": 60,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 0
+    },
+    {
+      "_index": 548,
+      "PPIM": 78,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 549,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 550,
+      "PPIM": 95,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 551,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 552,
+      "PPIM": 89,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 553,
+      "PPIM": 88,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 0
+    },
+    {
+      "_index": 554,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 555,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 0
+    },
+    {
+      "_index": 556,
+      "PPIM": 77,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 557,
+      "PPIM": 94,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 0
+    },
+    {
+      "_index": 558,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 0
+    },
+    {
+      "_index": 559,
+      "PPIM": 95,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 0
+    },
+    {
+      "_index": 560,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 150
+    },
+    {
+      "_index": 561,
+      "PPIM": 90,
+      "PDRP": 12,
+      "CDPT": 2,
+      "PNid": 150
+    },
+    {
+      "_index": 562,
+      "PPIM": 95,
+      "PDRP": 8,
+      "CDPT": 2,
+      "PNid": 150
+    },
+    {
+      "_index": 563,
+      "PPIM": 93,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 150
+    },
+    {
+      "_index": 564,
+      "PPIM": 69,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 150
+    },
+    {
+      "_index": 565,
+      "PPIM": 83,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 150
+    },
+    {
+      "_index": 566,
+      "PPIM": 82,
+      "PDRP": 6,
+      "CDPT": 2,
+      "PNid": 150
+    },
+    {
+      "_index": 567,
+      "PPIM": 94,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 150
+    },
+    {
+      "_index": 568,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 150
+    },
+    {
+      "_index": 569,
+      "PPIM": 90,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 150
+    },
+    {
+      "_index": 570,
+      "PPIM": 91,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 150
+    },
+    {
+      "_index": 571,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 150
+    },
+    {
+      "_index": 572,
+      "PPIM": 90,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 150
+    },
+    {
+      "_index": 573,
+      "PPIM": 81,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 150
+    },
+    {
+      "_index": 574,
+      "PPIM": 93,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 150
+    },
+    {
+      "_index": 575,
+      "PPIM": 74,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 150
+    },
+    {
+      "_index": 576,
+      "PPIM": 86,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 150
+    },
+    {
+      "_index": 577,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 578,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 193
+    },
+    {
+      "_index": 579,
+      "PPIM": 86,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 580,
+      "PPIM": 87,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 581,
+      "PPIM": 66,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 193
+    },
+    {
+      "_index": 582,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 583,
+      "PPIM": 86,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 584,
+      "PPIM": 90,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 585,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 586,
+      "PPIM": 87,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 587,
+      "PPIM": 88,
+      "PDRP": 10,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 588,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 589,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 193
+    },
+    {
+      "_index": 590,
+      "PPIM": 79,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 591,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 592,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 193
+    },
+    {
+      "_index": 593,
+      "PPIM": 90,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 193
+    },
+    {
+      "_index": 594,
+      "PPIM": 71,
+      "PDRP": 7,
+      "CDPT": 2,
+      "PNid": 236
+    },
+    {
+      "_index": 595,
+      "PPIM": 90,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 236
+    },
+    {
+      "_index": 596,
+      "PPIM": 92,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 236
+    },
+    {
+      "_index": 597,
+      "PPIM": 93,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 236
+    },
+    {
+      "_index": 598,
+      "PPIM": 66,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 236
+    },
+    {
+      "_index": 599,
+      "PPIM": 81,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 236
+    },
+    {
+      "_index": 600,
+      "PPIM": 85,
+      "PDRP": 6,
+      "CDPT": 2,
+      "PNid": 236
+    },
+    {
+      "_index": 601,
+      "PPIM": 94,
+      "PDRP": 1,
+      "CDPT": 2,
+      "PNid": 236
+    },
+    {
+      "_index": 602,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 2,
+      "PNid": 236
+    },
+    {
+      "_index": 603,
+      "PPIM": 92,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 236
+    },
+    {
+      "_index": 604,
+      "PPIM": 87,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 236
+    },
+    {
+      "_index": 605,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 236
+    },
+    {
+      "_index": 606,
+      "PPIM": 90,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 236
+    },
+    {
+      "_index": 607,
+      "PPIM": 82,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 236
+    },
+    {
+      "_index": 608,
+      "PPIM": 91,
+      "PDRP": 5,
+      "CDPT": 2,
+      "PNid": 236
+    },
+    {
+      "_index": 609,
+      "PPIM": 67,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 236
+    },
+    {
+      "_index": 610,
+      "PPIM": 86,
+      "PDRP": 3,
+      "CDPT": 2,
+      "PNid": 236
+    },
+    {
+      "_index": 611,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 4
+    },
+    {
+      "_index": 612,
+      "PPIM": 87,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 4
+    },
+    {
+      "_index": 613,
+      "PPIM": 91,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 4
+    },
+    {
+      "_index": 614,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 4
+    },
+    {
+      "_index": 615,
+      "PPIM": 60,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 4
+    },
+    {
+      "_index": 616,
+      "PPIM": 82,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 4
+    },
+    {
+      "_index": 617,
+      "PPIM": 85,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 4
+    },
+    {
+      "_index": 618,
+      "PPIM": 93,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 4
+    },
+    {
+      "_index": 619,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 0,
+      "PNid": 4
+    },
+    {
+      "_index": 620,
+      "PPIM": 89,
+      "PDRP": 11,
+      "CDPT": 2,
+      "PNid": 4
+    },
+    {
+      "_index": 621,
+      "PPIM": 86,
+      "PDRP": 10,
+      "CDPT": 2,
+      "PNid": 4
+    },
+    {
+      "_index": 622,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 4
+    },
+    {
+      "_index": 623,
+      "PPIM": 91,
+      "PDRP": 0,
+      "CDPT": 0,
+      "PNid": 4
+    },
+    {
+      "_index": 624,
+      "PPIM": 80,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 4
+    },
+    {
+      "_index": 625,
+      "PPIM": 91,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 4
+    },
+    {
+      "_index": 626,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 4
+    },
+    {
+      "_index": 627,
+      "PPIM": 90,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 4
+    },
+    {
+      "_index": 628,
+      "PPIM": 90,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 118
+    },
+    {
+      "_index": 629,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 0,
+      "PNid": 241
+    },
+    {
+      "_index": 630,
+      "PPIM": 95,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 241
+    },
+    {
+      "_index": 631,
+      "PPIM": 91,
+      "PDRP": 8,
+      "CDPT": 0,
+      "PNid": 241
+    },
+    {
+      "_index": 632,
+      "PPIM": 90,
+      "PDRP": 9,
+      "CDPT": 2,
+      "PNid": 241
+    },
+    {
+      "_index": 633,
+      "PPIM": 69,
+      "PDRP": 2,
+      "CDPT": 0,
+      "PNid": 241
+    },
+    {
+      "_index": 634,
+      "PPIM": 84,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 241
+    },
+    {
+      "_index": 635,
+      "PPIM": 84,
+      "PDRP": 6,
+      "CDPT": 0,
+      "PNid": 241
+    },
+    {
+      "_index": 636,
+      "PPIM": 95,
+      "PDRP": 1,
+      "CDPT": 0,
+      "PNid": 241
+    },
+    {
+      "_index": 637,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 241
+    },
+    {
+      "_index": 638,
+      "PPIM": 95,
+      "PDRP": 11,
+      "CDPT": 0,
+      "PNid": 241
+    },
+    {
+      "_index": 639,
+      "PPIM": 93,
+      "PDRP": 10,
+      "CDPT": 0,
+      "PNid": 241
+    },
+    {
+      "_index": 640,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 241
+    },
+    {
+      "_index": 641,
+      "PPIM": 90,
+      "PDRP": 0,
+      "CDPT": 1,
+      "PNid": 241
+    },
+    {
+      "_index": 642,
+      "PPIM": 81,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 241
+    },
+    {
+      "_index": 643,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 241
+    },
+    {
+      "_index": 644,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 0,
+      "PNid": 241
+    },
+    {
+      "_index": 645,
+      "PPIM": 88,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 241
+    },
+    {
+      "_index": 646,
+      "PPIM": 70,
+      "PDRP": 7,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 647,
+      "PPIM": 88,
+      "PDRP": 12,
+      "CDPT": 0,
+      "PNid": 127
+    },
+    {
+      "_index": 648,
+      "PPIM": 86,
+      "PDRP": 8,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 649,
+      "PPIM": 87,
+      "PDRP": 9,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 650,
+      "PPIM": 66,
+      "PDRP": 2,
+      "CDPT": 2,
+      "PNid": 127
+    },
+    {
+      "_index": 651,
+      "PPIM": 80,
+      "PDRP": 13,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 652,
+      "PPIM": 86,
+      "PDRP": 6,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 653,
+      "PPIM": 90,
+      "PDRP": 1,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 654,
+      "PPIM": 55,
+      "PDRP": 15,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 655,
+      "PPIM": 87,
+      "PDRP": 11,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 656,
+      "PPIM": 88,
+      "PDRP": 10,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 657,
+      "PPIM": 50,
+      "PDRP": 16,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 658,
+      "PPIM": 95,
+      "PDRP": 0,
+      "CDPT": 2,
+      "PNid": 127
+    },
+    {
+      "_index": 659,
+      "PPIM": 79,
+      "PDRP": 14,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 660,
+      "PPIM": 90,
+      "PDRP": 5,
+      "CDPT": 1,
+      "PNid": 127
+    },
+    {
+      "_index": 661,
+      "PPIM": 70,
+      "PDRP": 4,
+      "CDPT": 2,
+      "PNid": 127
+    },
+    {
+      "_index": 662,
+      "PPIM": 90,
+      "PDRP": 3,
+      "CDPT": 1,
+      "PNid": 127
+    }
+  ]
+}

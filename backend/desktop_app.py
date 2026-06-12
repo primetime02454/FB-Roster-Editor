@@ -4,6 +4,7 @@ import sys
 import threading
 import time
 import urllib.request
+import os
 from pathlib import Path
 
 import uvicorn
@@ -20,7 +21,42 @@ except ImportError as exc:  # pragma: no cover
 HOST = "127.0.0.1"
 PORT = 8000
 APP_URL = f"http://{HOST}:{PORT}"
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+APP_NAME = "FB Roster Editor"
+
+
+def project_root() -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
+    return Path(__file__).resolve().parents[1]
+
+
+PROJECT_ROOT = project_root()
+
+
+def external_asset_root() -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent / "assets"
+    return PROJECT_ROOT / "frontend" / "public"
+
+
+def runtime_data_root() -> Path:
+    if getattr(sys, "frozen", False):
+        base = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local")) / "FB Roster Editor"
+        base.mkdir(parents=True, exist_ok=True)
+        return base
+    return PROJECT_ROOT / "backend" / "data"
+
+
+def runtime_log_path() -> Path:
+    return runtime_data_root() / "desktop_runtime.log"
+
+
+def append_runtime_log(message: str) -> None:
+    try:
+        with runtime_log_path().open("a", encoding="utf-8") as handle:
+            handle.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} {message}\n")
+    except Exception:
+        pass
 
 
 def wait_for_server(timeout: float = 30.0) -> None:
@@ -38,7 +74,11 @@ def wait_for_server(timeout: float = 30.0) -> None:
 
 
 def run_server(server: uvicorn.Server) -> None:
-    server.run()
+    try:
+        server.run()
+    except Exception as exc:
+        append_runtime_log(f"server_error {type(exc).__name__}: {exc}")
+        raise
 
 
 def main() -> int:
@@ -48,14 +88,41 @@ def main() -> int:
             "Frontend build not found. Run `npm.cmd --prefix frontend run build` before launching desktop mode."
         )
 
-    config = uvicorn.Config("app.main:app", host=HOST, port=PORT, log_level="warning")
+    data_root = runtime_data_root()
+    session_root = data_root / "sessions"
+    session_root.mkdir(parents=True, exist_ok=True)
+    os.environ["FB_EDITOR_BACKEND_ROOT"] = str(PROJECT_ROOT)
+    os.environ["FB_EDITOR_PROJECT_ROOT"] = str(PROJECT_ROOT)
+    os.environ["FB_EDITOR_FRONTEND_DIST"] = str(PROJECT_ROOT / "frontend" / "dist")
+    os.environ["FB_EDITOR_DATA_ROOT"] = str(data_root)
+    os.environ["FB_EDITOR_SESSION_ROOT"] = str(session_root)
+    os.environ["FB_EDITOR_EXTERNAL_ASSET_ROOT"] = str(external_asset_root())
+    os.environ["FB_EDITOR_PORTRAIT_ROOT"] = str(external_asset_root() / "Player_Portraits")
+    append_runtime_log(
+        f"startup project_root={PROJECT_ROOT} frontend_dist={PROJECT_ROOT / 'frontend' / 'dist'} "
+        f"data_root={data_root} session_root={session_root} asset_root={external_asset_root()}"
+    )
+
+    from app.main import app as fastapi_app
+
+    config = uvicorn.Config(
+        fastapi_app,
+        host=HOST,
+        port=PORT,
+        log_level="warning",
+        log_config=None,
+    )
     server = uvicorn.Server(config)
     thread = threading.Thread(target=run_server, args=(server,), daemon=True)
     thread.start()
-    wait_for_server()
+    try:
+        wait_for_server()
+    except Exception as exc:
+        append_runtime_log(f"wait_for_server_error {type(exc).__name__}: {exc}")
+        raise
 
     window = webview.create_window(
-        "Madden Roster Editor",
+        APP_NAME,
         APP_URL,
         width=1600,
         height=1000,
@@ -67,8 +134,12 @@ def main() -> int:
         server.should_exit = True
 
     window.events.closed += shutdown
-    webview.start()
-    return 0
+    try:
+        webview.start()
+        return 0
+    except Exception as exc:
+        append_runtime_log(f"webview_error {type(exc).__name__}: {exc}")
+        raise
 
 
 if __name__ == "__main__":

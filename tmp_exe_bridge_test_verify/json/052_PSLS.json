@@ -1,0 +1,62 @@
+{
+  "path": "PSLS",
+  "name": "PSLS",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 169708,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "STV1",
+      "type": 2
+    },
+    {
+      "name": "STV2",
+      "type": 2
+    },
+    {
+      "name": "STV3",
+      "type": 2
+    },
+    {
+      "name": "PFNA",
+      "type": 0
+    },
+    {
+      "name": "PLNA",
+      "type": 0
+    },
+    {
+      "name": "STRA",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "PJEN",
+      "type": 3
+    },
+    {
+      "name": "PSXP",
+      "type": 3
+    },
+    {
+      "name": "SEYR",
+      "type": 2
+    },
+    {
+      "name": "PPOS",
+      "type": 3
+    },
+    {
+      "name": "STTY",
+      "type": 3
+    }
+  ],
+  "records": []
+}

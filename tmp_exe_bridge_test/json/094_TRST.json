@@ -1,0 +1,102 @@
+{
+  "path": "TRST",
+  "name": "TRST",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 509152,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "TAp1",
+      "type": 3
+    },
+    {
+      "name": "TBp1",
+      "type": 3
+    },
+    {
+      "name": "TAy1",
+      "type": 3
+    },
+    {
+      "name": "TBy1",
+      "type": 3
+    },
+    {
+      "name": "TAp2",
+      "type": 3
+    },
+    {
+      "name": "TBp2",
+      "type": 3
+    },
+    {
+      "name": "TAy2",
+      "type": 3
+    },
+    {
+      "name": "TBy2",
+      "type": 3
+    },
+    {
+      "name": "TAp3",
+      "type": 3
+    },
+    {
+      "name": "TBp3",
+      "type": 3
+    },
+    {
+      "name": "TAy3",
+      "type": 3
+    },
+    {
+      "name": "TBy3",
+      "type": 3
+    },
+    {
+      "name": "SSTA",
+      "type": 3
+    },
+    {
+      "name": "TEID",
+      "type": 3
+    },
+    {
+      "name": "SEWN",
+      "type": 3
+    },
+    {
+      "name": "SEYR",
+      "type": 2
+    },
+    {
+      "name": "TAdc",
+      "type": 3
+    },
+    {
+      "name": "TBdc",
+      "type": 3
+    },
+    {
+      "name": "TApc",
+      "type": 3
+    },
+    {
+      "name": "TBpc",
+      "type": 3
+    },
+    {
+      "name": "TAid",
+      "type": 3
+    },
+    {
+      "name": "TBid",
+      "type": 3
+    }
+  ],
+  "records": []
+}

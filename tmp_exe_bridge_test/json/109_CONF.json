@@ -1,0 +1,45 @@
+{
+  "path": "CONF",
+  "name": "CONF",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 950396,
+  "raw_key_hex": "",
+  "declared_entries_total": 2,
+  "records_parsed": 2,
+  "field_definitions": [
+    {
+      "name": "CGID",
+      "type": 3
+    },
+    {
+      "name": "LGID",
+      "type": 3
+    },
+    {
+      "name": "CNAM",
+      "type": 0
+    },
+    {
+      "name": "NCcl",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "CGID": 1,
+      "LGID": 0,
+      "CNAM": "NFC",
+      "NCcl": 34
+    },
+    {
+      "_index": 1,
+      "CGID": 0,
+      "LGID": 0,
+      "CNAM": "AFC",
+      "NCcl": 35
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "path": "POGH",
+  "name": "POGH",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 142788,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "STI1",
+      "type": 3
+    },
+    {
+      "name": "STV1",
+      "type": 2
+    },
+    {
+      "name": "STI2",
+      "type": 3
+    },
+    {
+      "name": "STV2",
+      "type": 2
+    },
+    {
+      "name": "STI3",
+      "type": 3
+    },
+    {
+      "name": "STV3",
+      "type": 2
+    },
+    {
+      "name": "STI4",
+      "type": 3
+    },
+    {
+      "name": "STV4",
+      "type": 2
+    },
+    {
+      "name": "STI5",
+      "type": 3
+    },
+    {
+      "name": "STV5",
+      "type": 2
+    },
+    {
+      "name": "STI6",
+      "type": 3
+    },
+    {
+      "name": "STV6",
+      "type": 2
+    },
+    {
+      "name": "STI7",
+      "type": 3
+    },
+    {
+      "name": "STV7",
+      "type": 2
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "SGNM",
+      "type": 2
+    },
+    {
+      "name": "SEWN",
+      "type": 3
+    },
+    {
+      "name": "SEYR",
+      "type": 2
+    },
+    {
+      "name": "PAat",
+      "type": 3
+    }
+  ],
+  "records": []
+}

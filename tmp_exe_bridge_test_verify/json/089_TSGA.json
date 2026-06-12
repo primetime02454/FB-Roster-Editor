@@ -1,0 +1,386 @@
+{
+  "path": "TSGA",
+  "name": "TSGA",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 506328,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "TSRE",
+      "type": 3
+    },
+    {
+      "name": "TDNF",
+      "type": 3
+    },
+    {
+      "name": "TSHG",
+      "type": 3
+    },
+    {
+      "name": "TNOH",
+      "type": 3
+    },
+    {
+      "name": "TSGL",
+      "type": 3
+    },
+    {
+      "name": "TDIP",
+      "type": 3
+    },
+    {
+      "name": "TSMP",
+      "type": 3
+    },
+    {
+      "name": "TATP",
+      "type": 3
+    },
+    {
+      "name": "TRUP",
+      "type": 3
+    },
+    {
+      "name": "TSCR",
+      "type": 3
+    },
+    {
+      "name": "THTR",
+      "type": 3
+    },
+    {
+      "name": "TSTR",
+      "type": 3
+    },
+    {
+      "name": "TOPT",
+      "type": 3
+    },
+    {
+      "name": "TSAU",
+      "type": 3
+    },
+    {
+      "name": "TBLZ",
+      "type": 3
+    },
+    {
+      "name": "ts2a",
+      "type": 3
+    },
+    {
+      "name": "tsda",
+      "type": 3
+    },
+    {
+      "name": "tsfa",
+      "type": 3
+    },
+    {
+      "name": "tsga",
+      "type": 3
+    },
+    {
+      "name": "tsoa",
+      "type": 3
+    },
+    {
+      "name": "tspa",
+      "type": 3
+    },
+    {
+      "name": "tsra",
+      "type": 3
+    },
+    {
+      "name": "tsta",
+      "type": 3
+    },
+    {
+      "name": "t31c",
+      "type": 3
+    },
+    {
+      "name": "ts2c",
+      "type": 3
+    },
+    {
+      "name": "t33c",
+      "type": 3
+    },
+    {
+      "name": "ts3c",
+      "type": 3
+    },
+    {
+      "name": "t34c",
+      "type": 3
+    },
+    {
+      "name": "ts4c",
+      "type": 3
+    },
+    {
+      "name": "tspc",
+      "type": 3
+    },
+    {
+      "name": "ts1d",
+      "type": 3
+    },
+    {
+      "name": "ts3d",
+      "type": 3
+    },
+    {
+      "name": "ts4d",
+      "type": 3
+    },
+    {
+      "name": "tsPd",
+      "type": 2
+    },
+    {
+      "name": "tsdd",
+      "type": 3
+    },
+    {
+      "name": "tspd",
+      "type": 3
+    },
+    {
+      "name": "tspe",
+      "type": 3
+    },
+    {
+      "name": "ts4f",
+      "type": 3
+    },
+    {
+      "name": "tsdf",
+      "type": 3
+    },
+    {
+      "name": "tsof",
+      "type": 3
+    },
+    {
+      "name": "tssf",
+      "type": 2
+    },
+    {
+      "name": "tssg",
+      "type": 3
+    },
+    {
+      "name": "tsnh",
+      "type": 3
+    },
+    {
+      "name": "tsqh",
+      "type": 3
+    },
+    {
+      "name": "tsDi",
+      "type": 3
+    },
+    {
+      "name": "tsPi",
+      "type": 3
+    },
+    {
+      "name": "tspi",
+      "type": 3
+    },
+    {
+      "name": "tsqk",
+      "type": 3
+    },
+    {
+      "name": "tssk",
+      "type": 3
+    },
+    {
+      "name": "ts1l",
+      "type": 3
+    },
+    {
+      "name": "tsfl",
+      "type": 3
+    },
+    {
+      "name": "tsfm",
+      "type": 3
+    },
+    {
+      "name": "tspo",
+      "type": 3
+    },
+    {
+      "name": "ts1p",
+      "type": 3
+    },
+    {
+      "name": "ts2p",
+      "type": 3
+    },
+    {
+      "name": "ts3p",
+      "type": 3
+    },
+    {
+      "name": "ts4p",
+      "type": 3
+    },
+    {
+      "name": "tsap",
+      "type": 3
+    },
+    {
+      "name": "tsdp",
+      "type": 2
+    },
+    {
+      "name": "tsop",
+      "type": 2
+    },
+    {
+      "name": "ts1r",
+      "type": 3
+    },
+    {
+      "name": "ts2r",
+      "type": 3
+    },
+    {
+      "name": "ts3r",
+      "type": 3
+    },
+    {
+      "name": "ts4r",
+      "type": 3
+    },
+    {
+      "name": "tsar",
+      "type": 3
+    },
+    {
+      "name": "tsdr",
+      "type": 3
+    },
+    {
+      "name": "tsfr",
+      "type": 3
+    },
+    {
+      "name": "tshr",
+      "type": 3
+    },
+    {
+      "name": "tskr",
+      "type": 2
+    },
+    {
+      "name": "tsor",
+      "type": 2
+    },
+    {
+      "name": "tspr",
+      "type": 2
+    },
+    {
+      "name": "tsps",
+      "type": 3
+    },
+    {
+      "name": "tsqs",
+      "type": 3
+    },
+    {
+      "name": "tsPt",
+      "type": 3
+    },
+    {
+      "name": "tsdt",
+      "type": 3
+    },
+    {
+      "name": "tsot",
+      "type": 3
+    },
+    {
+      "name": "tspt",
+      "type": 3
+    },
+    {
+      "name": "tsrt",
+      "type": 3
+    },
+    {
+      "name": "tsst",
+      "type": 3
+    },
+    {
+      "name": "tsfu",
+      "type": 3
+    },
+    {
+      "name": "tspu",
+      "type": 3
+    },
+    {
+      "name": "t31y",
+      "type": 3
+    },
+    {
+      "name": "ts1y",
+      "type": 2
+    },
+    {
+      "name": "t33y",
+      "type": 3
+    },
+    {
+      "name": "t34y",
+      "type": 3
+    },
+    {
+      "name": "tsPy",
+      "type": 3
+    },
+    {
+      "name": "tsTy",
+      "type": 2
+    },
+    {
+      "name": "tsdy",
+      "type": 2
+    },
+    {
+      "name": "tsoy",
+      "type": 2
+    },
+    {
+      "name": "tsty",
+      "type": 2
+    },
+    {
+      "name": "tsbz",
+      "type": 3
+    },
+    {
+      "name": "tsoz",
+      "type": 3
+    }
+  ],
+  "records": []
+}

@@ -1,0 +1,234 @@
+{
+  "path": "FAPL",
+  "name": "FAPL",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 460692,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "TF00",
+      "type": 3
+    },
+    {
+      "name": "TF10",
+      "type": 3
+    },
+    {
+      "name": "TF20",
+      "type": 3
+    },
+    {
+      "name": "TF30",
+      "type": 3
+    },
+    {
+      "name": "TF01",
+      "type": 3
+    },
+    {
+      "name": "TF11",
+      "type": 3
+    },
+    {
+      "name": "TF21",
+      "type": 3
+    },
+    {
+      "name": "TF31",
+      "type": 3
+    },
+    {
+      "name": "TF02",
+      "type": 3
+    },
+    {
+      "name": "TF12",
+      "type": 3
+    },
+    {
+      "name": "TF22",
+      "type": 3
+    },
+    {
+      "name": "TF03",
+      "type": 3
+    },
+    {
+      "name": "TF13",
+      "type": 3
+    },
+    {
+      "name": "TF23",
+      "type": 3
+    },
+    {
+      "name": "TF04",
+      "type": 3
+    },
+    {
+      "name": "TF14",
+      "type": 3
+    },
+    {
+      "name": "TF24",
+      "type": 3
+    },
+    {
+      "name": "TF05",
+      "type": 3
+    },
+    {
+      "name": "TF15",
+      "type": 3
+    },
+    {
+      "name": "TF25",
+      "type": 3
+    },
+    {
+      "name": "TF06",
+      "type": 3
+    },
+    {
+      "name": "TF16",
+      "type": 3
+    },
+    {
+      "name": "TF26",
+      "type": 3
+    },
+    {
+      "name": "TF07",
+      "type": 3
+    },
+    {
+      "name": "TF17",
+      "type": 3
+    },
+    {
+      "name": "TF27",
+      "type": 3
+    },
+    {
+      "name": "TF08",
+      "type": 3
+    },
+    {
+      "name": "TF18",
+      "type": 3
+    },
+    {
+      "name": "TF28",
+      "type": 3
+    },
+    {
+      "name": "TF09",
+      "type": 3
+    },
+    {
+      "name": "TF19",
+      "type": 3
+    },
+    {
+      "name": "TF29",
+      "type": 3
+    },
+    {
+      "name": "PWRA",
+      "type": 3
+    },
+    {
+      "name": "PCSA",
+      "type": 3
+    },
+    {
+      "name": "PTSA",
+      "type": 3
+    },
+    {
+      "name": "SCWB",
+      "type": 3
+    },
+    {
+      "name": "FABD",
+      "type": 3
+    },
+    {
+      "name": "FAHD",
+      "type": 3
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "PAGE",
+      "type": 3
+    },
+    {
+      "name": "FARE",
+      "type": 3
+    },
+    {
+      "name": "PFIG",
+      "type": 3
+    },
+    {
+      "name": "SIPI",
+      "type": 3
+    },
+    {
+      "name": "PECL",
+      "type": 3
+    },
+    {
+      "name": "PTEN",
+      "type": 3
+    },
+    {
+      "name": "PCON",
+      "type": 3
+    },
+    {
+      "name": "PEBO",
+      "type": 3
+    },
+    {
+      "name": "PSBO",
+      "type": 3
+    },
+    {
+      "name": "PDRP",
+      "type": 3
+    },
+    {
+      "name": "PYRP",
+      "type": 3
+    },
+    {
+      "name": "PSRR",
+      "type": 3
+    },
+    {
+      "name": "POVR",
+      "type": 3
+    },
+    {
+      "name": "PECS",
+      "type": 3
+    },
+    {
+      "name": "PPOS",
+      "type": 3
+    },
+    {
+      "name": "PESa",
+      "type": 3
+    }
+  ],
+  "records": []
+}

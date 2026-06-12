@@ -1,0 +1,59 @@
+{
+  "path": "SACP",
+  "name": "SACP",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 3789724,
+  "raw_key_hex": "",
+  "declared_entries_total": 4,
+  "records_parsed": 4,
+  "field_definitions": [
+    {
+      "name": "SMAD",
+      "type": 3
+    },
+    {
+      "name": "SMID",
+      "type": 3
+    },
+    {
+      "name": "SIDO",
+      "type": 3
+    },
+    {
+      "name": "COPS",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "SMAD": 10000000,
+      "SMID": 100000,
+      "SIDO": 3500000,
+      "COPS": 0
+    },
+    {
+      "_index": 1,
+      "SMAD": 5000000,
+      "SMID": 100000,
+      "SIDO": 700000,
+      "COPS": 1
+    },
+    {
+      "_index": 2,
+      "SMAD": 5000000,
+      "SMID": 100000,
+      "SIDO": 650000,
+      "COPS": 2
+    },
+    {
+      "_index": 3,
+      "SMAD": 3000000,
+      "SMID": 100000,
+      "SIDO": 150000,
+      "COPS": 3
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "path": "FDNF",
+  "name": "FDNF",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 83024,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "TILD",
+      "type": 3
+    },
+    {
+      "name": "TIPD",
+      "type": 3
+    },
+    {
+      "name": "TIDE",
+      "type": 3
+    },
+    {
+      "name": "TITL",
+      "type": 3
+    },
+    {
+      "name": "DPNM",
+      "type": 3
+    },
+    {
+      "name": "DRST",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "TGID": 1023,
+      "TILD": 0,
+      "TIPD": 0,
+      "TIDE": 0,
+      "TITL": 0,
+      "DPNM": 2047,
+      "DRST": 0
+    }
+  ]
+}

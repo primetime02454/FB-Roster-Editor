@@ -1,0 +1,150 @@
+{
+  "path": "DCIC",
+  "name": "DCIC",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 977712,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "OVI0",
+      "type": 3
+    },
+    {
+      "name": "SLP0",
+      "type": 3
+    },
+    {
+      "name": "OVI1",
+      "type": 3
+    },
+    {
+      "name": "SLP1",
+      "type": 3
+    },
+    {
+      "name": "OVI2",
+      "type": 3
+    },
+    {
+      "name": "SLP2",
+      "type": 3
+    },
+    {
+      "name": "OVI3",
+      "type": 3
+    },
+    {
+      "name": "SLP3",
+      "type": 3
+    },
+    {
+      "name": "OVI4",
+      "type": 3
+    },
+    {
+      "name": "SLP4",
+      "type": 3
+    },
+    {
+      "name": "OVI5",
+      "type": 3
+    },
+    {
+      "name": "SLP5",
+      "type": 3
+    },
+    {
+      "name": "OVI6",
+      "type": 3
+    },
+    {
+      "name": "SLP6",
+      "type": 3
+    },
+    {
+      "name": "OVI7",
+      "type": 3
+    },
+    {
+      "name": "SLP7",
+      "type": 3
+    },
+    {
+      "name": "OVI8",
+      "type": 3
+    },
+    {
+      "name": "SLP8",
+      "type": 3
+    },
+    {
+      "name": "OVI9",
+      "type": 3
+    },
+    {
+      "name": "SLP9",
+      "type": 3
+    },
+    {
+      "name": "DCSI",
+      "type": 3
+    },
+    {
+      "name": "DFCL",
+      "type": 3
+    },
+    {
+      "name": "DCYR",
+      "type": 3
+    },
+    {
+      "name": "CDCS",
+      "type": 3
+    },
+    {
+      "name": "CBST",
+      "type": 3
+    },
+    {
+      "name": "HBST",
+      "type": 3
+    },
+    {
+      "name": "LBST",
+      "type": 3
+    },
+    {
+      "name": "QBST",
+      "type": 3
+    },
+    {
+      "name": "DEST",
+      "type": 3
+    },
+    {
+      "name": "SFST",
+      "type": 3
+    },
+    {
+      "name": "OLST",
+      "type": 3
+    },
+    {
+      "name": "WRST",
+      "type": 3
+    },
+    {
+      "name": "DTST",
+      "type": 3
+    },
+    {
+      "name": "TeST",
+      "type": 3
+    }
+  ],
+  "records": []
+}

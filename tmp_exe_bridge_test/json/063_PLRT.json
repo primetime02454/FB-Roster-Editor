@@ -1,0 +1,22 @@
+{
+  "path": "PLRT",
+  "name": "PLRT",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 360972,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "TOID",
+      "type": 3
+    }
+  ],
+  "records": []
+}

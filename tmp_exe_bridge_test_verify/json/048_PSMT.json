@@ -1,0 +1,66 @@
+{
+  "path": "PSMT",
+  "name": "PSMT",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 123196,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PC00",
+      "type": 2
+    },
+    {
+      "name": "PC10",
+      "type": 2
+    },
+    {
+      "name": "PC01",
+      "type": 2
+    },
+    {
+      "name": "PC02",
+      "type": 2
+    },
+    {
+      "name": "PC03",
+      "type": 2
+    },
+    {
+      "name": "PC04",
+      "type": 2
+    },
+    {
+      "name": "PC05",
+      "type": 2
+    },
+    {
+      "name": "PC06",
+      "type": 2
+    },
+    {
+      "name": "PC07",
+      "type": 2
+    },
+    {
+      "name": "PC08",
+      "type": 2
+    },
+    {
+      "name": "PC09",
+      "type": 2
+    },
+    {
+      "name": "MTSI",
+      "type": 3
+    },
+    {
+      "name": "PDRP",
+      "type": 3
+    }
+  ],
+  "records": []
+}

@@ -9,7 +9,7 @@
     "build:desktop": "build_desktop_exe.bat",
     "deploy": "npm run build && npx firebase-tools deploy --only hosting",
     "deploy:hosting": "npm run build && npx firebase-tools deploy --only hosting",
-    "deploy:api": "gcloud run deploy madden-roster-editor-api --source backend --region us-central1 --allow-unauthenticated --memory 2Gi --cpu 2",
+    "deploy:api": "gcloud run deploy madden-roster-editor-api --source backend --region us-central1 --allow-unauthenticated --memory 2Gi --cpu 2 --min-instances 1 --max-instances 1",
     "serve:hosting": "npm run build && npx firebase-tools emulators:start --only hosting --project demo-madden-roster-editor",
     "serve:hosting:ci": "npm run build && npx firebase-tools hosting:channel:deploy local-preview"
   },

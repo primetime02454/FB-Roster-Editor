@@ -1,0 +1,435 @@
+{
+  "path": "OWNR",
+  "name": "OWNR",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1045544,
+  "raw_key_hex": "",
+  "declared_entries_total": 32,
+  "records_parsed": 32,
+  "field_definitions": [
+    {
+      "name": "ONAB",
+      "type": 3
+    },
+    {
+      "name": "ONPH",
+      "type": 3
+    },
+    {
+      "name": "DCCP",
+      "type": 3
+    },
+    {
+      "name": "OCCP",
+      "type": 3
+    },
+    {
+      "name": "PCCP",
+      "type": 3
+    },
+    {
+      "name": "TRCP",
+      "type": 3
+    },
+    {
+      "name": "GmCP",
+      "type": 3
+    },
+    {
+      "name": "PTId",
+      "type": 3
+    },
+    {
+      "name": "PNid",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 14,
+      "PNid": 2560
+    },
+    {
+      "_index": 1,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 13,
+      "PNid": 2561
+    },
+    {
+      "_index": 2,
+      "ONAB": 1,
+      "ONPH": 1,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 11,
+      "PNid": 2562
+    },
+    {
+      "_index": 3,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 8,
+      "PNid": 2563
+    },
+    {
+      "_index": 4,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 4,
+      "PNid": 2564
+    },
+    {
+      "_index": 5,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 12,
+      "PNid": 2565
+    },
+    {
+      "_index": 6,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 2,
+      "OCCP": 2,
+      "PCCP": 2,
+      "TRCP": 2,
+      "GmCP": 2,
+      "PTId": 13,
+      "PNid": 2566
+    },
+    {
+      "_index": 7,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 7,
+      "PNid": 2567
+    },
+    {
+      "_index": 8,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 6,
+      "PNid": 2568
+    },
+    {
+      "_index": 9,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 9,
+      "PNid": 2569
+    },
+    {
+      "_index": 10,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 3,
+      "OCCP": 3,
+      "PCCP": 3,
+      "TRCP": 3,
+      "GmCP": 3,
+      "PTId": 1,
+      "PNid": 2570
+    },
+    {
+      "_index": 11,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 5,
+      "PNid": 2571
+    },
+    {
+      "_index": 12,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 10,
+      "PNid": 2572
+    },
+    {
+      "_index": 13,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 8,
+      "PNid": 2573
+    },
+    {
+      "_index": 14,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 0,
+      "PNid": 2574
+    },
+    {
+      "_index": 15,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 0,
+      "PNid": 2575
+    },
+    {
+      "_index": 16,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 16,
+      "PNid": 2576
+    },
+    {
+      "_index": 17,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 2,
+      "OCCP": 2,
+      "PCCP": 2,
+      "TRCP": 2,
+      "GmCP": 2,
+      "PTId": 3,
+      "PNid": 2577
+    },
+    {
+      "_index": 18,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 11,
+      "PNid": 2578
+    },
+    {
+      "_index": 19,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 2,
+      "OCCP": 2,
+      "PCCP": 2,
+      "TRCP": 2,
+      "GmCP": 2,
+      "PTId": 11,
+      "PNid": 2579
+    },
+    {
+      "_index": 20,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 11,
+      "PNid": 2580
+    },
+    {
+      "_index": 21,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 0,
+      "PNid": 2581
+    },
+    {
+      "_index": 22,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 3,
+      "OCCP": 3,
+      "PCCP": 3,
+      "TRCP": 3,
+      "GmCP": 3,
+      "PTId": 15,
+      "PNid": 2582
+    },
+    {
+      "_index": 23,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 16,
+      "PNid": 2583
+    },
+    {
+      "_index": 24,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 0,
+      "OCCP": 0,
+      "PCCP": 0,
+      "TRCP": 0,
+      "GmCP": 0,
+      "PTId": 7,
+      "PNid": 2584
+    },
+    {
+      "_index": 25,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 2,
+      "OCCP": 2,
+      "PCCP": 2,
+      "TRCP": 2,
+      "GmCP": 2,
+      "PTId": 1,
+      "PNid": 2585
+    },
+    {
+      "_index": 26,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 12,
+      "PNid": 2586
+    },
+    {
+      "_index": 27,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 2,
+      "OCCP": 2,
+      "PCCP": 2,
+      "TRCP": 2,
+      "GmCP": 2,
+      "PTId": 10,
+      "PNid": 2587
+    },
+    {
+      "_index": 28,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 14,
+      "PNid": 2588
+    },
+    {
+      "_index": 29,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 2,
+      "OCCP": 2,
+      "PCCP": 2,
+      "TRCP": 2,
+      "GmCP": 2,
+      "PTId": 7,
+      "PNid": 2589
+    },
+    {
+      "_index": 30,
+      "ONAB": 0,
+      "ONPH": 1,
+      "DCCP": 2,
+      "OCCP": 2,
+      "PCCP": 2,
+      "TRCP": 2,
+      "GmCP": 2,
+      "PTId": 5,
+      "PNid": 2590
+    },
+    {
+      "_index": 31,
+      "ONAB": 0,
+      "ONPH": 0,
+      "DCCP": 1,
+      "OCCP": 1,
+      "PCCP": 1,
+      "TRCP": 1,
+      "GmCP": 1,
+      "PTId": 8,
+      "PNid": 2591
+    }
+  ]
+}

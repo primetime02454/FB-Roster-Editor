@@ -1,7 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
+import shutil
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('app', 'app'), ('data', 'data'), ('..\\frontend\\dist', 'frontend\\dist')]
+datas = [
+    ('app', 'app'),
+    ('data\\visual_prefab_options_trimmed.json', 'data'),
+    ('data\\cfb27', 'data\\cfb27'),
+    ('data\\cfb27_dynasty', 'data\\cfb27_dynasty'),
+    (shutil.which('node') or r'C:\Program Files\nodejs\node.exe', 'bin'),
+    ('tools', 'tools'),
+    ('vendor', 'vendor'),
+    ('..\\frontend\\dist', 'frontend\\dist'),
+]
 binaries = []
 hiddenimports = []
 tmp_ret = collect_all('webview')
@@ -10,7 +20,7 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 a = Analysis(
     ['desktop_app.py'],
-    pathex=['C:\\Users\\Shadow\\Desktop\\Coding\\madden-roster-editor-webapp\\backend'],
+    pathex=['C:\\Users\\Shadow\\Desktop\\Coding\\fb-roster-editor-webapp\\backend'],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,

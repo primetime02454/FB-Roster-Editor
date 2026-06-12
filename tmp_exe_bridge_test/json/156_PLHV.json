@@ -1,0 +1,62 @@
+{
+  "path": "PLHV",
+  "name": "PLHV",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1957744,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PFNA",
+      "type": 0
+    },
+    {
+      "name": "PLNA",
+      "type": 0
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "POID",
+      "type": 3
+    },
+    {
+      "name": "PAGE",
+      "type": 3
+    },
+    {
+      "name": "PPTI",
+      "type": 3
+    },
+    {
+      "name": "PJEN",
+      "type": 3
+    },
+    {
+      "name": "PSXP",
+      "type": 3
+    },
+    {
+      "name": "PPOS",
+      "type": 3
+    },
+    {
+      "name": "POPS",
+      "type": 3
+    },
+    {
+      "name": "PHGT",
+      "type": 3
+    }
+  ],
+  "records": []
+}

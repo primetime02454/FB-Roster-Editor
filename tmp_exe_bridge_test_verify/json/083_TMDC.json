@@ -1,0 +1,38 @@
+{
+  "path": "TMDC",
+  "name": "TMDC",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 462556,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "TDCA",
+      "type": 3
+    },
+    {
+      "name": "TDCD",
+      "type": 3
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "TDAM",
+      "type": 3
+    },
+    {
+      "name": "TDCT",
+      "type": 3
+    }
+  ],
+  "records": []
+}

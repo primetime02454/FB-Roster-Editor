@@ -1,0 +1,46 @@
+{
+  "path": "PGOL",
+  "name": "PGOL",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 116436,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "gopa",
+      "type": 3
+    },
+    {
+      "name": "gosa",
+      "type": 3
+    },
+    {
+      "name": "gopb",
+      "type": 3
+    },
+    {
+      "name": "gorb",
+      "type": 3
+    },
+    {
+      "name": "gosb",
+      "type": 3
+    },
+    {
+      "name": "gors",
+      "type": 3
+    },
+    {
+      "name": "gory",
+      "type": 2
+    }
+  ],
+  "records": []
+}

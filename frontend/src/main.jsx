@@ -4,11 +4,19 @@ import './styles.css';
 
 const CLOUD_RUN_API_BASE = 'https://madden-roster-editor-api-13516500762.us-central1.run.app/api';
 const API = import.meta.env.VITE_API_URL || defaultApiBase();
-const PAGE_SIZE = 250;
-const VISUALS_PAGE_SIZE = 100;
+const PAGE_SIZE = 100;
+const VISUALS_PAGE_SIZE = 75;
+const TABLE_CACHE_LIMIT = 18;
+const TABLE_ROW_HEIGHT = 32;
+const TABLE_OVERSCAN = 10;
+const NAV_ROW_HEIGHT = 55;
+const NAV_OVERSCAN = 8;
+const EDITOR_META_CACHE = new Map();
+const VISUAL_OPTIONS_CACHE = new Map();
+const PLAYER_VISUALS_CACHE = new Map();
 const PLAYER_INFO_ORDER = [
   'PFNA', 'PLNA', 'PGID', 'POID', 'TGID', 'PPOS', 'PLTY', 'POVR',
-  'PAGE', 'PHGT', 'PWGT', 'PYRP', 'PJEN', 'PCOL', 'PHTN', 'PHSN',
+  'PAGE', 'PHGT', 'PWGT', 'PYEA', 'PYRP', 'PRSD', 'PJEN', 'PCOL', 'PHTN', 'PHSN',
   'PHAN', 'PCPH', 'PIMP', 'PINJ', 'PYCF', 'PSXP', 'PGHE', 'PCMT',
 ];
 const PLAYER_CONTRACT_ORDER = [
@@ -43,14 +51,19 @@ const POSITION_OPTIONS = [
   { id: 10, label: 'LE' },
   { id: 11, label: 'RE' },
   { id: 12, label: 'DT' },
-  { id: 13, label: 'LOLB' },
+  { id: 13, label: 'SAM' },
   { id: 14, label: 'MLB' },
-  { id: 15, label: 'ROLB' },
+  { id: 15, label: 'WILL' },
   { id: 16, label: 'CB' },
   { id: 17, label: 'FS' },
   { id: 18, label: 'SS' },
   { id: 19, label: 'K' },
   { id: 20, label: 'P' },
+];
+const PLAYER_POSITION_LABELS = Object.fromEntries(POSITION_OPTIONS.map(option => [String(option.id), option.label]));
+const PLAYER_INFO_SECTIONS = [
+  { key: 'player-core', title: 'Player Data', columns: ['PFNA', 'PLNA', 'PGID', 'POID', 'TGID', 'PPOS', 'PLTY', 'POVR', 'PJEN'] },
+  { key: 'player-bio', title: 'Bio / Status', columns: ['PAGE', 'PHGT', 'PWGT', 'PYEA', 'PYRP', 'PRSD', 'PCOL', 'PHTN', 'PHSN', 'PHAN', 'PCPH', 'PIMP', 'PINJ', 'PYCF', 'PSXP', 'PGHE', 'PCMT'] },
 ];
 
 const PLAYER_SECTION_DEFS = [
@@ -160,7 +173,6 @@ const VIEW_BUTTONS = [
   { key: 'player', label: 'Player Editor' },
   { key: 'team', label: 'Team Editor' },
   { key: 'visuals', label: 'Character Visuals' },
-  { key: 'node', label: 'Node JSON' },
 ];
 const VISUALS_LABELS = {
   'Player ID': 'Player ID',
@@ -230,6 +242,18 @@ function clearSessionIdFromUrl() {
 function isSessionMissingError(err) {
   const msg = String(err?.message || '').toLowerCase();
   return err?.status === 404 || msg.includes('session not found') || msg === 'not found';
+}
+
+function rememberLimited(cache, key, value, limit = TABLE_CACHE_LIMIT) {
+  if (cache.has(key)) cache.delete(key);
+  cache.set(key, value);
+  while (cache.size > limit) {
+    cache.delete(cache.keys().next().value);
+  }
+}
+
+function clampNumber(value, min, max) {
+  return Math.max(min, Math.min(max, value));
 }
 
 function apiUrl(path) {
@@ -346,6 +370,84 @@ function colorHexFromValues(r, g, b) {
   return `#${hex(r)}${hex(g)}${hex(b)}`;
 }
 
+function cleanPortraitName(value) {
+  return String(value || '')
+    .trim()
+    .replace(/^nilpp_/i, '')
+    .replace(/\.png$/i, '');
+}
+
+function apiAssetBase() {
+  return API.replace(/\/api\/?$/, '');
+}
+
+function playerPortraitUrl(name, playerId) {
+  const cleaned = cleanPortraitName(name);
+  if (!cleaned) return '';
+  const encoded = encodeURIComponent(cleaned);
+  const cacheBust = playerId ? `?pgid=${encodeURIComponent(playerId)}` : '';
+  return `${apiAssetBase()}/api/portraits/nilpp_${encoded}.png${cacheBust}`;
+}
+
+function makeUniquePortraitName(value) {
+  const cleaned = cleanPortraitName(value);
+  if (!cleaned) return '';
+  return /^Unique_/i.test(cleaned) ? cleaned : `Unique_${cleaned}`;
+}
+
+function compactNamePart(value) {
+  return String(value || '').trim().replace(/[^A-Za-z0-9]/g, '');
+}
+
+function hasExactPortraitSuffix(value) {
+  return /_[0-9]+$/i.test(cleanPortraitName(value));
+}
+
+function playerPortraitCandidates({
+  genericHeadName,
+  assetName,
+  playerId,
+  firstName,
+  lastName,
+  portraitId,
+} = {}) {
+  const compactLast = compactNamePart(lastName);
+  const compactFirst = compactNamePart(firstName);
+  const compactPlayerId = compactNamePart(playerId);
+  const cleanedGenericHead = cleanPortraitName(genericHeadName);
+  const cleanedAssetName = cleanPortraitName(assetName);
+  const exactNames = [
+    cleanedGenericHead,
+    cleanedAssetName,
+    makeUniquePortraitName(cleanedAssetName),
+  ].filter(Boolean);
+  const fallbackNames = [];
+
+  if (cleanedGenericHead && !hasExactPortraitSuffix(cleanedGenericHead) && !/^\d+$/.test(cleanedGenericHead)) {
+    fallbackNames.push(makeUniquePortraitName(cleanedGenericHead));
+  }
+
+  if (compactLast && compactFirst && compactPlayerId) {
+    fallbackNames.push(`Unique_${compactLast}${compactFirst}_${compactPlayerId}`);
+  }
+  if (compactLast && compactFirst && portraitId) {
+    fallbackNames.push(`Unique_${compactLast}${compactFirst}_${compactNamePart(portraitId)}`);
+  }
+  const names = [...exactNames, ...fallbackNames, 'Blank'];
+
+  const seen = new Set();
+  return names
+    .map(cleanPortraitName)
+    .filter(Boolean)
+    .filter(name => {
+      const key = name.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .map(name => playerPortraitUrl(name, playerId));
+}
+
 function colorFromOption(option, fallback = '#181a1e') {
   const color = option?.primaryColor;
   if (!color) return fallback;
@@ -418,9 +520,44 @@ function formatHeight(value) {
   return `${Math.floor(inches / 12)}'${inches % 12}"`;
 }
 
+function formatWeight(value) {
+  const raw = Number(value);
+  if (!Number.isFinite(raw)) return valueText(value);
+  return String(raw + 160);
+}
+
+function parseHeightDisplay(value) {
+  const text = String(value ?? '').trim();
+  const match = text.match(/^(\d+)\s*'\s*(\d+)\s*"?$/);
+  if (match) return String((Number(match[1]) * 12) + Number(match[2]));
+  return text;
+}
+
+function parseWeightDisplay(value) {
+  const text = String(value ?? '').trim();
+  if (/^-?\d+$/.test(text)) {
+    const numeric = Number(text);
+    if (numeric >= 160) return String(numeric - 160);
+  }
+  return text;
+}
+
+function displayValueForColumn(col, value) {
+  if (col === 'PWGT') return formatWeight(value);
+  if (col === 'PHGT') return formatHeight(value);
+  if (col === 'Height Inches') return formatHeight(value);
+  if (col === 'PPOS') return PLAYER_POSITION_LABELS[valueText(value)] || valueText(value);
+  return valueText(value);
+}
+
 function normalizePlayerClass(value) {
   const text = valueText(value);
-  return ({ 0: 'FR', 1: 'SO', 2: 'JR', 3: 'SR', 4: 'RS' })[text] || text;
+  return ({ 0: 'Fr', 1: 'So', 2: 'Jr', 3: 'Sr', 4: 'RS' })[text] || text;
+}
+
+function isRedshirtStatus(value) {
+  const text = valueText(value);
+  return text === '2' || text === '3';
 }
 
 function HeaderRatingTile({ value, label }) {
@@ -485,6 +622,48 @@ function isTeamRatingColumn(code, label = '') {
   return /rating/i.test(String(label));
 }
 
+const PLAYER_RATING_GROUPS = [
+  { title: 'Offense', subgroups: [
+    { title: 'Passing', codes: ['PTHP', 'PTAS', 'PTAM', 'PTAD', 'PTHA', 'PTOR', 'PTUP', 'PPLA'] },
+    { title: 'Ball Carrier', codes: ['PCAR', 'PBCV', 'PBKT', 'PELU', 'PLJM', 'PLSM', 'PLTR', 'PLSA'] },
+    { title: 'Receiving', codes: ['PCTH', 'PCBT', 'PLCI', 'PLSC', 'PLRL', 'PDRR', 'PMRR'] },
+    { title: 'Blocking', codes: ['PPBK', 'PPBF', 'PPBS', 'PRBK', 'PRBF', 'PRBS', 'PLBK', 'PLIB'] },
+  ] },
+  { title: 'Defense', subgroups: [
+    { title: 'Coverage', codes: ['PLMC', 'PLZC', 'PLPE', 'PLRE'] },
+    { title: 'Pass Rush & Tackling', codes: ['PTAK', 'PLHT', 'PBSG', 'PLPU', 'PFMS', 'PBSK', 'PLPR'] },
+  ] },
+  { title: 'Special Teams', subgroups: [
+    { title: 'Kicking & Returns', codes: ['PKAC', 'PKPR', 'PKRT'] },
+  ] },
+  { title: 'Athleticism', subgroups: [
+    { title: 'Physical', codes: ['PSPD', 'PACC', 'PAGI', 'PSTR', 'PJMP', 'PSTA', 'PTGH'] },
+  ] },
+];
+
+// Build the grouped rating layout from the flat list of rating columns a record has.
+// Anything not explicitly placed falls into an "Other" group so nothing is hidden.
+function buildRatingGroups(availableColumns) {
+  const available = new Set(availableColumns);
+  const assigned = new Set();
+  const groups = [];
+  for (const group of PLAYER_RATING_GROUPS) {
+    const subgroups = [];
+    for (const sub of group.subgroups) {
+      const columns = sub.codes.filter(code => available.has(code) && !assigned.has(code));
+      columns.forEach(code => assigned.add(code));
+      if (columns.length) subgroups.push({ title: sub.title, columns });
+    }
+    const count = subgroups.reduce((sum, sub) => sum + sub.columns.length, 0);
+    if (count) groups.push({ title: group.title, count, subgroups });
+  }
+  const leftover = availableColumns.filter(code => !assigned.has(code));
+  if (leftover.length) {
+    groups.push({ title: 'Other', count: leftover.length, subgroups: [{ title: 'Other Ratings', columns: leftover }] });
+  }
+  return groups;
+}
+
 function buildSections(columns, defs) {
   const remaining = [...columns];
   const sections = [];
@@ -543,6 +722,9 @@ function App() {
   const [replaceFind, setReplaceFind] = useState('');
   const [replaceWith, setReplaceWith] = useState('');
   const [openMenu, setOpenMenu] = useState(null);
+  const [bulkDialog, setBulkDialog] = useState(null); // 'import' | 'export' | null
+  const [bulkFormat, setBulkFormat] = useState('csv'); // 'csv' | 'json'
+  const bulkImportFormatRef = useRef('csv');
   const [mobileNavOpen, setMobileNavOpen] = useState(() => typeof window !== 'undefined' ? window.innerWidth <= 1360 : false);
   const fileRef = useRef(null);
   const csvBundleRef = useRef(null);
@@ -552,6 +734,10 @@ function App() {
   const visualsJsonRef = useRef(null);
   const menuBarRef = useRef(null);
   const mobileNavRef = useRef(null);
+  const autosaveTimerRef = useRef(null);
+  const tableRequestSeqRef = useRef(0);
+  const tablePageCacheRef = useRef(new Map());
+  const tableMetaCacheRef = useRef(new Map());
   const showTableSidebar = view === 'table';
   const currentModeLabel = EDITOR_MODE_LABELS[view] || 'Table View';
   const statusFileLabel = session?.input_file ? `Loaded ${session.input_file}` : 'No roster open';
@@ -579,7 +765,6 @@ function App() {
         await Promise.allSettled([
           fetchJson(`/session/${session.session_id}/editor-meta/TEAM`),
           fetchJson(`/session/${session.session_id}/editor-meta/PLAY`),
-          fetchJson(`/session/${session.session_id}/visuals-table?offset=0&limit=1&search=`),
           firstTeamId !== undefined && firstTeamId !== null
             ? fetchJson(`/session/${session.session_id}/player-options?team_id=${firstTeamId}`)
             : fetchJson(`/session/${session.session_id}/player-options`),
@@ -590,6 +775,20 @@ function App() {
       cancelled = true;
     };
   }, [session]);
+
+  useEffect(() => {
+    tablePageCacheRef.current.clear();
+    tableMetaCacheRef.current.clear();
+  }, [session?.session_id]);
+
+  useEffect(() => {
+    if (!session?.session_id) return undefined;
+    const timer = window.setInterval(() => {
+      fetchJson(`/session/${session.session_id}`)
+        .catch(() => {});
+    }, 30000);
+    return () => window.clearInterval(timer);
+  }, [session?.session_id]);
 
   useEffect(() => {
     if (session && currentTable && view === 'table') {
@@ -605,8 +804,19 @@ function App() {
 
   useEffect(() => {
     if (session && currentTableMeta?.name) {
+      const cacheKey = `${session.session_id}:${currentTableMeta.name}`;
+      const cached = tableMetaCacheRef.current.get(cacheKey) || EDITOR_META_CACHE.get(cacheKey);
+      if (cached) {
+        setTableMeta(cached);
+        return;
+      }
       fetchJson(`/session/${session.session_id}/editor-meta/${currentTableMeta.name}`)
-        .then(out => setTableMeta(out || { labels: {} }))
+        .then(out => {
+          const nextMeta = out || { labels: {} };
+          rememberLimited(tableMetaCacheRef.current, cacheKey, nextMeta);
+          rememberLimited(EDITOR_META_CACHE, cacheKey, nextMeta, 24);
+          setTableMeta(nextMeta);
+        })
         .catch(() => setTableMeta({ labels: {} }));
     } else {
       setTableMeta({ labels: {} });
@@ -645,6 +855,12 @@ function App() {
     return () => window.removeEventListener('pointerdown', onPointerDown);
   }, []);
 
+  useEffect(() => () => {
+    if (autosaveTimerRef.current) {
+      window.clearTimeout(autosaveTimerRef.current);
+    }
+  }, []);
+
   async function onOpenFile(file) {
     if (!file) return;
     setLoading(true);
@@ -679,22 +895,48 @@ function App() {
     }
   }
 
-  async function importAllCsvBundle(file) {
+  async function importAllBundle(file) {
     if (!file || !session) return;
+    const format = bulkImportFormatRef.current === 'json' ? 'json' : 'csv';
+    const path = format === 'json'
+      ? `/session/${session.session_id}/import/all-json`
+      : `/session/${session.session_id}/import/all-csv`;
     setLoading(true);
     setStatus(`Importing ${file.name}...`);
     try {
       const form = new FormData();
       form.append('file', file);
-      const res = await fetchWithFallback(`/session/${session.session_id}/import/all-csv`, { method: 'POST', body: form });
+      const res = await fetchWithFallback(path, { method: 'POST', body: form });
       if (!res.ok) throw new Error(await res.text());
       await loadExistingSession(session.session_id);
-      setStatus(`Imported CSV bundle from ${file.name}.`);
+      scheduleAutosave();
+      setStatus(`Imported ${format.toUpperCase()} bundle from ${file.name}.`);
     } catch (err) {
-      setStatus(`CSV import failed: ${err.message}`);
+      setStatus(`Import All failed: ${err.message}`);
     } finally {
       if (csvBundleRef.current) csvBundleRef.current.value = '';
       setLoading(false);
+    }
+  }
+
+  function exportAllBundle(format) {
+    if (!session) return;
+    const path = format === 'json'
+      ? `/session/${session.session_id}/export/all-json.zip`
+      : `/session/${session.session_id}/export/all-csv.zip`;
+    const name = format === 'json' ? 'roster_json_bundle.zip' : 'roster_csv_bundle.zip';
+    downloadSessionFile(path, name);
+  }
+
+  function confirmBulkDialog() {
+    const format = bulkFormat === 'json' ? 'json' : 'csv';
+    const mode = bulkDialog;
+    setBulkDialog(null);
+    if (mode === 'export') {
+      exportAllBundle(format);
+    } else if (mode === 'import') {
+      bulkImportFormatRef.current = format;
+      csvBundleRef.current?.click();
     }
   }
 
@@ -708,6 +950,7 @@ function App() {
       const res = await fetchWithFallback(`/session/${session.session_id}/import/table/${encodeURIComponent(currentTable)}.csv`, { method: 'POST', body: form });
       if (!res.ok) throw new Error(await res.text());
       await loadExistingSession(session.session_id);
+      scheduleAutosave();
       setStatus(`Imported CSV into ${currentTableMeta?.name || currentTable}.`);
     } catch (err) {
       setStatus(`Current CSV import failed: ${err.message}`);
@@ -727,6 +970,7 @@ function App() {
       const res = await fetchWithFallback(`/session/${session.session_id}/import/visuals/csv`, { method: 'POST', body: form });
       if (!res.ok) throw new Error(await res.text());
       await loadExistingSession(session.session_id);
+      scheduleAutosave();
       setStatus(`Imported visuals CSV from ${file.name}.`);
     } catch (err) {
       setStatus(`Visuals CSV import failed: ${err.message}`);
@@ -752,6 +996,7 @@ function App() {
         body: JSON.stringify({ value }),
       });
       await loadExistingSession(session.session_id);
+      scheduleAutosave();
       setStatus(`Imported JSON from ${file.name}.`);
     } catch (err) {
       setStatus(`Current JSON import failed: ${err.message}`);
@@ -774,6 +1019,7 @@ function App() {
         body: JSON.stringify({ value }),
       });
       await loadExistingSession(session.session_id);
+      scheduleAutosave();
       setStatus(`Imported visuals JSON from ${file.name}.`);
     } catch (err) {
       setStatus(`Visuals JSON import failed: ${err.message}`);
@@ -781,6 +1027,19 @@ function App() {
       if (visualsJsonRef.current) visualsJsonRef.current.value = '';
       setLoading(false);
     }
+  }
+
+  function scheduleAutosave() {
+    if (!session || franchiseSession) return;
+    if (autosaveTimerRef.current) window.clearTimeout(autosaveTimerRef.current);
+    autosaveTimerRef.current = window.setTimeout(async () => {
+      try {
+        await fetchJson(`/session/${session.session_id}/autosave`, { method: 'POST' });
+        setStatus(current => current.startsWith('Downloaded ') ? current : 'Autosaved roster backup.');
+      } catch (err) {
+        setStatus(`Autosave failed: ${err.message}`);
+      }
+    }, 1200);
   }
 
   async function downloadSessionFile(path, fallbackName) {
@@ -796,7 +1055,7 @@ function App() {
   }
 
   const currentCsvExportPath = view === 'visuals'
-    ? `/session/${session?.session_id}/export/visuals/players.csv`
+    ? `/session/${session?.session_id}/export/visuals/flat.csv`
     : currentTable ? `/session/${session?.session_id}/export/table/${encodeURIComponent(currentTable)}.csv` : '';
   const currentJsonExportPath = view === 'visuals'
     ? `/session/${session?.session_id}/export/visuals/nested.json`
@@ -851,6 +1110,11 @@ function App() {
     setStatus(message);
   }
 
+  function handleEditorSessionInvalid() {
+    clearSessionIdFromUrl();
+    setStatus('Session check failed. The current roster stays visible, but reopen the file if edits stop saving.');
+  }
+
   function handleSessionError(err, fallback) {
     const msg = err?.message || fallback;
     if (isSessionMissingError(err)) {
@@ -863,20 +1127,42 @@ function App() {
 
   async function loadTable(path = currentTable, offset = 0, options = {}) {
     if (!session || !path) return;
-    setLoading(true);
+    const requestSeq = ++tableRequestSeqRef.current;
+    const search = options.search ?? tableSearch;
+    const sortBy = options.sortBy ?? tableSortBy;
+    const sortDir = options.sortDir ?? tableSortDir;
+    const filterColumn = options.filterColumn ?? tableFilterColumn;
+    const filterValue = options.filterValue ?? tableFilterValue;
+    const cacheKey = JSON.stringify({
+      session: session.session_id,
+      path,
+      offset,
+      limit: PAGE_SIZE,
+      search,
+      sortBy,
+      sortDir,
+      filterColumn,
+      filterValue,
+    });
+    const cached = tablePageCacheRef.current.get(cacheKey);
+    if (cached) {
+      React.startTransition(() => setTableData(cached));
+    }
+    const loadingTimer = window.setTimeout(() => {
+      if (requestSeq === tableRequestSeqRef.current) setLoading(true);
+    }, cached ? 250 : 80);
     try {
-      const search = options.search ?? tableSearch;
-      const sortBy = options.sortBy ?? tableSortBy;
-      const sortDir = options.sortDir ?? tableSortDir;
-      const filterColumn = options.filterColumn ?? tableFilterColumn;
-      const filterValue = options.filterValue ?? tableFilterValue;
       const q = new URLSearchParams({ offset, limit: PAGE_SIZE, search, sort_by: sortBy, sort_dir: sortDir, filter_column: filterColumn, filter_value: filterValue });
       const data = await fetchJson(`/session/${session.session_id}/table/${encodeURIComponent(path)}?${q}`);
-      setTableData(data);
+      if (requestSeq !== tableRequestSeqRef.current) return;
+      rememberLimited(tablePageCacheRef.current, cacheKey, data);
+      React.startTransition(() => setTableData(data));
     } catch (err) {
+      if (requestSeq !== tableRequestSeqRef.current) return;
       handleSessionError(err, 'Load table failed');
     } finally {
-      setLoading(false);
+      window.clearTimeout(loadingTimer);
+      if (requestSeq === tableRequestSeqRef.current) setLoading(false);
     }
   }
 
@@ -898,6 +1184,7 @@ function App() {
       ...d,
       records: d.records.map(r => r.__rowIndex === rowIndex ? { ...r, [column]: value } : r),
     }));
+    scheduleAutosave();
   }
 
   async function undo() {
@@ -938,6 +1225,7 @@ function App() {
       body: JSON.stringify({ table_path: currentTable, start_row_index: selectedCell.rowIndex, start_column: selectedCell.column, rows }),
     });
     await loadTable(currentTable, tableData.offset, tableSearch);
+    scheduleAutosave();
     setStatus('Pasted grid data.');
   }
 
@@ -951,6 +1239,7 @@ function App() {
         body: JSON.stringify({ table_path: currentTable, find: replaceFind, replace: replaceWith }),
       });
       await loadTable(currentTable, tableData.offset, tableSearch);
+      scheduleAutosave();
       setStatus(`Replaced ${res.replacements} values.`);
       setReplaceOpen(false);
     } catch (err) {
@@ -966,17 +1255,38 @@ function App() {
       items: [
         { label: 'Open...', disabled: false, action: () => fileRef.current?.click() },
         { label: 'Open Sample', disabled: false, action: parseSample },
-        { label: 'Import All from CSV...', disabled: !session, action: () => csvBundleRef.current?.click() },
-        { label: 'Import Current CSV...', disabled: currentCsvImportDisabled, action: () => tableCsvRef.current?.click() },
-        { label: 'Import Current JSON...', disabled: currentJsonImportDisabled, action: () => jsonImportRef.current?.click() },
-        { label: 'Import Visuals CSV...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsCsvRef.current?.click() },
-        { label: 'Import Visuals JSON...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsJsonRef.current?.click() },
         { type: 'separator' },
         { label: 'Save DB', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/save-roster.db`, 'roster.db') },
         { label: 'Save Raw', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/save-raw.db`, 'roster_raw.db') },
         { label: 'Save Compressed', disabled: !session || franchiseSession || session.input_container !== 'fbchunks', action: () => downloadSessionFile(`/session/${session.session_id}/save-compressed`, 'roster_wrapped') },
         { label: 'Save As DB', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/save-roster.db`, 'roster.db') },
         { label: 'Save As JSON', disabled: !session, action: () => downloadSessionFile(`/session/${session.session_id}/save-project.json`, 'madden_roster_editor_project.json') },
+      ],
+    },
+    {
+      label: 'Import',
+      items: [
+        { label: 'Import All... (CSV / JSON)', disabled: !session, action: () => { setBulkFormat('csv'); setBulkDialog('import'); } },
+        { type: 'separator' },
+        { label: 'Import Current CSV...', disabled: currentCsvImportDisabled, action: () => tableCsvRef.current?.click() },
+        { label: 'Import Current JSON...', disabled: currentJsonImportDisabled, action: () => jsonImportRef.current?.click() },
+        { type: 'separator' },
+        { label: 'Import Visuals CSV...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsCsvRef.current?.click() },
+        { label: 'Import Visuals JSON...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsJsonRef.current?.click() },
+      ],
+    },
+    {
+      label: 'Export',
+      items: [
+        { label: 'Export All... (CSV / JSON)', disabled: !session, action: () => { setBulkFormat('csv'); setBulkDialog('export'); } },
+        { type: 'separator' },
+        { label: view === 'visuals' ? 'Current View CSV' : 'Current Table CSV', disabled: !session || !currentCsvExportPath, action: () => downloadSessionFile(currentCsvExportPath, view === 'visuals' ? 'character_visuals_players_flat.csv' : `${currentTableMeta?.name || 'table'}.csv`) },
+        { label: view === 'visuals' ? 'Current View JSON' : 'Current Table JSON', disabled: !session || !currentJsonExportPath, action: () => downloadSessionFile(currentJsonExportPath, view === 'visuals' ? 'character_visuals_nested.json' : `${currentTableMeta?.name || 'table'}.json`) },
+        { type: 'separator' },
+        { label: 'Visuals Players CSV', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/flat.csv`, 'character_visuals_players_flat.csv') },
+        { label: 'Visuals Nested JSON', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/nested.json`, 'character_visuals_nested.json') },
+        { label: 'Visuals Loadouts CSV', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/loadouts.csv`, 'character_visuals_loadouts.csv') },
+        { label: 'Visuals Elements CSV', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/elements.csv`, 'character_visuals_loadout_elements.csv') },
       ],
     },
     {
@@ -997,23 +1307,6 @@ function App() {
         { label: 'Player Editor', disabled: !playTable, action: () => { setCurrentTable(playTable); setView('player'); } },
         { label: 'Team Editor', disabled: !teamTable, action: () => { setCurrentTable(teamTable); setView('team'); } },
         { label: 'Character Visuals', disabled: !session || franchiseSession || visualsUnsupported, action: () => setView('visuals') },
-        { label: 'Node JSON', disabled: !session, action: () => setView('node') },
-      ],
-    },
-    {
-      label: 'Export',
-      items: [
-        { label: 'Export All ZIP', disabled: !session, action: () => downloadSessionFile(`/session/${session.session_id}/export/all.zip`, 'madden_roster_editor_project_export.zip') },
-        { label: 'Export All to CSV', disabled: !session, action: () => downloadSessionFile(`/session/${session.session_id}/export/all-csv.zip`, 'madden_roster_editor_csv_bundle.zip') },
-        { label: view === 'visuals' ? 'Current View CSV' : 'Current Table CSV', disabled: !session || !currentCsvExportPath, action: () => downloadSessionFile(currentCsvExportPath, view === 'visuals' ? 'character_visuals_players.csv' : `${currentTableMeta?.name || 'table'}.csv`) },
-        { label: view === 'visuals' ? 'Current View JSON' : 'Current Table JSON', disabled: !session || !currentJsonExportPath, action: () => downloadSessionFile(currentJsonExportPath, view === 'visuals' ? 'character_visuals_nested.json' : `${currentTableMeta?.name || 'table'}.json`) },
-        { type: 'separator' },
-        { label: 'Import Visuals CSV...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsCsvRef.current?.click() },
-        { label: 'Visuals Nested JSON', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/nested.json`, 'character_visuals_nested.json') },
-        { label: 'Import Visuals JSON...', disabled: !session || franchiseSession || visualsUnsupported, action: () => visualsJsonRef.current?.click() },
-        { label: 'Visuals Players CSV', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/players.csv`, 'character_visuals_players.csv') },
-        { label: 'Visuals Loadouts CSV', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/loadouts.csv`, 'character_visuals_loadouts.csv') },
-        { label: 'Visuals Elements CSV', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/export/visuals/elements.csv`, 'character_visuals_loadout_elements.csv') },
       ],
     },
   ];
@@ -1068,7 +1361,7 @@ function App() {
             </div>
           </div>
           <input ref={fileRef} className="file-input" type="file" onChange={e => onOpenFile(e.target.files?.[0])} />
-          <input ref={csvBundleRef} className="file-input" type="file" accept=".zip,application/zip" onChange={e => importAllCsvBundle(e.target.files?.[0])} />
+          <input ref={csvBundleRef} className="file-input" type="file" accept=".zip,application/zip" onChange={e => importAllBundle(e.target.files?.[0])} />
           <input ref={tableCsvRef} className="file-input" type="file" accept=".csv,text/csv" onChange={e => importCurrentCsv(e.target.files?.[0])} />
           <input ref={visualsCsvRef} className="file-input" type="file" accept=".csv,.zip,text/csv,application/zip" onChange={e => importVisualsCsv(e.target.files?.[0])} />
           <input ref={jsonImportRef} className="file-input" type="file" accept=".json,application/json" onChange={e => importCurrentJson(e.target.files?.[0])} />
@@ -1189,12 +1482,32 @@ function App() {
               selectionScope="table"
             />
           )}
-          {view === 'player' && <RecordEditor kind="Player" tablePath={playTable} session={session} patchCell={patchCell} setStatus={setStatus} onSessionInvalid={clearSession} />}
-          {view === 'team' && <RecordEditor kind="Team" tablePath={teamTable} session={session} patchCell={patchCell} setStatus={setStatus} onSessionInvalid={clearSession} />}
-          {view === 'visuals' && <VisualsView active={view === 'visuals'} session={session} setStatus={setStatus} selectedCell={selectedCell} setSelectedCell={setSelectedCell} onSessionInvalid={clearSession} />}
-          {view === 'node' && <NodeEditor session={session} currentTable={currentTable} />}
+          {view === 'player' && <RecordEditor kind="Player" tablePath={playTable} session={session} patchCell={patchCell} setStatus={setStatus} onDirty={scheduleAutosave} onSessionInvalid={handleEditorSessionInvalid} />}
+          {view === 'team' && <RecordEditor kind="Team" tablePath={teamTable} session={session} patchCell={patchCell} setStatus={setStatus} onDirty={scheduleAutosave} onSessionInvalid={handleEditorSessionInvalid} />}
+          {view === 'visuals' && <VisualsView active={view === 'visuals'} session={session} setStatus={setStatus} selectedCell={selectedCell} setSelectedCell={setSelectedCell} onDirty={scheduleAutosave} onSessionInvalid={clearSession} />}
         </main>
       </div>
+
+      {bulkDialog && (
+        <div className="modal-backdrop" onClick={() => setBulkDialog(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>{bulkDialog === 'export' ? 'Export All' : 'Import All'}</h2>
+            <p>Tables: COCH, DCHT, PLAY, TCPS, TEAM + Character Visuals.</p>
+            <label className="radio-row">
+              <input type="radio" name="bulk-format" value="csv" checked={bulkFormat === 'csv'} onChange={() => setBulkFormat('csv')} />
+              <span>CSV (default)</span>
+            </label>
+            <label className="radio-row">
+              <input type="radio" name="bulk-format" value="json" checked={bulkFormat === 'json'} onChange={() => setBulkFormat('json')} />
+              <span>JSON</span>
+            </label>
+            <div className="row right">
+              <button onClick={() => setBulkDialog(null)}>Cancel</button>
+              <button onClick={confirmBulkDialog}>{bulkDialog === 'export' ? 'Export' : 'Choose file...'}</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {replaceOpen && (
         <div className="modal-backdrop" onClick={() => setReplaceOpen(false)}>
@@ -1255,10 +1568,27 @@ function TableView({
 }) {
   const [draftSearch, setDraftSearch] = useState(search);
   const [draftFilterValue, setDraftFilterValue] = useState(filterValue || '');
+  const [scrollTop, setScrollTop] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(640);
   const gridWrapRef = useRef(null);
   const pendingScrollLeftRef = useRef(null);
   useEffect(() => setDraftSearch(search), [search]);
   useEffect(() => setDraftFilterValue(filterValue || ''), [filterValue]);
+  useEffect(() => {
+    const node = gridWrapRef.current;
+    if (!node) return undefined;
+    function syncViewport() {
+      setViewportHeight(node.clientHeight || 640);
+    }
+    syncViewport();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncViewport) : null;
+    observer?.observe(node);
+    window.addEventListener('resize', syncViewport);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', syncViewport);
+    };
+  }, []);
   useEffect(() => {
     if (pendingScrollLeftRef.current === null) return;
     const nextLeft = pendingScrollLeftRef.current;
@@ -1273,6 +1603,13 @@ function TableView({
   const filterableColumns = visibleColumns;
   const showLabel = column => displayLabel(column, columnLabels);
   const searchPlaceholder = selectionScope === 'visuals' ? 'Search visuals...' : 'Search table...';
+  const totalRows = data.records.length;
+  const virtualStart = clampNumber(Math.floor(scrollTop / TABLE_ROW_HEIGHT) - TABLE_OVERSCAN, 0, totalRows);
+  const virtualCount = Math.ceil(viewportHeight / TABLE_ROW_HEIGHT) + TABLE_OVERSCAN * 2;
+  const virtualEnd = clampNumber(virtualStart + virtualCount, virtualStart, totalRows);
+  const virtualRows = data.records.slice(virtualStart, virtualEnd);
+  const topSpacerHeight = virtualStart * TABLE_ROW_HEIGHT;
+  const bottomSpacerHeight = Math.max(0, (totalRows - virtualEnd) * TABLE_ROW_HEIGHT);
 
   function detectColumnSortType(column) {
     const samples = (data.records || [])
@@ -1378,7 +1715,11 @@ function TableView({
         <button disabled={data.offset <= 0} onClick={() => runQuery(Math.max(0, data.offset - pageSize))}>Prev</button>
         <button disabled={pageEnd >= data.total} onClick={() => runQuery(data.offset + pageSize)}>Next</button>
       </div>
-      <div className="grid-wrap" ref={gridWrapRef}>
+      <div
+        className="grid-wrap"
+        ref={gridWrapRef}
+        onScroll={event => setScrollTop(event.currentTarget.scrollTop)}
+      >
         <table className="data-grid">
           <thead>
             <tr>
@@ -1396,7 +1737,13 @@ function TableView({
               </tr>
           </thead>
           <tbody>
-            {data.records.map((row, rowIndex) => {
+            {topSpacerHeight > 0 && (
+              <tr className="virtual-spacer-row" aria-hidden="true">
+                <td colSpan={Math.max(1, visibleColumns.length)} style={{ height: topSpacerHeight }} />
+              </tr>
+            )}
+            {virtualRows.map((row, visibleRowIndex) => {
+              const rowIndex = virtualStart + visibleRowIndex;
               const rowId = row.__rowIndex ?? row['Player ID'] ?? rowIndex;
               return (
                 <tr key={rowId}>
@@ -1428,6 +1775,11 @@ function TableView({
                 </tr>
               );
             })}
+            {bottomSpacerHeight > 0 && (
+              <tr className="virtual-spacer-row" aria-hidden="true">
+                <td colSpan={Math.max(1, visibleColumns.length)} style={{ height: bottomSpacerHeight }} />
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -1435,39 +1787,52 @@ function TableView({
   );
 }
 
-function SpinnerField({ value, onChange, onCommit, min = -9999, max = 9999, step = 1 }) {
-  const numericValue = Number(value || 0);
+function SpinnerField({ value, onChange, onCommit, min = -9999, max = 9999, step = 1, formatValue = valueText, parseValue = value => String(value ?? '').trim() }) {
+  const [draftValue, setDraftValue] = useState(() => formatValue(value));
+  useEffect(() => {
+    setDraftValue(formatValue(value));
+  }, [value, formatValue]);
+  const parsedCurrent = Number(parseValue(draftValue) || 0);
+  const numericValue = Number.isFinite(parsedCurrent) ? parsedCurrent : 0;
+
+  function commit(nextDraft = draftValue) {
+    const parsed = parseValue(nextDraft);
+    onChange(parsed);
+    onCommit?.(parsed);
+  }
+
   return (
     <div className="spinner-field">
       <input
-        type="number"
-        value={value}
+        type="text"
+        inputMode="numeric"
+        value={draftValue}
         min={min}
         max={max}
         step={step}
-        onChange={e => onChange(e.target.value)}
-        onBlur={onCommit}
+        onChange={e => setDraftValue(e.target.value)}
+        onBlur={() => commit()}
       />
       <div className="spinner-buttons">
-        <button type="button" onClick={() => onChange(String(numericValue + step))}>+</button>
-        <button type="button" onClick={() => onChange(String(numericValue - step))}>-</button>
+        <button type="button" onClick={() => commit(String(Math.min(max, numericValue + step)))}>+</button>
+        <button type="button" onClick={() => commit(String(Math.max(min, numericValue - step)))}>-</button>
       </div>
     </div>
   );
 }
 
-function RecordNavCard({ option, active, onClick, kind, style, logoUrl }) {
+const RecordNavCard = React.memo(function RecordNavCard({ option, active, onSelect, kind, style, logoUrl, rosterFamily }) {
   const topMeta = kind === 'Team' && option.ovr !== undefined && option.ovr !== null ? `${option.ovr} OVR` : '';
   const detailBits = [];
-  if (option.rosterFamily !== 'madden' && option.teamName) detailBits.push(option.teamName);
-  if (option.rosterFamily !== 'madden' && option.position) {
+  if (rosterFamily !== 'madden' && option.teamName) detailBits.push(option.teamName);
+  if (rosterFamily !== 'madden' && option.position) {
     detailBits.push(option.ovr !== undefined && option.ovr !== null ? `${option.position} - ${option.ovr} OVR` : option.position);
   } else if (kind !== 'Team' && option.ovr !== undefined && option.ovr !== null) {
     detailBits.push(`${option.ovr} OVR`);
   }
-  if (option.nickname && kind === 'Team' && option.rosterFamily !== 'madden') detailBits.push(option.nickname);
+  if (option.nickname && kind === 'Team' && rosterFamily !== 'madden') detailBits.push(option.nickname);
   return (
-    <button type="button" className={active ? 'active' : ''} onClick={onClick} style={style} data-active={active ? 'true' : 'false'}>
+    <button type="button" className={active ? 'active' : ''} onClick={() => onSelect(option.rowIndex)} style={style} data-active={active ? 'true' : 'false'}>
       <div className="record-card-row">
         {logoUrl && (
           <img
@@ -1475,8 +1840,9 @@ function RecordNavCard({ option, active, onClick, kind, style, logoUrl }) {
             src={logoUrl}
             alt=""
             loading="lazy"
+            decoding="async"
             onError={event => {
-              const fallback = fallbackLogoUrlForRoster(option, option.rosterFamily);
+              const fallback = fallbackLogoUrlForRoster(option, rosterFamily);
               if (!fallback || event.currentTarget.dataset.fallbackApplied === 'true') return;
               event.currentTarget.dataset.fallbackApplied = 'true';
               event.currentTarget.src = fallback;
@@ -1493,9 +1859,9 @@ function RecordNavCard({ option, active, onClick, kind, style, logoUrl }) {
       </div>
     </button>
   );
-}
+});
 
-function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessionInvalid }) {
+function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty, onSessionInvalid }) {
   const rosterFamily = session?.roster_family || 'college';
   const visualsSupported = session?.visuals?.supported !== false;
   const [data, setData] = useState({ records: [], columns: [], total: 0, offset: 0 });
@@ -1511,8 +1877,14 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   const [visualOptions, setVisualOptions] = useState({});
   const [bootstrapping, setBootstrapping] = useState(false);
   const [activeTab, setActiveTab] = useState('info');
+  const [navScrollTop, setNavScrollTop] = useState(0);
+  const [navViewportHeight, setNavViewportHeight] = useState(600);
+  const deferredQuery = React.useDeferredValue(query);
   const editorContentRef = useRef(null);
   const navListRef = useRef(null);
+  const requestSeqRef = useRef(0);
+  const visualRequestSeqRef = useRef(0);
+  const collectionRequestSeqRef = useRef(0);
 
   useEffect(() => {
     if (session && tablePath) {
@@ -1525,11 +1897,36 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   }, [kind, session?.session_id, tablePath]);
 
   useEffect(() => {
-    const activeButton = navListRef.current?.querySelector('button[data-active="true"]');
-    activeButton?.scrollIntoView({ block: 'nearest' });
-  }, [selectedRowIndex, playerOptions, teamOptions, query]);
+    const node = navListRef.current;
+    if (!node) return;
+    const activeIndex = (kind === 'Player' ? playerOptions : teamOptions)
+      .findIndex(option => String(option.rowIndex) === String(selectedRowIndex));
+    if (activeIndex < 0) return;
+    const top = activeIndex * NAV_ROW_HEIGHT;
+    const bottom = top + NAV_ROW_HEIGHT;
+    if (top < node.scrollTop || bottom > node.scrollTop + node.clientHeight) {
+      node.scrollTop = Math.max(0, top - NAV_ROW_HEIGHT * 2);
+    }
+  }, [selectedRowIndex, playerOptions, teamOptions, kind]);
+
+  useEffect(() => {
+    const node = navListRef.current;
+    if (!node) return undefined;
+    function syncNavViewport() {
+      setNavViewportHeight(node.clientHeight || 600);
+    }
+    syncNavViewport();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncNavViewport) : null;
+    observer?.observe(node);
+    window.addEventListener('resize', syncNavViewport);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', syncNavViewport);
+    };
+  }, []);
 
   async function initializeEditor() {
+    const requestSeq = ++requestSeqRef.current;
     setBootstrapping(true);
     setSelectedTeam('');
     setSelectedPosition('');
@@ -1540,6 +1937,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     try {
       const prepPromise = Promise.all([loadMeta(), loadVisualOptions()]);
       const teams = await fetchJson(`/session/${session.session_id}/team-options`);
+      if (requestSeq !== requestSeqRef.current) return;
       const teamList = teams.options || [];
       setTeamOptions(teamList);
       const defaultTeamId = teamList[0]?.teamId !== undefined && teamList[0]?.teamId !== null ? String(teamList[0].teamId) : '';
@@ -1549,19 +1947,20 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
         setSelectedTeam(defaultTeamRow);
         if (firstTeam) {
           setSelectedRowIndex(String(firstTeam.rowIndex));
-          await loadRecord(firstTeam.rowIndex);
+          await loadRecord(firstTeam.rowIndex, requestSeq);
         }
       } else {
         setSelectedTeam(defaultTeamId);
         const baseQ = new URLSearchParams();
         if (defaultTeamId) baseQ.set('team_id', defaultTeamId);
         const players = await fetchJson(`/session/${session.session_id}/player-options?${baseQ}`);
+        if (requestSeq !== requestSeqRef.current) return;
         const options = players.options || [];
         setPlayerOptions(options);
         const firstPlayer = options[0];
         if (firstPlayer) {
           setSelectedRowIndex(String(firstPlayer.rowIndex));
-          await loadRecord(firstPlayer.rowIndex);
+          await loadRecord(firstPlayer.rowIndex, requestSeq);
         }
       }
       prepPromise.catch(() => {});
@@ -1579,8 +1978,16 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   async function loadMeta() {
     try {
       const name = kind === 'Player' ? 'PLAY' : 'TEAM';
+      const cacheKey = `${session.session_id}:${name}`;
+      const cached = EDITOR_META_CACHE.get(cacheKey);
+      if (cached) {
+        setEditorMeta(cached);
+        return;
+      }
       const out = await fetchJson(`/session/${session.session_id}/editor-meta/${name}`);
-      setEditorMeta(out || { labels: {}, gearFields: [] });
+      const nextMeta = out || { labels: {}, gearFields: [] };
+      rememberLimited(EDITOR_META_CACHE, cacheKey, nextMeta, 24);
+      setEditorMeta(nextMeta);
     } catch (err) {
       if (isSessionMissingError(err)) {
         onSessionInvalid?.();
@@ -1593,8 +2000,16 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   async function loadVisualOptions() {
     if (kind !== 'Player' || !visualsSupported) return;
     try {
+      const cacheKey = session.session_id;
+      const cached = VISUAL_OPTIONS_CACHE.get(cacheKey);
+      if (cached) {
+        setVisualOptions(cached);
+        return;
+      }
       const out = await fetchJson(`/session/${session.session_id}/visual-options`);
-      setVisualOptions(out.fields || {});
+      const nextOptions = out.fields || {};
+      rememberLimited(VISUAL_OPTIONS_CACHE, cacheKey, nextOptions, 8);
+      setVisualOptions(nextOptions);
     } catch (err) {
       if (isSessionMissingError(err)) {
         onSessionInvalid?.();
@@ -1606,30 +2021,34 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
 
   async function loadFilters(teamId = selectedTeam, position = selectedPosition, search = query, autoSelectFirst = false) {
     if (!session) return;
+    const requestSeq = ++requestSeqRef.current;
     try {
       const teams = teamOptions.length ? { options: teamOptions } : await fetchJson(`/session/${session.session_id}/team-options`);
+      if (requestSeq !== requestSeqRef.current) return;
       setTeamOptions(teams.options || []);
       if (kind === 'Player') {
         const baseQ = new URLSearchParams();
         if (teamId) baseQ.set('team_id', teamId);
         if (search) baseQ.set('search', search);
         const basePlayers = await fetchJson(`/session/${session.session_id}/player-options?${baseQ}`);
+        if (requestSeq !== requestSeqRef.current) return;
         const allOptions = basePlayers.options || [];
         if (position) {
           const filteredQ = new URLSearchParams(baseQ);
           filteredQ.set('position', position);
           const players = await fetchJson(`/session/${session.session_id}/player-options?${filteredQ}`);
+          if (requestSeq !== requestSeqRef.current) return;
           const options = players.options || [];
           setPlayerOptions(options);
           if (autoSelectFirst && options[0]) {
             setSelectedRowIndex(String(options[0].rowIndex));
-            await loadRecord(options[0].rowIndex);
+            await loadRecord(options[0].rowIndex, requestSeq);
           }
         } else {
           setPlayerOptions(allOptions);
           if (autoSelectFirst && allOptions[0]) {
             setSelectedRowIndex(String(allOptions[0].rowIndex));
-            await loadRecord(allOptions[0].rowIndex);
+            await loadRecord(allOptions[0].rowIndex, requestSeq);
           }
         }
       }
@@ -1645,16 +2064,16 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
         if (options[0]) {
           setSelectedTeam(String(options[0].rowIndex));
           setSelectedRowIndex(String(options[0].rowIndex));
-          await loadRecord(options[0].rowIndex);
+          await loadRecord(options[0].rowIndex, requestSeq);
         }
       }
     } catch (err) {
-      setTeamOptions([]);
-      setPlayerOptions([]);
       if (isSessionMissingError(err)) {
         onSessionInvalid?.();
         return;
       }
+      setTeamOptions([]);
+      setPlayerOptions([]);
       setStatus?.(`Load ${kind.toLowerCase()} filters failed: ${err.message}`);
     }
   }
@@ -1665,8 +2084,10 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     search = query,
   } = {}) {
     if (!session) return;
+    const requestSeq = ++collectionRequestSeqRef.current;
     try {
       const teams = await fetchJson(`/session/${session.session_id}/team-options`);
+      if (requestSeq !== collectionRequestSeqRef.current) return;
       const nextTeamOptions = teams.options || [];
       setTeamOptions(nextTeamOptions);
 
@@ -1676,23 +2097,29 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
         if (search) baseQ.set('search', search);
         if (position) baseQ.set('position', position);
         const players = await fetchJson(`/session/${session.session_id}/player-options?${baseQ}`);
+        if (requestSeq !== collectionRequestSeqRef.current) return;
         setPlayerOptions(players.options || []);
       }
     } catch (err) {
-      if (isSessionMissingError(err)) {
-        onSessionInvalid?.();
-      }
+      if (!isSessionMissingError(err)) setStatus?.(`Refresh ${kind.toLowerCase()} list failed: ${err.message}`);
     }
   }
 
-  async function loadRecord(rowIndex) {
+  async function loadRecord(rowIndex, requestSeq = ++requestSeqRef.current) {
     if (rowIndex === '' || rowIndex === undefined || rowIndex === null) return;
     const q = new URLSearchParams({ offset: rowIndex, limit: 1, search: '' });
     try {
       const out = await fetchJson(`/session/${session.session_id}/table/${encodeURIComponent(tablePath)}?${q}`);
+      if (requestSeq !== requestSeqRef.current) return;
       setData({ ...out, total: out.total });
       const loadedRecord = out.records?.[0] || null;
       setDraftValues(buildDraftValues(loadedRecord, out.columns || []));
+      if (kind === 'Player') {
+        const cachedVisuals = loadedRecord?.PGID !== undefined
+          ? PLAYER_VISUALS_CACHE.get(`${session.session_id}:${loadedRecord.PGID}`)
+          : null;
+        setGearValues(cachedVisuals?.fields || {});
+      }
       if (loadedRecord?.__rowIndex !== undefined) {
         setSelectedRowIndex(String(loadedRecord.__rowIndex));
         if (kind === 'Team') {
@@ -1700,16 +2127,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
         }
       }
       if (kind === 'Player' && visualsSupported && loadedRecord?.PGID !== undefined) {
-        try {
-          const visuals = await fetchJson(`/session/${session.session_id}/player-visuals/${loadedRecord.PGID}`);
-          setGearValues(visuals.fields || {});
-        } catch (err) {
-          if (isSessionMissingError(err)) {
-            onSessionInvalid?.();
-            return;
-          }
-          setGearValues({});
-        }
+        loadPlayerVisualsInBackground(loadedRecord.PGID, requestSeq);
       } else {
         setGearValues({});
       }
@@ -1727,6 +2145,30 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     }
   }
 
+  function loadPlayerVisualsInBackground(playerId, recordRequestSeq) {
+    const visualsCacheKey = `${session.session_id}:${playerId}`;
+    if (PLAYER_VISUALS_CACHE.has(visualsCacheKey)) return;
+    const visualRequestSeq = ++visualRequestSeqRef.current;
+    const run = async () => {
+      try {
+        const visuals = await fetchJson(`/session/${session.session_id}/player-visuals/${playerId}`);
+        if (recordRequestSeq !== requestSeqRef.current || visualRequestSeq !== visualRequestSeqRef.current) return;
+        rememberLimited(PLAYER_VISUALS_CACHE, visualsCacheKey, visuals, 250);
+        React.startTransition(() => setGearValues(visuals.fields || {}));
+      } catch (err) {
+        if (recordRequestSeq !== requestSeqRef.current || visualRequestSeq !== visualRequestSeqRef.current) return;
+        if (!isSessionMissingError(err)) {
+          setStatus?.(`Load player visuals failed: ${err.message}`);
+        }
+      }
+    };
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(run, { timeout: 350 });
+    } else {
+      window.setTimeout(run, 0);
+    }
+  }
+
   const record = data.records[0];
   const editableColumns = data.columns.filter(c => !c.startsWith('__') && c !== 'TeamName' && c !== 'Position');
   const orderedColumns = kind === 'Player'
@@ -1738,7 +2180,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   const sectionByKey = Object.fromEntries(sections.map(section => [section.key, section]));
   const filteredTeamOptions = useMemo(() => {
     if (kind !== 'Team') return teamOptions;
-    const needle = query.trim().toLowerCase();
+    const needle = deferredQuery.trim().toLowerCase();
     if (!needle) return teamOptions;
     return teamOptions.filter(option => (
       String(option.label || '').toLowerCase().includes(needle)
@@ -1746,11 +2188,17 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
       || String(option.abbrev || '').toLowerCase().includes(needle)
       || String(option.teamId ?? '').includes(needle)
     ));
-  }, [kind, teamOptions, query]);
+  }, [kind, teamOptions, deferredQuery]);
   const navigationOptions = kind === 'Player' ? playerOptions : filteredTeamOptions;
-  const teamNameById = Object.fromEntries(teamOptions.map(option => [String(option.teamId), option.label]));
-  const teamOptionById = Object.fromEntries(teamOptions.map(option => [String(option.teamId), option]));
+  const teamNameById = useMemo(() => Object.fromEntries(teamOptions.map(option => [String(option.teamId), option.label])), [teamOptions]);
+  const teamOptionById = useMemo(() => Object.fromEntries(teamOptions.map(option => [String(option.teamId), option])), [teamOptions]);
   const currentNavIndex = navigationOptions.findIndex(option => String(option.rowIndex) === String(selectedRowIndex));
+  const navStart = clampNumber(Math.floor(navScrollTop / NAV_ROW_HEIGHT) - NAV_OVERSCAN, 0, navigationOptions.length);
+  const navCount = Math.ceil(navViewportHeight / NAV_ROW_HEIGHT) + NAV_OVERSCAN * 2;
+  const navEnd = clampNumber(navStart + navCount, navStart, navigationOptions.length);
+  const visibleNavigationOptions = navigationOptions.slice(navStart, navEnd);
+  const navTopSpacerHeight = navStart * NAV_ROW_HEIGHT;
+  const navBottomSpacerHeight = Math.max(0, (navigationOptions.length - navEnd) * NAV_ROW_HEIGHT);
   const currentTeamOption = kind === 'Team'
     ? teamOptions.find(option => String(option.rowIndex) === String(selectedRowIndex))
       || teamOptions.find(option => String(option.rowIndex) === String(selectedTeam))
@@ -1762,12 +2210,23 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   const currentTeamLogo = teamLogoUrlForRoster(currentRecordTeamOption, rosterFamily);
   const playerFirstName = valueText(draftValues.PFNA ?? record?.PFNA ?? selectedPlayerOption?.label?.split?.(' ')?.[0] ?? record?.firstName ?? '');
   const playerLastName = valueText(draftValues.PLNA ?? record?.PLNA ?? (selectedPlayerOption?.label ? selectedPlayerOption.label.split(' ').slice(1).join(' ') : record?.lastName ?? ''));
+  const playerId = draftValues.PGID ?? record?.PGID ?? selectedPlayerOption?.playerId ?? '';
+  const playerPortraitCandidatesList = kind === 'Player' ? playerPortraitCandidates({
+    genericHeadName: gearValues['Generic Head Name'] ?? gearValues.genericHeadName ?? gearValues.PGHE ?? draftValues.PGHE ?? record?.PGHE,
+    assetName: gearValues['Asset Name'] ?? gearValues.assetName ?? draftValues['Asset Name'] ?? record?.['Asset Name'],
+    playerId,
+    firstName: playerFirstName,
+    lastName: playerLastName,
+    portraitId: draftValues.PSXP ?? record?.PSXP,
+  }) : [];
+  const playerPortrait = playerPortraitCandidatesList[0] || '';
   const playerJerseyNumber = valueText(draftValues.PJEN ?? record?.PJEN ?? selectedPlayerOption?.jerseyNumber ?? '');
-  const playerPosition = valueText(record?.Position ?? draftValues.PPOS ?? record?.PPOS ?? selectedPlayerOption?.position ?? '');
+  const playerPosition = displayValueForColumn('PPOS', draftValues.PPOS ?? record?.PPOS ?? selectedPlayerOption?.positionId ?? record?.Position ?? selectedPlayerOption?.position ?? '');
   const playerArchetype = valueText(draftValues.PLTY ?? record?.PLTY ?? '');
-  const playerClass = normalizePlayerClass(draftValues.PYRP ?? record?.PYRP ?? '');
+  const playerClass = normalizePlayerClass(draftValues.PYEA ?? record?.PYEA ?? '');
+  const playerRedshirt = isRedshirtStatus(draftValues.PRSD ?? record?.PRSD ?? '0');
   const playerHeight = formatHeight(draftValues.PHGT ?? record?.PHGT ?? '');
-  const playerWeight = valueText(draftValues.PWGT ?? record?.PWGT ?? '');
+  const playerWeight = formatWeight(draftValues.PWGT ?? record?.PWGT ?? '');
   const teamDisplayName = valueText(draftValues.TDNA ?? record?.TDNA ?? currentTeamOption?.displayName ?? currentTeamOption?.label ?? record?.TeamName ?? '');
   const teamLongName = valueText(draftValues.TDLN ?? record?.TDLN ?? currentTeamOption?.longName ?? '');
   const teamNickname = valueText(draftValues.TMNC ?? record?.TMNC ?? currentTeamOption?.nickname ?? '');
@@ -1801,7 +2260,11 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   ));
   const visibleSections = (() => {
     if (kind === 'Player') {
-      if (activeTab === 'info') return [sectionByKey.identity].filter(Boolean);
+      if (activeTab === 'info') {
+        return PLAYER_INFO_SECTIONS
+          .map(section => ({ ...section, columns: section.columns.filter(col => orderedColumns.includes(col)) }))
+          .filter(section => section.columns.length);
+      }
       if (activeTab === 'ratings') return [sectionByKey.ratings].filter(Boolean);
       if (activeTab === 'contract') return [sectionByKey.contract].filter(Boolean);
       return [sectionByKey.misc, sectionByKey.remaining].filter(Boolean);
@@ -1834,11 +2297,13 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     const current = valueText(gearValues[col]);
     const base = visualOptions[col]?.options || [];
     const extra = [];
-    if (!base.some(option => String(option.value) === '0')) extra.push({ label: '0', value: '0' });
+    if (!base.some(option => String(option.value) === '0')) extra.push({ label: 'None', value: '0' });
     if (current && current !== '0' && !base.some(option => String(option.value) === current)) {
       extra.push({ label: `${current} (Current)`, value: current });
     }
-    return [...extra, ...base];
+    return [...extra, ...base].map(option => (
+      String(option.value) === '0' ? { ...option, label: 'None' } : option
+    ));
   }
 
   function teamReferenceLabel(col, value) {
@@ -1848,6 +2313,9 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
   }
 
   function selectOptionsForColumn(col) {
+    if (kind === 'Player' && col === 'PPOS') {
+      return POSITION_OPTIONS.map(option => ({ label: option.label, value: String(option.id) }));
+    }
     if (kind !== 'Team') return [];
     if (TEAM_RIVAL_COLUMNS.includes(col)) {
       const current = valueText(draftValues[col]);
@@ -1879,12 +2347,13 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     if (!record) return;
     const nextValue = parsePossibleJson(rawValue);
     if (String(valueText(record[col])) === String(rawValue)) return;
+    const currentRowIndex = record.__rowIndex;
     await patchCell(tablePath, record.__rowIndex, col, nextValue);
     setData(current => ({
       ...current,
-      records: current.records.map(r => r.__rowIndex === record.__rowIndex ? { ...r, [col]: nextValue } : r),
+      records: current.records.map(r => r.__rowIndex === currentRowIndex ? { ...r, [col]: nextValue } : r),
     }));
-    await refreshEditorCollections();
+    await refreshEditorCollections({ teamId: selectedTeam, position: selectedPosition, search: query });
   }
 
   async function commitField(col) {
@@ -1899,8 +2368,17 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ player_id: String(record.PGID), column, value: parsePossibleJson(value) }),
       });
-      setGearValues(current => ({ ...current, [column]: value }));
+      setGearValues(current => {
+        const next = { ...current, [column]: value };
+        rememberLimited(PLAYER_VISUALS_CACHE, `${session.session_id}:${record.PGID}`, { fields: next }, 250);
+        return next;
+      });
+      onDirty?.();
     } catch (err) {
+      if (isSessionMissingError(err)) {
+        onSessionInvalid?.();
+        return;
+      }
       setStatus?.(`Update gear failed: ${err.message}`);
     }
   }
@@ -1927,6 +2405,63 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
       : { TB2R: rgb.r, TB2G: rgb.g, TB2B: rgb.b };
     await patchColorFields(nextValues);
   }
+
+  function renderField(col) {
+    const selectOptions = selectOptionsForColumn(col);
+    const isDisplayHeight = col === 'PHGT';
+    const isDisplayWeight = col === 'PWGT';
+    const spinnerFormat = isDisplayHeight
+      ? formatHeight
+      : isDisplayWeight
+        ? formatWeight
+        : valueText;
+    const spinnerParse = isDisplayHeight
+      ? parseHeightDisplay
+      : isDisplayWeight
+        ? parseWeightDisplay
+        : (value => String(value ?? '').trim());
+    return (
+      <label key={col}>
+        <span>{labelForField(editorMeta, col)}</span>
+        <small>{col}</small>
+        {selectOptions.length ? (
+          <select
+            value={valueText(draftValues[col])}
+            onChange={e => {
+              const next = e.target.value;
+              setDraftValues(current => ({ ...current, [col]: next }));
+              commitFieldValue(col, next).catch(err => setStatus?.(`Update ${labelForField(editorMeta, col)} failed: ${err.message}`));
+            }}
+          >
+            {selectOptions.map(option => (
+              <option key={`${col}-${option.value}`} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        ) : isNumericValue(draftValues[col]) ? (
+          <SpinnerField
+            value={draftValues[col] ?? ''}
+            onChange={value => setDraftValues(current => ({ ...current, [col]: value }))}
+            onCommit={parsed => commitFieldValue(col, parsed)}
+            min={TEAM_COLOR_FIELDS.some(field => field.key === col) ? 0 : -9999}
+            max={TEAM_COLOR_FIELDS.some(field => field.key === col) ? 255 : 9999}
+            formatValue={spinnerFormat}
+            parseValue={spinnerParse}
+          />
+        ) : (
+          <input
+            value={draftValues[col] ?? ''}
+            onChange={e => setDraftValues(current => ({ ...current, [col]: e.target.value }))}
+            onBlur={() => commitField(col)}
+          />
+        )}
+        {teamReferenceLabel(col, draftValues[col]) && !selectOptions.length && <em className="field-hint">{teamReferenceLabel(col, draftValues[col])}</em>}
+      </label>
+    );
+  }
+
+  const ratingGroups = kind === 'Player' && activeTab === 'ratings'
+    ? buildRatingGroups(sectionByKey.ratings?.columns || [])
+    : [];
 
   return (
     <section className={`panel fullheight editor-page editor-page-${kind.toLowerCase()}`}>
@@ -2011,20 +2546,23 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
               )}
               <div className="record-count">{currentNavIndex >= 0 ? currentNavIndex + 1 : 0} / {navigationOptions.length || data.total}</div>
             </div>
-            <div className="editor-nav-list" ref={navListRef}>
-              {navigationOptions.map(option => (
-                <RecordNavCard
+            <div className="editor-nav-list" ref={navListRef} onScroll={event => setNavScrollTop(event.currentTarget.scrollTop)}>
+              {navTopSpacerHeight > 0 && <div className="virtual-nav-spacer" style={{ height: navTopSpacerHeight }} />}
+              {visibleNavigationOptions.map(option => (
+                  <RecordNavCard
                   key={`${option.rowIndex}-${option.teamId ?? 'na'}`}
                   kind={kind}
-                  option={{ ...option, rosterFamily }}
+                  option={option}
+                  rosterFamily={rosterFamily}
                   active={String(selectedRowIndex) === String(option.rowIndex)}
                   style={kind === 'Player' ? navOptionStyle(teamOptionById[String(option.teamId)]) : navOptionStyle(option)}
                   logoUrl={kind === 'Player'
                     ? teamLogoUrlForRoster(teamOptionById[String(option.teamId)], rosterFamily)
                     : teamLogoUrlForRoster(option, rosterFamily)}
-                  onClick={() => loadRecord(option.rowIndex)}
+                  onSelect={loadRecord}
                 />
               ))}
+              {navBottomSpacerHeight > 0 && <div className="virtual-nav-spacer" style={{ height: navBottomSpacerHeight }} />}
             </div>
             </aside>
             <div className="editor-content" ref={editorContentRef}>
@@ -2033,19 +2571,41 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                   <div className="identity-title-group">
                     {kind === 'Player' ? (
                       <div className="identity-title-row player-title-row">
-                        {currentTeamLogo && (
-                          <img
-                            className="identity-logo player-logo"
-                            src={currentTeamLogo}
-                            alt=""
-                            onError={event => {
-                              const fallback = fallbackLogoUrlForRoster(currentRecordTeamOption, rosterFamily);
-                              if (!fallback || event.currentTarget.dataset.fallbackApplied === 'true') return;
-                              event.currentTarget.dataset.fallbackApplied = 'true';
-                              event.currentTarget.src = fallback;
-                            }}
-                          />
-                        )}
+                        <div className={`player-visual-stack${playerPortrait ? ' has-portrait' : ' no-portrait'}`}>
+                          {playerPortrait && (
+                            <img
+                              className="player-portrait"
+                              src={playerPortrait}
+                              alt={`${playerFirstName} ${playerLastName}`.trim()}
+                              loading="lazy"
+                              data-fallbacks={playerPortraitCandidatesList.slice(1).join('||')}
+                              onError={event => {
+                                const fallbackAttr = event.currentTarget.dataset.fallbacks || '';
+                                const [nextCandidate, ...rest] = fallbackAttr ? fallbackAttr.split('||').filter(Boolean) : [];
+                                if (nextCandidate) {
+                                  event.currentTarget.dataset.fallbacks = rest.join('||');
+                                  event.currentTarget.src = nextCandidate;
+                                  return;
+                                }
+                                event.currentTarget.closest('.player-visual-stack')?.classList.add('portrait-missing');
+                                event.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          )}
+                          {currentTeamLogo && (
+                            <img
+                              className="identity-logo player-logo"
+                              src={currentTeamLogo}
+                              alt=""
+                              onError={event => {
+                                const fallback = fallbackLogoUrlForRoster(currentRecordTeamOption, rosterFamily);
+                                if (!fallback || event.currentTarget.dataset.fallbackApplied === 'true') return;
+                                event.currentTarget.dataset.fallbackApplied = 'true';
+                                event.currentTarget.src = fallback;
+                              }}
+                            />
+                          )}
+                        </div>
                         <div className="player-heading-stack">
                         <h3>{`${playerFirstName || `Player ${record.__rowIndex}`}${playerLastName ? ` ${playerLastName}` : ''}`}</h3>
                           <div className="player-header-details">
@@ -2059,7 +2619,10 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                             </div>
                             <div>
                               <span>Class</span>
-                              <strong>{playerClass}</strong>
+                              <strong className="player-class-value">
+                                <span>{playerClass}</span>
+                                {playerRedshirt && <img className="redshirt-icon" src="/RedShirt_Icon.svg" alt="Redshirt" title="Redshirt" />}
+                              </strong>
                             </div>
                             <div>
                               <span>Height & Weight</span>
@@ -2112,7 +2675,24 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                 <button onClick={() => loadFilters(selectedTeam, selectedPosition, query, true)}>Search</button>
               </div>
             </div>
-            {visibleSections.map(section => (
+            {kind === 'Player' && activeTab === 'ratings' ? (
+              ratingGroups.length ? ratingGroups.map(group => (
+                <div className="editor-section" key={group.title}>
+                  <div className="editor-section-head">
+                    <h3>{group.title}</h3>
+                    <p>{group.count} ratings</p>
+                  </div>
+                  {group.subgroups.map(sub => (
+                    <div className="rating-subgroup" key={sub.title}>
+                      <div className="rating-subgroup-head">{sub.title}</div>
+                      <div className="form-grid ratings-grid">
+                        {sub.columns.map(renderField)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )) : <div className="empty">No ratings available for this record.</div>
+            ) : visibleSections.map(section => (
               <div className="editor-section" key={section.key}>
                 <div className="editor-section-head">
                   <h3>{section.title}</h3>
@@ -2136,45 +2716,8 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                     </div>
                   </div>
                 )}
-                  <div className={`form-grid ${section.key === 'identity' || section.key === 'team-info' ? 'form-grid-priority' : ''}`}>
-                  {section.columns.map(col => {
-                    const selectOptions = selectOptionsForColumn(col);
-                    return (
-                      <label key={col}>
-                        <span>{labelForField(editorMeta, col)}</span>
-                        <small>{col}</small>
-                        {selectOptions.length ? (
-                          <select
-                            value={valueText(draftValues[col])}
-                            onChange={e => {
-                              const next = e.target.value;
-                              setDraftValues(current => ({ ...current, [col]: next }));
-                              commitFieldValue(col, next).catch(err => setStatus?.(`Update ${labelForField(editorMeta, col)} failed: ${err.message}`));
-                            }}
-                          >
-                            {selectOptions.map(option => (
-                              <option key={`${col}-${option.value}`} value={option.value}>{option.label}</option>
-                            ))}
-                          </select>
-                        ) : isNumericValue(draftValues[col]) ? (
-                        <SpinnerField
-                          value={draftValues[col] ?? ''}
-                          onChange={value => setDraftValues(current => ({ ...current, [col]: value }))}
-                          onCommit={() => commitField(col)}
-                          min={TEAM_COLOR_FIELDS.some(field => field.key === col) ? 0 : -9999}
-                          max={TEAM_COLOR_FIELDS.some(field => field.key === col) ? 255 : 9999}
-                        />
-                      ) : (
-                        <input
-                          value={draftValues[col] ?? ''}
-                          onChange={e => setDraftValues(current => ({ ...current, [col]: e.target.value }))}
-                          onBlur={() => commitField(col)}
-                        />
-                      )}
-                        {teamReferenceLabel(col, draftValues[col]) && !selectOptions.length && <em className="field-hint">{teamReferenceLabel(col, draftValues[col])}</em>}
-                      </label>
-                    );
-                  })}
+                  <div className={`form-grid ${['identity', 'team-info', 'player-core', 'player-bio'].includes(section.key) ? 'form-grid-priority' : ''}`}>
+                  {section.columns.map(renderField)}
                 </div>
               </div>
             ))}
@@ -2184,24 +2727,57 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
                   <h3>Character Visuals</h3>
                   <p>Appearance and equipment values come from the visuals dataset.</p>
                 </div>
-                <div className="form-grid gear-grid">
-                  {editorMeta.gearFields.filter(col => Object.prototype.hasOwnProperty.call(gearValues, col)).map(col => (
-                    <label key={col}>
-                      <span>{gearFieldLabel(col)}</span>
-                      <small>{col}</small>
-                      <select
-                        value={valueText(gearValues[col])}
-                        onChange={e => {
-                          const next = e.target.value;
-                          setGearValues(current => ({ ...current, [col]: next }));
-                          patchGearField(col, next);
-                        }}
-                      >
-                        {mergedGearOptions(col).map(option => (
-                          <option key={`${col}-${option.value}`} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
+                <div className="visuals-groups">
+                  {[
+                    { key: 'player-data', title: 'Player Data', columns: editorMeta.gearFields.filter(col => !String(col).startsWith('slotType:')) },
+                    { key: 'metrics', title: 'Metrics / First Loadout', columns: editorMeta.gearFields.filter(col => /^slotType:\s(?:4[3-9]|Gut|Thighs|RearGlute|Chest|Waist|Calves)/.test(String(col))) },
+                    { key: 'gear', title: 'Gear / Nested Loadouts', columns: editorMeta.gearFields.filter(col => String(col).startsWith('slotType:') && !/^slotType:\s(?:4[3-9]|Gut|Thighs|RearGlute|Chest|Waist|Calves)/.test(String(col))) },
+                  ].filter(section => section.columns.length).map(section => (
+                    <div className="visuals-group" key={section.key}>
+                      <div className="rating-subgroup-head">{section.title}</div>
+                      <div className="form-grid gear-grid">
+                        {section.columns.map(col => {
+                          const isSlot = String(col).startsWith('slotType:');
+                          const hasOptions = (visualOptions[col]?.options || []).length > 0;
+                          const readonly = col === 'Player ID';
+                          return (
+                            <label key={col}>
+                              <span>{gearFieldLabel(col)}</span>
+                              <small>{col}</small>
+                              {col === 'Height Inches' ? (
+                                <SpinnerField
+                                  value={gearValues[col] ?? ''}
+                                  onChange={value => setGearValues(current => ({ ...current, [col]: value }))}
+                                  onCommit={parsed => patchGearField(col, parsed)}
+                                  formatValue={formatHeight}
+                                  parseValue={parseHeightDisplay}
+                                />
+                              ) : isSlot && hasOptions ? (
+                                <select
+                                  value={valueText(gearValues[col])}
+                                  onChange={e => {
+                                    const next = e.target.value;
+                                    setGearValues(current => ({ ...current, [col]: next }));
+                                    patchGearField(col, next);
+                                  }}
+                                >
+                                  {mergedGearOptions(col).map(option => (
+                                    <option key={`${col}-${option.value}`} value={option.value}>{option.label}</option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <input
+                                  value={valueText(gearValues[col])}
+                                  readOnly={readonly}
+                                  onChange={e => setGearValues(current => ({ ...current, [col]: e.target.value }))}
+                                  onBlur={e => { if (!readonly) patchGearField(col, e.target.value); }}
+                                />
+                              )}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -2212,7 +2788,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onSessio
     </section>
   );
 }
-function VisualsView({ active, session, setStatus, selectedCell, setSelectedCell, onSessionInvalid }) {
+function VisualsView({ active, session, setStatus, selectedCell, setSelectedCell, onDirty, onSessionInvalid }) {
   const [data, setData] = useState({ records: [], columns: [], total: 0, offset: 0 });
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('');
@@ -2273,6 +2849,7 @@ function VisualsView({ active, session, setStatus, selectedCell, setSelectedCell
         ...current,
         records: current.records.map(row => String(row['Player ID']) === String(playerId) ? { ...row, [column]: value } : row),
       }));
+      onDirty?.();
       setStatus(`Updated visuals for player ${playerId}.`);
     } catch (err) {
       if (isSessionMissingError(err)) {
@@ -2416,5 +2993,39 @@ function NodeEditor({ session, currentTable }) {
   );
 }
 
-createRoot(document.getElementById('root')).render(<App />);
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+  componentDidCatch(error, info) {
+    // Keep a record in the console but never let a render error blank the app.
+    console.error('FB Roster Editor render error:', error, info);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="app-crash">
+          <h2>Something hit a snag</h2>
+          <p>The editor recovered from an unexpected error. Your loaded roster is still on the server.</p>
+          <pre>{String(this.state.error?.message || this.state.error)}</pre>
+          <div className="row">
+            <button onClick={() => this.setState({ error: null })}>Try again</button>
+            <button onClick={() => window.location.reload()}>Reload</button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+createRoot(document.getElementById('root')).render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);
 

@@ -1,0 +1,30 @@
+{
+  "path": "TSRD",
+  "name": "TSRD",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 508968,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "tsra",
+      "type": 3
+    },
+    {
+      "name": "tsdc",
+      "type": 3
+    },
+    {
+      "name": "tsor",
+      "type": 2
+    }
+  ],
+  "records": []
+}

@@ -1,0 +1,118 @@
+{
+  "path": "SAYP",
+  "name": "SAYP",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 3795128,
+  "raw_key_hex": "",
+  "declared_entries_total": 19,
+  "records_parsed": 19,
+  "field_definitions": [
+    {
+      "name": "SMID",
+      "type": 3
+    },
+    {
+      "name": "PYRP",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "SMID": 290000,
+      "PYRP": 0
+    },
+    {
+      "_index": 1,
+      "SMID": 360000,
+      "PYRP": 1
+    },
+    {
+      "_index": 2,
+      "SMID": 440000,
+      "PYRP": 2
+    },
+    {
+      "_index": 3,
+      "SMID": 510000,
+      "PYRP": 3
+    },
+    {
+      "_index": 4,
+      "SMID": 600000,
+      "PYRP": 4
+    },
+    {
+      "_index": 5,
+      "SMID": 600000,
+      "PYRP": 5
+    },
+    {
+      "_index": 6,
+      "SMID": 600000,
+      "PYRP": 6
+    },
+    {
+      "_index": 7,
+      "SMID": 720000,
+      "PYRP": 7
+    },
+    {
+      "_index": 8,
+      "SMID": 720000,
+      "PYRP": 8
+    },
+    {
+      "_index": 9,
+      "SMID": 720000,
+      "PYRP": 9
+    },
+    {
+      "_index": 10,
+      "SMID": 820000,
+      "PYRP": 10
+    },
+    {
+      "_index": 11,
+      "SMID": 820000,
+      "PYRP": 11
+    },
+    {
+      "_index": 12,
+      "SMID": 820000,
+      "PYRP": 12
+    },
+    {
+      "_index": 13,
+      "SMID": 820000,
+      "PYRP": 13
+    },
+    {
+      "_index": 14,
+      "SMID": 820000,
+      "PYRP": 14
+    },
+    {
+      "_index": 15,
+      "SMID": 820000,
+      "PYRP": 15
+    },
+    {
+      "_index": 16,
+      "SMID": 820000,
+      "PYRP": 16
+    },
+    {
+      "_index": 17,
+      "SMID": 820000,
+      "PYRP": 17
+    },
+    {
+      "_index": 18,
+      "SMID": 820000,
+      "PYRP": 18
+    }
+  ]
+}

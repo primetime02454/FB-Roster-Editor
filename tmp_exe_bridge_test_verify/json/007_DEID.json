@@ -1,0 +1,33 @@
+{
+  "path": "DEID",
+  "name": "DEID",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 75844,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "UGID",
+      "type": 3
+    },
+    {
+      "name": "PNid",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "TGID": 5,
+      "UGID": 4294967295,
+      "PNid": 118
+    }
+  ]
+}

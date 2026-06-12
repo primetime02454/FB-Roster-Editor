@@ -1,0 +1,123 @@
+{
+  "path": "SEAI",
+  "name": "SEAI",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 459888,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "SNPB",
+      "type": 3
+    },
+    {
+      "name": "SERB",
+      "type": 3
+    },
+    {
+      "name": "SUDC",
+      "type": 3
+    },
+    {
+      "name": "SESI",
+      "type": 3
+    },
+    {
+      "name": "SEWN",
+      "type": 3
+    },
+    {
+      "name": "SNCP",
+      "type": 3
+    },
+    {
+      "name": "SNDP",
+      "type": 3
+    },
+    {
+      "name": "SEFP",
+      "type": 3
+    },
+    {
+      "name": "SNWP",
+      "type": 3
+    },
+    {
+      "name": "SEYR",
+      "type": 2
+    },
+    {
+      "name": "SEST",
+      "type": 3
+    },
+    {
+      "name": "SEWT",
+      "type": 3
+    },
+    {
+      "name": "SEBW",
+      "type": 3
+    },
+    {
+      "name": "SDOW",
+      "type": 3
+    },
+    {
+      "name": "SEOW",
+      "type": 3
+    },
+    {
+      "name": "SGOW",
+      "type": 3
+    },
+    {
+      "name": "SNPW",
+      "type": 3
+    },
+    {
+      "name": "SBRW",
+      "type": 3
+    },
+    {
+      "name": "SERW",
+      "type": 3
+    },
+    {
+      "name": "SFRW",
+      "type": 3
+    },
+    {
+      "name": "SESW",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "SNPB": 0,
+      "SERB": 0,
+      "SUDC": 0,
+      "SESI": 0,
+      "SEWN": 23,
+      "SNCP": 0,
+      "SNDP": 0,
+      "SEFP": 0,
+      "SNWP": 0,
+      "SEYR": 0,
+      "SEST": 15,
+      "SEWT": 9,
+      "SEBW": 0,
+      "SDOW": 4,
+      "SEOW": 0,
+      "SGOW": 0,
+      "SNPW": 0,
+      "SBRW": 0,
+      "SERW": 25,
+      "SFRW": 0,
+      "SESW": 0
+    }
+  ]
+}

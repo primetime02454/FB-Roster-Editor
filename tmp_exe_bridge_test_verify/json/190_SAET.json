@@ -1,0 +1,43 @@
+{
+  "path": "SAET",
+  "name": "SAET",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 3842548,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "SAPC",
+      "type": 3
+    },
+    {
+      "name": "SATN",
+      "type": 3
+    },
+    {
+      "name": "SAQT",
+      "type": 3
+    },
+    {
+      "name": "SATX",
+      "type": 3
+    },
+    {
+      "name": "SATY",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "SAPC": 2,
+      "SATN": 2,
+      "SAQT": 5,
+      "SATX": 2,
+      "SATY": 0
+    }
+  ]
+}

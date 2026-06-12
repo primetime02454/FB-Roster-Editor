@@ -1,0 +1,88 @@
+{
+  "path": "CRHT",
+  "name": "CRHT",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 627432,
+  "raw_key_hex": "",
+  "declared_entries_total": 13,
+  "records_parsed": 13,
+  "field_definitions": [
+    {
+      "name": "CRHI",
+      "type": 3
+    },
+    {
+      "name": "CRHQ",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "CRHI": 0,
+      "CRHQ": 140
+    },
+    {
+      "_index": 1,
+      "CRHI": 1,
+      "CRHQ": 141
+    },
+    {
+      "_index": 2,
+      "CRHI": 2,
+      "CRHQ": 142
+    },
+    {
+      "_index": 3,
+      "CRHI": 3,
+      "CRHQ": 143
+    },
+    {
+      "_index": 4,
+      "CRHI": 4,
+      "CRHQ": 144
+    },
+    {
+      "_index": 5,
+      "CRHI": 5,
+      "CRHQ": 145
+    },
+    {
+      "_index": 6,
+      "CRHI": 6,
+      "CRHQ": 146
+    },
+    {
+      "_index": 7,
+      "CRHI": 7,
+      "CRHQ": 147
+    },
+    {
+      "_index": 8,
+      "CRHI": 8,
+      "CRHQ": 148
+    },
+    {
+      "_index": 9,
+      "CRHI": 9,
+      "CRHQ": 153
+    },
+    {
+      "_index": 10,
+      "CRHI": 10,
+      "CRHQ": 155
+    },
+    {
+      "_index": 11,
+      "CRHI": 11,
+      "CRHQ": 156
+    },
+    {
+      "_index": 12,
+      "CRHI": 12,
+      "CRHQ": 157
+    }
+  ]
+}

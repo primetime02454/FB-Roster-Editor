@@ -1,0 +1,105 @@
+{
+  "path": "QITM",
+  "name": "QITM",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 359496,
+  "raw_key_hex": "",
+  "declared_entries_total": 2,
+  "records_parsed": 2,
+  "field_definitions": [
+    {
+      "name": "QIK1",
+      "type": 3
+    },
+    {
+      "name": "QIK2",
+      "type": 3
+    },
+    {
+      "name": "QIEA",
+      "type": 3
+    },
+    {
+      "name": "QIID",
+      "type": 3
+    },
+    {
+      "name": "QUID",
+      "type": 3
+    },
+    {
+      "name": "QURG",
+      "type": 3
+    },
+    {
+      "name": "QITM",
+      "type": 3
+    },
+    {
+      "name": "SCRN",
+      "type": 3
+    },
+    {
+      "name": "QTTP",
+      "type": 3
+    },
+    {
+      "name": "QIDT",
+      "type": 3
+    },
+    {
+      "name": "QIET",
+      "type": 3
+    },
+    {
+      "name": "QIFX",
+      "type": 3
+    },
+    {
+      "name": "PNid",
+      "type": 3
+    },
+    {
+      "name": "PNPs",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "QIK1": 4294901792,
+      "QIK2": 0,
+      "QIEA": 0,
+      "QIID": 1,
+      "QUID": 0,
+      "QURG": 0,
+      "QITM": 136,
+      "SCRN": 310,
+      "QTTP": 1,
+      "QIDT": 0,
+      "QIET": 14288400,
+      "QIFX": 0,
+      "PNid": 2052,
+      "PNPs": 11
+    },
+    {
+      "_index": 1,
+      "QIK1": 0,
+      "QIK2": 0,
+      "QIEA": 0,
+      "QIID": 2,
+      "QUID": 0,
+      "QURG": 0,
+      "QITM": 5,
+      "SCRN": 41,
+      "QTTP": 1,
+      "QIDT": 0,
+      "QIET": 14292000,
+      "QIFX": 0,
+      "PNid": 3076,
+      "PNPs": 13
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "path": "COIN",
+  "name": "COIN",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 645244,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "CRIB",
+      "type": 2
+    },
+    {
+      "name": "CAID",
+      "type": 2
+    },
+    {
+      "name": "CACL",
+      "type": 2
+    },
+    {
+      "name": "CADL",
+      "type": 2
+    },
+    {
+      "name": "CARL",
+      "type": 2
+    },
+    {
+      "name": "CASL",
+      "type": 2
+    },
+    {
+      "name": "CAWL",
+      "type": 2
+    },
+    {
+      "name": "CARM",
+      "type": 2
+    },
+    {
+      "name": "CMRM",
+      "type": 2
+    },
+    {
+      "name": "CRIR",
+      "type": 2
+    },
+    {
+      "name": "CFMR",
+      "type": 2
+    },
+    {
+      "name": "CWMR",
+      "type": 2
+    },
+    {
+      "name": "CACW",
+      "type": 2
+    },
+    {
+      "name": "CADW",
+      "type": 2
+    },
+    {
+      "name": "CAIW",
+      "type": 2
+    },
+    {
+      "name": "CARW",
+      "type": 2
+    },
+    {
+      "name": "CFRW",
+      "type": 2
+    },
+    {
+      "name": "CWRW",
+      "type": 2
+    },
+    {
+      "name": "CASW",
+      "type": 2
+    },
+    {
+      "name": "CAWW",
+      "type": 2
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "CRIB": 40,
+      "CAID": 6,
+      "CACL": 253,
+      "CADL": 252,
+      "CARL": 255,
+      "CASL": 254,
+      "CAWL": 251,
+      "CARM": 16,
+      "CMRM": 5,
+      "CRIR": 80,
+      "CFMR": 0,
+      "CWMR": 5,
+      "CACW": 8,
+      "CADW": 6,
+      "CAIW": 5,
+      "CARW": 1,
+      "CFRW": 100,
+      "CWRW": 50,
+      "CASW": 15,
+      "CAWW": 0
+    }
+  ]
+}

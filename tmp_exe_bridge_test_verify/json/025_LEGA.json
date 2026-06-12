@@ -1,0 +1,58 @@
+{
+  "path": "LEGA",
+  "name": "LEGA",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 91800,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "GASC",
+      "type": 3
+    },
+    {
+      "name": "GHSC",
+      "type": 3
+    },
+    {
+      "name": "GATG",
+      "type": 3
+    },
+    {
+      "name": "GHTG",
+      "type": 3
+    },
+    {
+      "name": "GTIM",
+      "type": 3
+    },
+    {
+      "name": "SGNM",
+      "type": 2
+    },
+    {
+      "name": "LEGS",
+      "type": 3
+    },
+    {
+      "name": "LENS",
+      "type": 3
+    },
+    {
+      "name": "LERT",
+      "type": 4
+    },
+    {
+      "name": "LEST",
+      "type": 3
+    },
+    {
+      "name": "LEGU",
+      "type": 3
+    }
+  ],
+  "records": []
+}

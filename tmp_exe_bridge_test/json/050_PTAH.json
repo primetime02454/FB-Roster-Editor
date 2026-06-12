@@ -1,0 +1,54 @@
+{
+  "path": "PTAH",
+  "name": "PTAH",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 130588,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "SSTA",
+      "type": 3
+    },
+    {
+      "name": "TAID",
+      "type": 3
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "cMON",
+      "type": 3
+    },
+    {
+      "name": "SEWN",
+      "type": 3
+    },
+    {
+      "name": "SDOW",
+      "type": 3
+    },
+    {
+      "name": "cDAY",
+      "type": 3
+    },
+    {
+      "name": "CALY",
+      "type": 3
+    },
+    {
+      "name": "TATY",
+      "type": 3
+    }
+  ],
+  "records": []
+}

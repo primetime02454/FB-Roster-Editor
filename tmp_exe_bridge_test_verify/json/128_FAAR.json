@@ -1,0 +1,129 @@
+{
+  "path": "FAAR",
+  "name": "FAAR",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1026900,
+  "raw_key_hex": "",
+  "declared_entries_total": 17,
+  "records_parsed": 17,
+  "field_definitions": [
+    {
+      "name": "FAAM",
+      "type": 3
+    },
+    {
+      "name": "FADP",
+      "type": 3
+    },
+    {
+      "name": "FAAR",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "FAAM": 3,
+      "FADP": 7,
+      "FAAR": 80
+    },
+    {
+      "_index": 1,
+      "FAAM": 8,
+      "FADP": 12,
+      "FAAR": 78
+    },
+    {
+      "_index": 2,
+      "FAAM": 6,
+      "FADP": 8,
+      "FAAR": 78
+    },
+    {
+      "_index": 3,
+      "FAAM": 5,
+      "FADP": 9,
+      "FAAR": 78
+    },
+    {
+      "_index": 4,
+      "FAAM": 3,
+      "FADP": 2,
+      "FAAR": 80
+    },
+    {
+      "_index": 5,
+      "FAAM": 4,
+      "FADP": 13,
+      "FAAR": 78
+    },
+    {
+      "_index": 6,
+      "FAAM": 5,
+      "FADP": 6,
+      "FAAR": 80
+    },
+    {
+      "_index": 7,
+      "FAAM": 8,
+      "FADP": 1,
+      "FAAR": 74
+    },
+    {
+      "_index": 8,
+      "FAAM": 3,
+      "FADP": 15,
+      "FAAR": 84
+    },
+    {
+      "_index": 9,
+      "FAAM": 4,
+      "FADP": 11,
+      "FAAR": 76
+    },
+    {
+      "_index": 10,
+      "FAAM": 6,
+      "FADP": 10,
+      "FAAR": 76
+    },
+    {
+      "_index": 11,
+      "FAAM": 2,
+      "FADP": 16,
+      "FAAR": 84
+    },
+    {
+      "_index": 12,
+      "FAAM": 6,
+      "FADP": 0,
+      "FAAR": 80
+    },
+    {
+      "_index": 13,
+      "FAAM": 4,
+      "FADP": 14,
+      "FAAR": 78
+    },
+    {
+      "_index": 14,
+      "FAAM": 5,
+      "FADP": 5,
+      "FAAR": 80
+    },
+    {
+      "_index": 15,
+      "FAAM": 5,
+      "FADP": 4,
+      "FAAR": 75
+    },
+    {
+      "_index": 16,
+      "FAAM": 8,
+      "FADP": 3,
+      "FAAR": 80
+    }
+  ]
+}

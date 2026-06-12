@@ -1,0 +1,199 @@
+{
+  "path": "EARE",
+  "name": "EARE",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 4121504,
+  "raw_key_hex": "",
+  "declared_entries_total": 24,
+  "records_parsed": 24,
+  "field_definitions": [
+    {
+      "name": "AGDE",
+      "type": 13
+    },
+    {
+      "name": "ENDN",
+      "type": 13
+    },
+    {
+      "name": "ENSN",
+      "type": 13
+    },
+    {
+      "name": "ENUV",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "AGDE": 0,
+      "ENDN": "Agree",
+      "ENSN": 0,
+      "ENUV": 20
+    },
+    {
+      "_index": 1,
+      "AGDE": 0,
+      "ENDN": "Bench",
+      "ENSN": 0,
+      "ENUV": 18
+    },
+    {
+      "_index": 2,
+      "AGDE": 0,
+      "ENDN": "BenchTheStarter",
+      "ENSN": 0,
+      "ENUV": 4
+    },
+    {
+      "_index": 3,
+      "AGDE": 0,
+      "ENDN": "Blitz",
+      "ENSN": 0,
+      "ENUV": 6
+    },
+    {
+      "_index": 4,
+      "AGDE": 0,
+      "ENDN": "DeepPass",
+      "ENSN": 0,
+      "ENUV": 12
+    },
+    {
+      "_index": 5,
+      "AGDE": 0,
+      "ENDN": "Disagree",
+      "ENSN": 0,
+      "ENUV": 21
+    },
+    {
+      "_index": 6,
+      "AGDE": 0,
+      "ENDN": "DoNotBench",
+      "ENSN": 0,
+      "ENUV": 19
+    },
+    {
+      "_index": 7,
+      "AGDE": 0,
+      "ENDN": "Failure",
+      "ENSN": 0,
+      "ENUV": 23
+    },
+    {
+      "_index": 8,
+      "AGDE": 0,
+      "ENDN": "GoForIt",
+      "ENSN": 0,
+      "ENUV": 3
+    },
+    {
+      "_index": 9,
+      "AGDE": 0,
+      "ENDN": "GoForTwo",
+      "ENSN": 0,
+      "ENUV": 10
+    },
+    {
+      "_index": 10,
+      "AGDE": 0,
+      "ENDN": "KeepHimIn",
+      "ENSN": 0,
+      "ENUV": 5
+    },
+    {
+      "_index": 11,
+      "AGDE": 0,
+      "ENDN": "KickFG",
+      "ENSN": 0,
+      "ENUV": 0
+    },
+    {
+      "_index": 12,
+      "AGDE": 0,
+      "ENDN": "Kickoff",
+      "ENSN": 0,
+      "ENUV": 15
+    },
+    {
+      "_index": 13,
+      "AGDE": 0,
+      "ENDN": "KickTheXP",
+      "ENSN": 0,
+      "ENUV": 11
+    },
+    {
+      "_index": 14,
+      "AGDE": 0,
+      "ENDN": "Man",
+      "ENSN": 0,
+      "ENUV": 9
+    },
+    {
+      "_index": 15,
+      "AGDE": 0,
+      "ENDN": "ManOrZone",
+      "ENSN": 0,
+      "ENUV": 8
+    },
+    {
+      "_index": 16,
+      "AGDE": 0,
+      "ENDN": "OnsideKick",
+      "ENSN": 0,
+      "ENUV": 14
+    },
+    {
+      "_index": 17,
+      "AGDE": 0,
+      "ENDN": "PlayRookie",
+      "ENSN": 0,
+      "ENUV": 16
+    },
+    {
+      "_index": 18,
+      "AGDE": 0,
+      "ENDN": "PlayVeteran",
+      "ENSN": 0,
+      "ENUV": 17
+    },
+    {
+      "_index": 19,
+      "AGDE": 0,
+      "ENDN": "Punt",
+      "ENSN": 0,
+      "ENUV": 2
+    },
+    {
+      "_index": 20,
+      "AGDE": 0,
+      "ENDN": "RunOrNormalPass",
+      "ENSN": 0,
+      "ENUV": 13
+    },
+    {
+      "_index": 21,
+      "AGDE": 0,
+      "ENDN": "RunOrPass",
+      "ENSN": 0,
+      "ENUV": 1
+    },
+    {
+      "_index": 22,
+      "AGDE": 0,
+      "ENDN": "Success",
+      "ENSN": 0,
+      "ENUV": 22
+    },
+    {
+      "_index": 23,
+      "AGDE": 0,
+      "ENDN": "Zone",
+      "ENSN": 0,
+      "ENUV": 7
+    }
+  ]
+}

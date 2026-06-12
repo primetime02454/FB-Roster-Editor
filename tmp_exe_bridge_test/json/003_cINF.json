@@ -1,0 +1,38 @@
+{
+  "path": "cINF",
+  "name": "cINF",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 74352,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "EVTD",
+      "type": 3
+    },
+    {
+      "name": "SEYR",
+      "type": 2
+    },
+    {
+      "name": "cTIS",
+      "type": 3
+    },
+    {
+      "name": "EVNT",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "EVTD": 0,
+      "SEYR": 255,
+      "cTIS": 0,
+      "EVNT": 0
+    }
+  ]
+}

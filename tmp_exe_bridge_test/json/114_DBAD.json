@@ -1,0 +1,113 @@
+{
+  "path": "DBAD",
+  "name": "DBAD",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 977312,
+  "raw_key_hex": "",
+  "declared_entries_total": 6,
+  "records_parsed": 6,
+  "field_definitions": [
+    {
+      "name": "PCTD",
+      "type": 3
+    },
+    {
+      "name": "PCPF",
+      "type": 3
+    },
+    {
+      "name": "PCPO",
+      "type": 3
+    },
+    {
+      "name": "DFTP",
+      "type": 3
+    },
+    {
+      "name": "PCPR",
+      "type": 3
+    },
+    {
+      "name": "PCPT",
+      "type": 3
+    },
+    {
+      "name": "PCPV",
+      "type": 3
+    },
+    {
+      "name": "USTi",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "PCTD": 30,
+      "PCPF": 3,
+      "PCPO": 50,
+      "DFTP": 2,
+      "PCPR": 5,
+      "PCPT": 10,
+      "PCPV": 2,
+      "USTi": 0
+    },
+    {
+      "_index": 1,
+      "PCTD": 10,
+      "PCPF": 3,
+      "PCPO": 60,
+      "DFTP": 0,
+      "PCPR": 5,
+      "PCPT": 20,
+      "PCPV": 2,
+      "USTi": 0
+    },
+    {
+      "_index": 2,
+      "PCTD": 40,
+      "PCPF": 3,
+      "PCPO": 40,
+      "DFTP": 1,
+      "PCPR": 5,
+      "PCPT": 10,
+      "PCPV": 2,
+      "USTi": 0
+    },
+    {
+      "_index": 3,
+      "PCTD": 95,
+      "PCPF": 0,
+      "PCPO": 5,
+      "DFTP": 2,
+      "PCPR": 0,
+      "PCPT": 0,
+      "PCPV": 0,
+      "USTi": 1
+    },
+    {
+      "_index": 4,
+      "PCTD": 95,
+      "PCPF": 0,
+      "PCPO": 5,
+      "DFTP": 0,
+      "PCPR": 0,
+      "PCPT": 0,
+      "PCPV": 0,
+      "USTi": 1
+    },
+    {
+      "_index": 5,
+      "PCTD": 95,
+      "PCPF": 0,
+      "PCPO": 5,
+      "DFTP": 1,
+      "PCPR": 0,
+      "PCPT": 0,
+      "PCPV": 0,
+      "USTi": 1
+    }
+  ]
+}

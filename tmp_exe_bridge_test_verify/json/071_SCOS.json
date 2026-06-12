@@ -1,0 +1,74 @@
+{
+  "path": "SCOS",
+  "name": "SCOS",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 459104,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "SSSC",
+      "type": 2
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "SSDE",
+      "type": 3
+    },
+    {
+      "name": "SSPF",
+      "type": 3
+    },
+    {
+      "name": "SSFI",
+      "type": 3
+    },
+    {
+      "name": "SSPI",
+      "type": 3
+    },
+    {
+      "name": "SSTI",
+      "type": 3
+    },
+    {
+      "name": "GTIM",
+      "type": 3
+    },
+    {
+      "name": "SSDP",
+      "type": 3
+    },
+    {
+      "name": "SSOR",
+      "type": 3
+    },
+    {
+      "name": "GQTR",
+      "type": 3
+    },
+    {
+      "name": "SSDS",
+      "type": 2
+    },
+    {
+      "name": "SSPY",
+      "type": 2
+    },
+    {
+      "name": "SSTY",
+      "type": 3
+    },
+    {
+      "name": "SSPt",
+      "type": 3
+    }
+  ],
+  "records": []
+}

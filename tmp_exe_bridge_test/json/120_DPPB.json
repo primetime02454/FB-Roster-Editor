@@ -1,0 +1,73 @@
+{
+  "path": "DPPB",
+  "name": "DPPB",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1015832,
+  "raw_key_hex": "",
+  "declared_entries_total": 10,
+  "records_parsed": 10,
+  "field_definitions": [
+    {
+      "name": "PPPB",
+      "type": 2
+    },
+    {
+      "name": "PPGR",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "PPPB": 2,
+      "PPGR": 7
+    },
+    {
+      "_index": 1,
+      "PPPB": 0,
+      "PPGR": 5
+    },
+    {
+      "_index": 2,
+      "PPPB": 59,
+      "PPGR": 8
+    },
+    {
+      "_index": 3,
+      "PPPB": 3,
+      "PPGR": 6
+    },
+    {
+      "_index": 4,
+      "PPPB": 62,
+      "PPGR": 4
+    },
+    {
+      "_index": 5,
+      "PPPB": 54,
+      "PPGR": 9
+    },
+    {
+      "_index": 6,
+      "PPPB": 12,
+      "PPGR": 0
+    },
+    {
+      "_index": 7,
+      "PPPB": 10,
+      "PPGR": 1
+    },
+    {
+      "_index": 8,
+      "PPPB": 63,
+      "PPGR": 3
+    },
+    {
+      "_index": 9,
+      "PPPB": 5,
+      "PPGR": 2
+    }
+  ]
+}

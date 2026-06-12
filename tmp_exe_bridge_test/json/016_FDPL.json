@@ -1,0 +1,262 @@
+{
+  "path": "FDPL",
+  "name": "FDPL",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 83196,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PTHA",
+      "type": 3
+    },
+    {
+      "name": "PWRA",
+      "type": 3
+    },
+    {
+      "name": "PCSA",
+      "type": 3
+    },
+    {
+      "name": "PLSA",
+      "type": 3
+    },
+    {
+      "name": "PTSA",
+      "type": 3
+    },
+    {
+      "name": "PSTA",
+      "type": 3
+    },
+    {
+      "name": "PLIB",
+      "type": 3
+    },
+    {
+      "name": "PKAC",
+      "type": 3
+    },
+    {
+      "name": "PVAC",
+      "type": 3
+    },
+    {
+      "name": "PACC",
+      "type": 3
+    },
+    {
+      "name": "PLMC",
+      "type": 3
+    },
+    {
+      "name": "PLSC",
+      "type": 3
+    },
+    {
+      "name": "PLZC",
+      "type": 3
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "PSPD",
+      "type": 3
+    },
+    {
+      "name": "PAGE",
+      "type": 3
+    },
+    {
+      "name": "PLPE",
+      "type": 3
+    },
+    {
+      "name": "PRSE",
+      "type": 3
+    },
+    {
+      "name": "PPBF",
+      "type": 3
+    },
+    {
+      "name": "PRBF",
+      "type": 3
+    },
+    {
+      "name": "PBSG",
+      "type": 3
+    },
+    {
+      "name": "PTGH",
+      "type": 3
+    },
+    {
+      "name": "PCPH",
+      "type": 3
+    },
+    {
+      "name": "PCTH",
+      "type": 3
+    },
+    {
+      "name": "PLCI",
+      "type": 3
+    },
+    {
+      "name": "PAGI",
+      "type": 3
+    },
+    {
+      "name": "DRTI",
+      "type": 3
+    },
+    {
+      "name": "PINJ",
+      "type": 3
+    },
+    {
+      "name": "PTAK",
+      "type": 3
+    },
+    {
+      "name": "PPBK",
+      "type": 3
+    },
+    {
+      "name": "PRBK",
+      "type": 3
+    },
+    {
+      "name": "INJL",
+      "type": 3
+    },
+    {
+      "name": "PLRL",
+      "type": 3
+    },
+    {
+      "name": "PLJM",
+      "type": 3
+    },
+    {
+      "name": "DPNM",
+      "type": 3
+    },
+    {
+      "name": "PLSM",
+      "type": 3
+    },
+    {
+      "name": "PTEN",
+      "type": 3
+    },
+    {
+      "name": "PCON",
+      "type": 3
+    },
+    {
+      "name": "PSBO",
+      "type": 3
+    },
+    {
+      "name": "PTHP",
+      "type": 3
+    },
+    {
+      "name": "PJMP",
+      "type": 3
+    },
+    {
+      "name": "PDRP",
+      "type": 3
+    },
+    {
+      "name": "PYRP",
+      "type": 3
+    },
+    {
+      "name": "PCAR",
+      "type": 3
+    },
+    {
+      "name": "PKPR",
+      "type": 3
+    },
+    {
+      "name": "PLPR",
+      "type": 3
+    },
+    {
+      "name": "PLRR",
+      "type": 3
+    },
+    {
+      "name": "PLTR",
+      "type": 3
+    },
+    {
+      "name": "PSTR",
+      "type": 3
+    },
+    {
+      "name": "POVR",
+      "type": 3
+    },
+    {
+      "name": "PAWR",
+      "type": 3
+    },
+    {
+      "name": "PPBS",
+      "type": 3
+    },
+    {
+      "name": "PRBS",
+      "type": 3
+    },
+    {
+      "name": "PFMS",
+      "type": 3
+    },
+    {
+      "name": "PPOS",
+      "type": 3
+    },
+    {
+      "name": "PLHT",
+      "type": 3
+    },
+    {
+      "name": "PKRT",
+      "type": 3
+    },
+    {
+      "name": "PELU",
+      "type": 3
+    },
+    {
+      "name": "PLPU",
+      "type": 3
+    },
+    {
+      "name": "PBCV",
+      "type": 3
+    },
+    {
+      "name": "PLPm",
+      "type": 3
+    },
+    {
+      "name": "DRPr",
+      "type": 3
+    }
+  ],
+  "records": []
+}

@@ -1,0 +1,46 @@
+{
+  "path": "SETL",
+  "name": "SETL",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1443616,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "SETL",
+      "type": 3
+    },
+    {
+      "name": "FORM",
+      "type": 3
+    },
+    {
+      "name": "MOTN",
+      "type": 3
+    },
+    {
+      "name": "SETT",
+      "type": 3
+    },
+    {
+      "name": "SITT",
+      "type": 3
+    },
+    {
+      "name": "SLF_",
+      "type": 3
+    },
+    {
+      "name": "name",
+      "type": 0
+    },
+    {
+      "name": "poso",
+      "type": 3
+    }
+  ],
+  "records": []
+}

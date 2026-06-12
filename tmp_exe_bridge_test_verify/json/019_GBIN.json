@@ -1,0 +1,34 @@
+{
+  "path": "GBIN",
+  "name": "GBIN",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 84436,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "GDSM",
+      "type": 1
+    },
+    {
+      "name": "GSSM",
+      "type": 1
+    },
+    {
+      "name": "GSRS",
+      "type": 1
+    },
+    {
+      "name": "GCTS",
+      "type": 1
+    },
+    {
+      "name": "GPTS",
+      "type": 1
+    }
+  ],
+  "records": []
+}

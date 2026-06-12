@@ -1,0 +1,46 @@
+{
+  "path": "PLAB",
+  "name": "PLAB",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1446984,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PI34",
+      "type": 3
+    },
+    {
+      "name": "BGID",
+      "type": 3
+    },
+    {
+      "name": "BORD",
+      "type": 3
+    },
+    {
+      "name": "BOFF",
+      "type": 3
+    },
+    {
+      "name": "PBGI",
+      "type": 3
+    },
+    {
+      "name": "BNAM",
+      "type": 0
+    },
+    {
+      "name": "PBAN",
+      "type": 0
+    },
+    {
+      "name": "PBPR",
+      "type": 3
+    }
+  ],
+  "records": []
+}

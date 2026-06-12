@@ -1,0 +1,30 @@
+{
+  "path": "PLRL",
+  "name": "PLRL",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 360656,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "REPF",
+      "type": 3
+    },
+    {
+      "name": "REST",
+      "type": 3
+    }
+  ],
+  "records": []
+}

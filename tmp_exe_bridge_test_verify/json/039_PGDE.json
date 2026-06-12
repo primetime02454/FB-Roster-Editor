@@ -1,0 +1,106 @@
+{
+  "path": "PGDE",
+  "name": "PGDE",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 98828,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "gslR",
+      "type": 2
+    },
+    {
+      "name": "gsca",
+      "type": 3
+    },
+    {
+      "name": "glsa",
+      "type": 3
+    },
+    {
+      "name": "gssa",
+      "type": 3
+    },
+    {
+      "name": "gdta",
+      "type": 3
+    },
+    {
+      "name": "gsta",
+      "type": 3
+    },
+    {
+      "name": "gsya",
+      "type": 2
+    },
+    {
+      "name": "gldb",
+      "type": 3
+    },
+    {
+      "name": "gdpd",
+      "type": 3
+    },
+    {
+      "name": "glff",
+      "type": 3
+    },
+    {
+      "name": "gdbh",
+      "type": 3
+    },
+    {
+      "name": "glsk",
+      "type": 3
+    },
+    {
+      "name": "glbl",
+      "type": 3
+    },
+    {
+      "name": "gdtl",
+      "type": 3
+    },
+    {
+      "name": "gsin",
+      "type": 3
+    },
+    {
+      "name": "glfr",
+      "type": 3
+    },
+    {
+      "name": "glft",
+      "type": 3
+    },
+    {
+      "name": "gsit",
+      "type": 3
+    },
+    {
+      "name": "gdmt",
+      "type": 3
+    },
+    {
+      "name": "glhu",
+      "type": 3
+    },
+    {
+      "name": "glfy",
+      "type": 2
+    },
+    {
+      "name": "gsiy",
+      "type": 2
+    }
+  ],
+  "records": []
+}

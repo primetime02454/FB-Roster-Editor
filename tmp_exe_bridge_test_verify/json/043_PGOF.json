@@ -1,0 +1,218 @@
+{
+  "path": "PGOF",
+  "name": "PGOF",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 108380,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "gcrL",
+      "type": 2
+    },
+    {
+      "name": "galN",
+      "type": 2
+    },
+    {
+      "name": "gulN",
+      "type": 2
+    },
+    {
+      "name": "gcca",
+      "type": 3
+    },
+    {
+      "name": "guca",
+      "type": 3
+    },
+    {
+      "name": "guia",
+      "type": 3
+    },
+    {
+      "name": "guoa",
+      "type": 3
+    },
+    {
+      "name": "gupa",
+      "type": 3
+    },
+    {
+      "name": "gura",
+      "type": 3
+    },
+    {
+      "name": "gasa",
+      "type": 3
+    },
+    {
+      "name": "gaya",
+      "type": 2
+    },
+    {
+      "name": "gcya",
+      "type": 2
+    },
+    {
+      "name": "guya",
+      "type": 2
+    },
+    {
+      "name": "gacb",
+      "type": 3
+    },
+    {
+      "name": "gacc",
+      "type": 3
+    },
+    {
+      "name": "gadc",
+      "type": 3
+    },
+    {
+      "name": "gamc",
+      "type": 3
+    },
+    {
+      "name": "gcpc",
+      "type": 3
+    },
+    {
+      "name": "gasc",
+      "type": 3
+    },
+    {
+      "name": "gcyc",
+      "type": 2
+    },
+    {
+      "name": "gaAd",
+      "type": 3
+    },
+    {
+      "name": "gaYd",
+      "type": 2
+    },
+    {
+      "name": "gabd",
+      "type": 3
+    },
+    {
+      "name": "gafd",
+      "type": 3
+    },
+    {
+      "name": "gcpd",
+      "type": 3
+    },
+    {
+      "name": "gatd",
+      "type": 3
+    },
+    {
+      "name": "gctd",
+      "type": 3
+    },
+    {
+      "name": "gutd",
+      "type": 3
+    },
+    {
+      "name": "guyh",
+      "type": 2
+    },
+    {
+      "name": "gaAm",
+      "type": 3
+    },
+    {
+      "name": "gaYm",
+      "type": 2
+    },
+    {
+      "name": "gacm",
+      "type": 3
+    },
+    {
+      "name": "gain",
+      "type": 3
+    },
+    {
+      "name": "gawn",
+      "type": 3
+    },
+    {
+      "name": "gcto",
+      "type": 3
+    },
+    {
+      "name": "gc2p",
+      "type": 3
+    },
+    {
+      "name": "gu2p",
+      "type": 3
+    },
+    {
+      "name": "gcdr",
+      "type": 3
+    },
+    {
+      "name": "gaAs",
+      "type": 3
+    },
+    {
+      "name": "gaYs",
+      "type": 2
+    },
+    {
+      "name": "gaat",
+      "type": 3
+    },
+    {
+      "name": "guat",
+      "type": 3
+    },
+    {
+      "name": "gubt",
+      "type": 3
+    },
+    {
+      "name": "gufu",
+      "type": 3
+    },
+    {
+      "name": "gu2y",
+      "type": 3
+    },
+    {
+      "name": "gucy",
+      "type": 2
+    },
+    {
+      "name": "guiy",
+      "type": 2
+    },
+    {
+      "name": "guoy",
+      "type": 2
+    },
+    {
+      "name": "gupy",
+      "type": 2
+    },
+    {
+      "name": "gury",
+      "type": 2
+    }
+  ],
+  "records": []
+}

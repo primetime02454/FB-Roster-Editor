@@ -1,0 +1,26 @@
+{
+  "path": "PCSC",
+  "name": "PCSC",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 98740,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "pctp",
+      "type": 3
+    },
+    {
+      "name": "pccv",
+      "type": 3
+    }
+  ],
+  "records": []
+}

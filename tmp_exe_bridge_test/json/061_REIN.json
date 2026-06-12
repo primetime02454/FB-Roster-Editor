@@ -1,0 +1,23 @@
+{
+  "path": "REIN",
+  "name": "REIN",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 360760,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "ROST",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "ROST": 0
+    }
+  ]
+}

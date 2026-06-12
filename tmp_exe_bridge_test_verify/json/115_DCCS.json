@@ -1,0 +1,38 @@
+{
+  "path": "DCCS",
+  "name": "DCCS",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 977600,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "CLGC",
+      "type": 3
+    },
+    {
+      "name": "RCSC",
+      "type": 3
+    },
+    {
+      "name": "MXCI",
+      "type": 3
+    },
+    {
+      "name": "S2CS",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "CLGC": 297,
+      "RCSC": 300,
+      "MXCI": 296,
+      "S2CS": 100
+    }
+  ]
+}

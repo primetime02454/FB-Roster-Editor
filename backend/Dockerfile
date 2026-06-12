@@ -13,7 +13,6 @@ COPY app ./app
 COPY data ./data
 COPY tools ./tools
 COPY vendor ./vendor
-RUN cd ./vendor/madden-franchise && npm install --omit=dev
 RUN mkdir -p ./data/sessions
 
 ENV PORT=8080

@@ -1,0 +1,26 @@
+{
+  "path": "PPPN",
+  "name": "PPPN",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 1375520,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "BOKL",
+      "type": 3
+    },
+    {
+      "name": "PLYL",
+      "type": 3
+    },
+    {
+      "name": "PPNN",
+      "type": 0
+    }
+  ],
+  "records": []
+}

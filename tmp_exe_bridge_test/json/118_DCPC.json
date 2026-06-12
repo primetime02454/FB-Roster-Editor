@@ -1,0 +1,110 @@
+{
+  "path": "DCPC",
+  "name": "DCPC",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 980504,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PG10",
+      "type": 3
+    },
+    {
+      "name": "PG11",
+      "type": 3
+    },
+    {
+      "name": "STG1",
+      "type": 3
+    },
+    {
+      "name": "WEK1",
+      "type": 3
+    },
+    {
+      "name": "PG12",
+      "type": 3
+    },
+    {
+      "name": "STG2",
+      "type": 3
+    },
+    {
+      "name": "WEK2",
+      "type": 3
+    },
+    {
+      "name": "STG3",
+      "type": 3
+    },
+    {
+      "name": "WEK3",
+      "type": 3
+    },
+    {
+      "name": "PG09",
+      "type": 3
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "NFLI",
+      "type": 3
+    },
+    {
+      "name": "ATCM",
+      "type": 3
+    },
+    {
+      "name": "BDJM",
+      "type": 3
+    },
+    {
+      "name": "VTJM",
+      "type": 3
+    },
+    {
+      "name": "PGFN",
+      "type": 3
+    },
+    {
+      "name": "NCPN",
+      "type": 0
+    },
+    {
+      "name": "ATSN",
+      "type": 3
+    },
+    {
+      "name": "20RS",
+      "type": 3
+    },
+    {
+      "name": "40RS",
+      "type": 3
+    },
+    {
+      "name": "60RS",
+      "type": 3
+    },
+    {
+      "name": "3CRS",
+      "type": 3
+    },
+    {
+      "name": "BCRS",
+      "type": 3
+    },
+    {
+      "name": "BSRS",
+      "type": 3
+    }
+  ],
+  "records": []
+}

@@ -1,0 +1,58 @@
+{
+  "path": "PLPD",
+  "name": "PLPD",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 2861956,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "per1",
+      "type": 3
+    },
+    {
+      "name": "rcv1",
+      "type": 3
+    },
+    {
+      "name": "per2",
+      "type": 3
+    },
+    {
+      "name": "rcv2",
+      "type": 3
+    },
+    {
+      "name": "per3",
+      "type": 3
+    },
+    {
+      "name": "rcv3",
+      "type": 3
+    },
+    {
+      "name": "per4",
+      "type": 3
+    },
+    {
+      "name": "rcv4",
+      "type": 3
+    },
+    {
+      "name": "per5",
+      "type": 3
+    },
+    {
+      "name": "rcv5",
+      "type": 3
+    },
+    {
+      "name": "PLYL",
+      "type": 3
+    }
+  ],
+  "records": []
+}

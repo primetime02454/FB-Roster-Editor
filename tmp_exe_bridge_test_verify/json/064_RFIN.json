@@ -1,0 +1,23 @@
+{
+  "path": "RFIN",
+  "name": "RFIN",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 361044,
+  "raw_key_hex": "",
+  "declared_entries_total": 1,
+  "records_parsed": 1,
+  "field_definitions": [
+    {
+      "name": "SOST",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "SOST": 0
+    }
+  ]
+}

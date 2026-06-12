@@ -1,0 +1,63 @@
+{
+  "path": "SPPM",
+  "name": "SPPM",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 3842868,
+  "raw_key_hex": "",
+  "declared_entries_total": 8,
+  "records_parsed": 8,
+  "field_definitions": [
+    {
+      "name": "PSR1",
+      "type": 3
+    },
+    {
+      "name": "PPOS",
+      "type": 3
+    }
+  ],
+  "records": [
+    {
+      "_index": 0,
+      "PSR1": 1,
+      "PPOS": 7
+    },
+    {
+      "_index": 1,
+      "PSR1": 1,
+      "PPOS": 2
+    },
+    {
+      "_index": 2,
+      "PSR1": 1,
+      "PPOS": 1
+    },
+    {
+      "_index": 3,
+      "PSR1": 1,
+      "PPOS": 6
+    },
+    {
+      "_index": 4,
+      "PSR1": 1,
+      "PPOS": 5
+    },
+    {
+      "_index": 5,
+      "PSR1": 1,
+      "PPOS": 0
+    },
+    {
+      "_index": 6,
+      "PSR1": 1,
+      "PPOS": 8
+    },
+    {
+      "_index": 7,
+      "PSR1": 1,
+      "PPOS": 9
+    }
+  ]
+}

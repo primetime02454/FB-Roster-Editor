@@ -1,0 +1,98 @@
+{
+  "path": "TCAL",
+  "name": "TCAL",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 461868,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "TCt2",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "TCpa",
+      "type": 2
+    },
+    {
+      "name": "TCra",
+      "type": 2
+    },
+    {
+      "name": "TCya",
+      "type": 2
+    },
+    {
+      "name": "TCfd",
+      "type": 3
+    },
+    {
+      "name": "TCtd",
+      "type": 3
+    },
+    {
+      "name": "TCaf",
+      "type": 2
+    },
+    {
+      "name": "TCsf",
+      "type": 2
+    },
+    {
+      "name": "TCpg",
+      "type": 3
+    },
+    {
+      "name": "TCpm",
+      "type": 2
+    },
+    {
+      "name": "TCpo",
+      "type": 3
+    },
+    {
+      "name": "TCto",
+      "type": 2
+    },
+    {
+      "name": "TCfp",
+      "type": 2
+    },
+    {
+      "name": "TCpp",
+      "type": 3
+    },
+    {
+      "name": "TCtp",
+      "type": 3
+    },
+    {
+      "name": "TCar",
+      "type": 2
+    },
+    {
+      "name": "TCdr",
+      "type": 2
+    },
+    {
+      "name": "TCqr",
+      "type": 2
+    },
+    {
+      "name": "TCdz",
+      "type": 3
+    },
+    {
+      "name": "TCrz",
+      "type": 3
+    }
+  ],
+  "records": []
+}

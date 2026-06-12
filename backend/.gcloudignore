@@ -5,3 +5,13 @@ __pycache__/
 **/__pycache__/
 *.pyc
 tests/
+build/
+dist/
+*.log
+*.bak-*
+*.spec.bak-*
+vendor/**/tests/
+vendor/**/test/
+vendor/**/docs/
+vendor/**/.git/
+vendor/**/.github/

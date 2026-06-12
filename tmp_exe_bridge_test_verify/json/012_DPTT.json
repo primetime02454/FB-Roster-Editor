@@ -1,0 +1,62 @@
+{
+  "path": "DPTT",
+  "name": "DPTT",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 78232,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "DGRA",
+      "type": 3
+    },
+    {
+      "name": "PWRA",
+      "type": 3
+    },
+    {
+      "name": "PGID",
+      "type": 3
+    },
+    {
+      "name": "POVG",
+      "type": 3
+    },
+    {
+      "name": "DPNM",
+      "type": 3
+    },
+    {
+      "name": "DRTM",
+      "type": 3
+    },
+    {
+      "name": "PTEN",
+      "type": 3
+    },
+    {
+      "name": "DGPO",
+      "type": 3
+    },
+    {
+      "name": "PDRP",
+      "type": 3
+    },
+    {
+      "name": "POVR",
+      "type": 3
+    },
+    {
+      "name": "PPOS",
+      "type": 3
+    },
+    {
+      "name": "DRPr",
+      "type": 3
+    }
+  ],
+  "records": []
+}

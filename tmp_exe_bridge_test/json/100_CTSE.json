@@ -1,0 +1,70 @@
+{
+  "path": "CTSE",
+  "name": "CTSE",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 547168,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "TaDA",
+      "type": 3
+    },
+    {
+      "name": "DESC",
+      "type": 0
+    },
+    {
+      "name": "TaID",
+      "type": 3
+    },
+    {
+      "name": "TaLO",
+      "type": 3
+    },
+    {
+      "name": "TaAS",
+      "type": 3
+    },
+    {
+      "name": "TaHS",
+      "type": 3
+    },
+    {
+      "name": "TaET",
+      "type": 3
+    },
+    {
+      "name": "STGT",
+      "type": 3
+    },
+    {
+      "name": "TaST",
+      "type": 3
+    },
+    {
+      "name": "TaEX",
+      "type": 3
+    },
+    {
+      "name": "TaTY",
+      "type": 3
+    },
+    {
+      "name": "TaHs",
+      "type": 3
+    },
+    {
+      "name": "UIet",
+      "type": 3
+    },
+    {
+      "name": "UIst",
+      "type": 3
+    }
+  ],
+  "records": []
+}

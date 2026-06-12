@@ -1,0 +1,30 @@
+{
+  "path": "DRTM",
+  "name": "DRTM",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 82792,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "DGRA",
+      "type": 3
+    },
+    {
+      "name": "TGID",
+      "type": 3
+    },
+    {
+      "name": "TDRP",
+      "type": 3
+    },
+    {
+      "name": "DTTP",
+      "type": 3
+    }
+  ],
+  "records": []
+}

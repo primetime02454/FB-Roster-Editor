@@ -1,0 +1,46 @@
+{
+  "path": "POBA",
+  "name": "POBA",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 357520,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "PBSD",
+      "type": 3
+    },
+    {
+      "name": "PBBI",
+      "type": 3
+    },
+    {
+      "name": "PBBO",
+      "type": 3
+    },
+    {
+      "name": "PBSO",
+      "type": 3
+    },
+    {
+      "name": "PBBP",
+      "type": 2
+    },
+    {
+      "name": "PBSP",
+      "type": 2
+    },
+    {
+      "name": "PPOS",
+      "type": 3
+    },
+    {
+      "name": "ddep",
+      "type": 3
+    }
+  ],
+  "records": []
+}

@@ -1,0 +1,38 @@
+{
+  "path": "CCAL",
+  "name": "CCAL",
+  "type": "tdb",
+  "unknown1": null,
+  "unknown2": null,
+  "offset": 74460,
+  "raw_key_hex": "",
+  "declared_entries_total": 0,
+  "records_parsed": 0,
+  "field_definitions": [
+    {
+      "name": "CCCP",
+      "type": 3
+    },
+    {
+      "name": "CCPP",
+      "type": 3
+    },
+    {
+      "name": "CCRP",
+      "type": 3
+    },
+    {
+      "name": "CCRS",
+      "type": 3
+    },
+    {
+      "name": "CCRW",
+      "type": 3
+    },
+    {
+      "name": "PNid",
+      "type": 3
+    }
+  ],
+  "records": []
+}
