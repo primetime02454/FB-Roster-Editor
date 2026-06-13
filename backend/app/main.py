@@ -36,6 +36,10 @@ CFB27_ARCHETYPES_PATHS = (
     DATA_ROOT / "cfb27" / "CFB27-Archetypes.csv",
     DATA_ROOT / "CFB27-Archetypes.csv",
 )
+MADDEN27_ARCHETYPES_PATHS = (
+    DATA_ROOT / "madden27" / "M27-Archetypes.csv",
+    DATA_ROOT / "M27-Archetypes.csv",
+)
 SESSION_ROOT = Path(os.environ.get("FB_EDITOR_SESSION_ROOT") or (DATA_ROOT / "sessions")).resolve()
 FRONTEND_DIST = Path(os.environ.get("FB_EDITOR_FRONTEND_DIST") or (PROJECT_ROOT / "frontend" / "dist")).resolve()
 EXTERNAL_ASSET_ROOT = Path(os.environ.get("FB_EDITOR_EXTERNAL_ASSET_ROOT") or (PROJECT_ROOT / "frontend" / "public")).resolve()
@@ -283,9 +287,8 @@ def load_reference_options() -> Dict[str, List[Dict[str, str]]]:
         return {}
 
 
-@lru_cache(maxsize=1)
-def load_cfb27_archetype_options() -> List[Dict[str, str]]:
-    archetype_path = next((path for path in CFB27_ARCHETYPES_PATHS if path.exists()), None)
+def load_archetype_options_from_csv(paths: Iterable[Path]) -> List[Dict[str, str]]:
+    archetype_path = next((path for path in paths if path.exists()), None)
     if archetype_path is None:
         return []
 
@@ -294,10 +297,11 @@ def load_cfb27_archetype_options() -> List[Dict[str, str]]:
         reader = csv.DictReader(f)
         for row in reader:
             value = str(row.get("ENUV", "")).strip()
-            label = str(row.get("ARLN") or row.get("ARSN") or value).strip()
+            archetype_text = str(row.get("ARLN") or row.get("ARSN") or value).strip()
 
             if value == "":
                 continue
+            label = archetype_text if archetype_text.startswith(f"{value} - ") else f"{value} - {archetype_text}"
 
             options.append({
                 "label": label,
@@ -307,6 +311,16 @@ def load_cfb27_archetype_options() -> List[Dict[str, str]]:
     return options
 
 
+@lru_cache(maxsize=1)
+def load_cfb27_archetype_options() -> List[Dict[str, str]]:
+    return load_archetype_options_from_csv(CFB27_ARCHETYPES_PATHS)
+
+
+@lru_cache(maxsize=1)
+def load_madden27_archetype_options() -> List[Dict[str, str]]:
+    return load_archetype_options_from_csv(MADDEN27_ARCHETYPES_PATHS)
+
+
 def editor_select_options(table_name: str, roster_family: str = "college") -> Dict[str, List[Dict[str, str]]]:
     table_name = (table_name or "").upper()
 
@@ -314,6 +328,10 @@ def editor_select_options(table_name: str, roster_family: str = "college") -> Di
         if roster_family == "college":
             return {
                 "PLTY": load_cfb27_archetype_options(),
+            }
+        if roster_family == "madden":
+            return {
+                "PLTY": load_madden27_archetype_options(),
             }
         return {}
 

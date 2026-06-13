@@ -60,10 +60,24 @@ const POSITION_OPTIONS = [
   { id: 19, label: 'K' },
   { id: 20, label: 'P' },
 ];
-const PLAYER_POSITION_LABELS = Object.fromEntries(POSITION_OPTIONS.map(option => [String(option.id), option.label]));
+const PLAYER_POSITION_LABELS = Object.fromEntries(POSITION_OPTIONS.map(option => [String(option.id), option.label])); //Added by Primetime02454 6-13-26 (temporary archetype fix)
+const MADDEN27_ARCHETYPE_OPTIONS = [
+  'Field General', 'Strong Arm', 'Improviser', 'Scrambler', 'Elusive Back', 'Power Back',
+  'Elusive Back', 'Receiving Back', 'Receiving Back', 'Power Back', 'Elusive Back',
+  'Elusive Back', 'Blocking', 'Utility', 'Deep Threat', 'Playmaker', 'Receiving Back',
+  'Power Back', 'Elusive Back', 'Elusive Back', 'Physical', 'Slot', 'Blocking',
+  'Vertical Threat', 'Receiving Back', 'Power Back', 'Possession', 'Pass Protector',
+  'Power', 'Elusive Back', 'Agile', 'Pass Protector', 'Power', 'Elusive Back',
+  'Agile', 'Pass Protector', 'Elusive Back', 'Power', 'Agile', 'Speed Rusher',
+  'Power Rusher', 'Receiving Back', 'Run Stopper', 'Nose Tackle', 'Power Back',
+  'Speed Rusher', 'Power Rusher', 'Speed Rusher', 'Power Rusher', 'Pass Coverage',
+  'Run Stopper', 'Field General', 'Pass Coverage', 'Run Stopper', 'Man To Man',
+  'Slot', 'Zone', 'Elusive Back', 'Zone', 'Hybrid', 'Run Support', 'Accurate',
+  'Power', 'Balanced', 'Balanced', 'Power', 'Accurate', 'Gadget', '?',
+].map((label, value) => ({ label: `${value} - ${label}`, value: String(value) }));
 const PLAYER_INFO_SECTIONS = [
   { key: 'player-core', title: 'Player Data', columns: ['PFNA', 'PLNA', 'PGID', 'POID', 'TGID', 'PPOS', 'PLTY', 'POVR', 'PJEN'] },
-  { key: 'player-bio', title: 'Bio / Status', columns: ['PAGE', 'PHGT', 'PWGT', 'PYEA', 'PYRP', 'PRSD', 'PCOL', 'PHTN', 'PHSN', 'PHAN', 'PCPH', 'PIMP', 'PINJ', 'PYCF', 'PSXP', 'PGHE', 'PCMT'] },
+  { key: 'player-bio', title: 'Bio / Status', columns: ['PAGE', 'PHGT', 'PWGT', 'PYEA', 'PYRP', 'PRSD', 'PCOL', 'PHTN', 'PHSN', 'PHAN', 'PCPH', 'PINJ', 'PYCF', 'PSXP', 'PGHE', 'PCMT'] },
 ];
 
 const PLAYER_SECTION_DEFS = [
@@ -700,6 +714,10 @@ function displayValueForColumn(col, value) {
 function normalizePlayerClass(value) {
   const text = valueText(value);
   return ({ 0: 'Fr', 1: 'So', 2: 'Jr', 3: 'Sr', 4: 'RS' })[text] || text;
+}
+
+function normalizePlayerEXP(value) {
+  return valueText(value);
 }
 
 function isRedshirtStatus(value) {
@@ -2580,7 +2598,12 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
   }
 
   const record = data.records[0];
-  const editableColumns = data.columns.filter(c => !c.startsWith('__') && c !== 'TeamName' && c !== 'Position');
+  const editableColumns = data.columns.filter(c => (
+    !c.startsWith('__')
+    && c !== 'TeamName'
+    && c !== 'Position'
+    && !(kind === 'Player' && rosterFamily === 'madden' && ['PYEA', 'PRSD'].includes(c))
+  ));
   const orderedColumns = kind === 'Player'
     ? orderColumns(editableColumns, [...PLAYER_INFO_ORDER, ...PLAYER_MISC_ORDER, ...PLAYER_CONTRACT_ORDER])
     : orderColumns(editableColumns, [...TEAM_INFO_ORDER, ...TEAM_RATING_ORDER]);
@@ -2640,6 +2663,9 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
 
   const playerArchetype = optionLabelForColumn('PLTY', draftValues.PLTY ?? record?.PLTY ?? '');
   const playerClass = normalizePlayerClass(draftValues.PYEA ?? record?.PYEA ?? '');
+  const playerYearsPro = normalizePlayerEXP(draftValues.PYRP ?? record?.PYRP ?? '');
+  const playerClassLabel = rosterFamily === 'madden' ? 'Years Pro' : 'Class';
+  const playerClassDisplay = rosterFamily === 'madden' ? playerYearsPro : playerClass;
   const playerRedshirt = isRedshirtStatus(draftValues.PRSD ?? record?.PRSD ?? '0');
   const playerHeight = formatHeight(draftValues.PHGT ?? record?.PHGT ?? '');
   const playerWeight = formatWeight(draftValues.PWGT ?? record?.PWGT ?? '');
@@ -2732,6 +2758,23 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
     if (kind === 'Player' && col === 'PPOS') {
       return POSITION_OPTIONS.map(option => ({ label: option.label, value: String(option.id) }));
     }
+    if (kind === 'Player' && col === 'PLTY' && rosterFamily === 'madden') {
+      const selectOptions = editorMeta.selectOptions?.[col] || [];
+      const options = selectOptions.length ? selectOptions : MADDEN27_ARCHETYPE_OPTIONS;
+      const current = valueText(draftValues[col]);
+      const formatted = options.map(option => {
+        const optionValue = String(option.value);
+        const optionLabel = String(option.label ?? option.value ?? '');
+        return {
+          ...option,
+          label: optionLabel.startsWith(`${optionValue} - `) ? optionLabel : `${optionValue} - ${optionLabel}`,
+          value: optionValue,
+        };
+      });
+      return formatted.some(option => option.value === current)
+        ? formatted
+        : [{ label: `${current} (Current)`, value: current }, ...formatted];
+    }
     const fieldDefinition = editorMeta.fieldDefinitions?.[col] || editorMeta.field_definitions?.[col];
     if (fieldDefinition?.type === 'bool') {
       return [
@@ -2818,7 +2861,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
       }));
     }
     await refreshEditorCollections({ teamId: selectedTeam, position: selectedPosition, search: query });
-    setStatus?.(`Updated ${labelForField(editorMeta, col)}.`);
+    setStatus?.(`Updated ${labelForEditorField(col)}.`);
   }
 
   async function commitField(col) {
@@ -2871,8 +2914,16 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
     await patchColorFields(nextValues);
   }
 
+  function labelForEditorField(col) {
+    if (rosterFamily === 'madden') {
+      if (col === 'PYRP') return 'Years Pro';
+    }
+    return labelForField(editorMeta, col);
+  }
+
   function renderField(col) {
     const selectOptions = selectOptionsForColumn(col);
+    const fieldLabel = labelForEditorField(col);
     const isDisplayHeight = col === 'PHGT';
     const isDisplayWeight = col === 'PWGT';
     const spinnerFormat = isDisplayHeight
@@ -2887,7 +2938,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
         : (value => String(value ?? '').trim());
     return (
       <label key={col}>
-        <span>{labelForField(editorMeta, col)}</span>
+        <span>{fieldLabel}</span>
         <small>{col}</small>
         {selectOptions.length ? (
           <select
@@ -2895,7 +2946,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
             onChange={e => {
               const next = e.target.value;
               setDraftValues(current => ({ ...current, [col]: next }));
-              commitFieldValue(col, next).catch(err => setStatus?.(`Update ${labelForField(editorMeta, col)} failed: ${err.message}`));
+              commitFieldValue(col, next).catch(err => setStatus?.(`Update ${fieldLabel} failed: ${err.message}`));
             }}
           >
             {selectOptions.map(option => (
@@ -2916,7 +2967,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
           <input
             value={draftValues[col] ?? ''}
             onChange={e => setDraftValues(current => ({ ...current, [col]: e.target.value }))}
-            onBlur={() => commitField(col).catch(err => setStatus?.(`Update ${labelForField(editorMeta, col)} failed: ${err.message}`))}
+            onBlur={() => commitField(col).catch(err => setStatus?.(`Update ${fieldLabel} failed: ${err.message}`))}
           />
         )}
         {teamReferenceLabel(col, draftValues[col]) && !selectOptions.length && <em className="field-hint">{teamReferenceLabel(col, draftValues[col])}</em>}
@@ -3084,10 +3135,10 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
                               <strong>{playerArchetype}</strong>
                             </div>
                             <div>
-                              <span>Class</span>
+                              <span>{playerClassLabel}</span>
                               <strong className="player-class-value">
-                                <span>{playerClass}</span>
-                                {playerRedshirt && <img className="redshirt-icon" src="/RedShirt_Icon.svg" alt="Redshirt" title="Redshirt" />}
+                                <span>{playerClassDisplay}</span>
+                                {rosterFamily !== 'madden' && playerRedshirt && <img className="redshirt-icon" src="/RedShirt_Icon.svg" alt="Redshirt" title="Redshirt" />}
                               </strong>
                             </div>
                             <div>

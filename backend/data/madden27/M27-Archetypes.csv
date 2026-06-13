@@ -1,69 +1,70 @@
 ﻿ARLN,ARSN,ENUV
-QB - Pocket Passer,Pocket Passer,0
-QB - Strong Arm,Strong Arm,1
-QB - Backfield Creator,Backfield Creator,2
-QB - Dual Threat,Dual Threat,3
-QB - Pure Runner,Pure Runner,4
-HB - Contact Seeker,Contact Seeker,5
-HB - East/West Playmaker,East/West Playmaker,6
-HB - Backfield Threat,Backfield Threat,7
-HB - North/South Blocker,North/South Blocker,8
-HB - North/South Receiver,North/South Receiver,9
-HB - Elusive Bruiser,Elusive Bruiser,10
-HB - East/West Receiver,East/West Receiver,11
-FB - Blocking,Blocking,12
-FB - Utility,Utility,13
-WR - Speedster,Speedster,14
-WR - Route Artist,Route Artist,15
-WR - Physical Route Runner,Physical Route Runner,16
-WR - Elusive Route Runner,Elusive Route Runner,17
-WR - Gritty Possession,Gritty Possession,18
-WR - Gadget,Gadget,19
-WR - Contested Specialist,Contested Specialist,20
-WR - Slot,Slot,21
-TE - Pure Blocker,Pure Blocker,22
-TE - Vertical Threat,Vertical Threat,23
-TE - Physical Route Runner,Physical Route Runner,24
-TE - Gritty Possession,Gritty Possession,25
-TE - Pure Possession,Pure Possession,26
-C - Pass Protector,Pass Protector,27
-C - Raw Strength,Raw Strength,28
-C - Well Rounded,Well Rounded,29
-C - Agile,Agile,30
-OT - Pass Protector,Pass Protector,31
-OT - Raw Strength,Raw Strength,32
-OT - Well Rounded,Well Rounded,33
-OT - Agile,Agile,34
-G - Pass Protector,Pass Protector,35
-G - Well Rounded,Well Rounded,36
-G - Raw Strength,Raw Strength,37
-G - Agile,Agile,38
-EDGE - Speed Rusher,Speed Rusher,39
-EDGE - Power Rusher,Power Rusher,40
-EDGE - Pure Power,Pure Power,41
-EDGE - Edge Setter,Edge Setter,42
-DT - Gap Specialist,Gap Specialist,43
-DT - Pure Power,Pure Power,44
-DT - Speed Rusher,Speed Rusher,45
-DT - Power Rusher,Power Rusher,46
-DEPRECIATED,DEPRECIATED,47
-OLB - Signal Caller,Signal Caller,48
-OLB - Lurker,Lurker,49
-OLB - Thumper,Thumper,50
-MIKE - Signal Caller,Signal Caller,51
-MIKE - Lurker,Lurker,52
-MIKE - Thumper,Thumper,53
-CB - Bump and Run,Bump and Run,54
-CB - Boundary,Boundary,55
-CB - Zone,Zone,56
-CB - Field,Field,57
-S - Coverage Specialist,Coverage Specialist,58
-S - Hybrid,Hybrid,59
-S - Box Specialist,Box Specialist,60
-KP - Accurate,Accurate,61
-KP - Power,Power,62
-KR - Balanced,Balanced,63
-PR - Balanced,Balanced,64
-LS - Power,Power,65
-LS - Accurate,Accurate,66
-GAD - Gadget,Gadget,67
+Field General,Field General,0
+Strong Arm,Strong Arm,1
+Improviser,Improviser,2
+Scrambler,Scrambler,3
+Elusive Back,Elusive Back,4
+Power Back,Power Back,5
+Elusive Back,Elusive Back,6
+Receiving Back,Receiving Back,7
+Receiving Back,Receiving Back,8
+Power Back,Power Back,9
+Elusive Back,Elusive Back,10
+Elusive Back,Elusive Back,11
+Blocking,Blocking,12
+Utility,Utility,13
+Deep Threat,Deep Threat,14
+Playmaker,Playmaker,15
+Receiving Back,Receiving Back,16
+Power Back,Power Back,17
+Elusive Back,Elusive Back,18
+Elusive Back,Elusive Back,19
+Physical,Physical,20
+Slot,Slot,21
+Blocking,Blocking,22
+Vertical Threat,Vertical Threat,23
+Receiving Back,Receiving Back,24
+Power Back,Power Back,25
+Possession,Possession,26
+Pass Protector,Pass Protector,27
+Power,Power,28
+Elusive Back,Elusive Back,29
+Agile,Agile,30
+Pass Protector,Pass Protector,31
+Power,Power,32
+Elusive Back,Elusive Back,33
+Agile,Agile,34
+Pass Protector,Pass Protector,35
+Elusive Back,Elusive Back,36
+Power,Power,37
+Agile,Agile,38
+Speed Rusher,Speed Rusher,39
+Power Rusher,Power Rusher,40
+Receiving Back,Receiving Back,41
+Run Stopper,Run Stopper,42
+Nose Tackle,Nose Tackle,43
+Power Back,Power Back,44
+Speed Rusher,Speed Rusher,45
+Power Rusher,Power Rusher,46
+Speed Rusher,Speed Rusher,47
+Power Rusher,Power Rusher,48
+Pass Coverage,Pass Coverage,49
+Run Stopper,Run Stopper,50
+Field General,Field General,51
+Pass Coverage,Pass Coverage,52
+Run Stopper,Run Stopper,53
+Man To Man,Man To Man,54
+Slot,Slot,55
+Zone,Zone,56
+Elusive Back,Elusive Back,57
+Zone,Zone,58
+Hybrid,Hybrid,59
+Run Support,Run Support,60
+Accurate,Accurate,61
+Power,Power,62
+Balanced,Balanced,63
+Balanced,Balanced,64
+Power,Power,65
+Accurate,Accurate,66
+Gadget,Gadget,67
+?,?,68
