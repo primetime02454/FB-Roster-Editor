@@ -292,6 +292,23 @@ async function fetchJson(path, options = {}) {
 }
 
 async function downloadFile(path, fallbackName = 'download.bin') {
+  const { blob, filename } = await fetchDownloadBlob(path, fallbackName);
+  downloadBlob(blob, filename);
+  return { filename };
+}
+
+function downloadBlob(blob, filename = 'download.bin') {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function fetchDownloadBlob(path, fallbackName = 'download.bin') {
   const res = await fetchWithFallback(path);
   if (!res.ok) {
     let message = `${res.status} ${res.statusText}`;
@@ -304,16 +321,59 @@ async function downloadFile(path, fallbackName = 'download.bin') {
     throw error;
   }
   const blob = await res.blob();
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
   const disposition = res.headers.get('content-disposition') || '';
   const match = disposition.match(/filename="?([^"]+)"?/i);
-  link.href = url;
-  link.download = match?.[1] || fallbackName;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  return { blob, filename: match?.[1] || fallbackName };
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || '').split(',')[1] || '');
+    reader.onerror = () => reject(reader.error || new Error('Could not read file data.'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+// Running inside the pywebview desktop window? The WebView2 host does not
+// support browser blob downloads or the File System Access API picker, so
+// saves must go through the native Python bridge instead.
+function isDesktopApp() {
+  return typeof window !== 'undefined' && !!window.pywebview;
+}
+
+function getDesktopSaveApi() {
+  const api = (typeof window !== 'undefined' && window.pywebview && window.pywebview.api) || null;
+  if (!api) return null;
+  if (typeof api.save_download === 'function' || typeof api.save_file_as === 'function') return api;
+  return null;
+}
+
+// pywebview injects window.pywebview.api shortly after load; poll briefly so an
+// early click does not fall through to a non-functional browser code path.
+async function waitForDesktopSaveApi(timeoutMs = 4000) {
+  if (!isDesktopApp()) return null;
+  const ready = getDesktopSaveApi();
+  if (ready) return ready;
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    await new Promise(resolve => setTimeout(resolve, 50));
+    const api = getDesktopSaveApi();
+    if (api) return api;
+  }
+  return getDesktopSaveApi();
+}
+
+// Save a server file to disk through the native desktop dialog. Prefers
+// save_download (Python fetches the bytes itself) and falls back to streaming
+// the blob through the bridge as base64 for older desktop builds.
+async function nativeSaveFromServer(api, path, fallbackName) {
+  if (typeof api.save_download === 'function') {
+    return api.save_download(apiUrl(path), fallbackName);
+  }
+  const { blob, filename } = await fetchDownloadBlob(path, fallbackName);
+  const base64 = await blobToBase64(blob);
+  return api.save_file_as(filename || fallbackName, base64);
 }
 
 function valueText(value) {
@@ -325,6 +385,8 @@ function valueText(value) {
 function parsePossibleJson(text) {
   const t = String(text ?? '').trim();
   if (!t) return '';
+  if (t.toLowerCase() === 'true') return true;
+  if (t.toLowerCase() === 'false') return false;
   if ((t.startsWith('{') && t.endsWith('}')) || (t.startsWith('[') && t.endsWith(']'))) {
     try { return JSON.parse(t); } catch {}
   }
@@ -799,6 +861,7 @@ function App() {
   const [tableListQuery, setTableListQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [tableLoadingProgress, setTableLoadingProgress] = useState(null);
+  const [operationProgress, setOperationProgress] = useState(null);
   const [status, setStatus] = useState('Open a roster DB to begin.');
   const [selectedCell, setSelectedCell] = useState(null);
   const [tableMeta, setTableMeta] = useState({ labels: {} });
@@ -821,6 +884,7 @@ function App() {
   const menuBarRef = useRef(null);
   const mobileNavRef = useRef(null);
   const autosaveTimerRef = useRef(null);
+  const operationProgressTimerRef = useRef(null);
   const tableRequestSeqRef = useRef(0);
   const tablePageCacheRef = useRef(new Map());
   const tableMetaCacheRef = useRef(new Map());
@@ -830,6 +894,27 @@ function App() {
   const topBarStatus = loading ? 'Working...' : status;
   const franchiseSession = session?.session_kind === 'franchise';
   const visualsUnsupported = session?.visuals?.supported === false;
+
+  function beginOperationProgress(label) {
+    if (operationProgressTimerRef.current) window.clearInterval(operationProgressTimerRef.current);
+    setOperationProgress({ label, value: 6 });
+    operationProgressTimerRef.current = window.setInterval(() => {
+      setOperationProgress(current => {
+        if (!current) return current;
+        const cap = current.value < 35 ? 35 : current.value < 70 ? 70 : 92;
+        return { ...current, value: Math.min(cap, current.value + Math.max(1, Math.round((cap - current.value) * 0.18))) };
+      });
+    }, 350);
+  }
+
+  function finishOperationProgress() {
+    if (operationProgressTimerRef.current) {
+      window.clearInterval(operationProgressTimerRef.current);
+      operationProgressTimerRef.current = null;
+    }
+    setOperationProgress(current => current ? { ...current, value: 100 } : current);
+    window.setTimeout(() => setOperationProgress(null), 260);
+  }
 
   const playTable = useMemo(() => tables.find(t => t.name === 'PLAY' || t.path?.endsWith('.PLAY'))?.path, [tables]);
   const teamTable = useMemo(() => tables.find(t => t.name === 'TEAM' || t.path?.endsWith('.TEAM'))?.path, [tables]);
@@ -945,12 +1030,16 @@ function App() {
     if (autosaveTimerRef.current) {
       window.clearTimeout(autosaveTimerRef.current);
     }
+    if (operationProgressTimerRef.current) {
+      window.clearInterval(operationProgressTimerRef.current);
+    }
   }, []);
 
   async function onOpenFile(file) {
     if (!file) return;
     setLoading(true);
     setStatus(`Parsing ${file.name}...`);
+    beginOperationProgress(`Opening ${file.name}...`);
     try {
       const form = new FormData();
       form.append('file', file);
@@ -964,12 +1053,14 @@ function App() {
     } finally {
       if (fileRef.current) fileRef.current.value = '';
       setLoading(false);
+      finishOperationProgress();
     }
   }
 
   async function parseSample() {
     setLoading(true);
     setStatus('Parsing bundled sample roster...');
+    beginOperationProgress('Opening sample roster...');
     try {
       const data = await fetchJson('/parse-sample', { method: 'POST' });
       applySession(data);
@@ -978,6 +1069,7 @@ function App() {
       setStatus(`Sample parse failed: ${err.message}`);
     } finally {
       setLoading(false);
+      finishOperationProgress();
     }
   }
 
@@ -989,6 +1081,7 @@ function App() {
       : `/session/${session.session_id}/import/all-csv`;
     setLoading(true);
     setStatus(`Importing ${file.name}...`);
+    beginOperationProgress(`Importing ${file.name}...`);
     try {
       const form = new FormData();
       form.append('file', file);
@@ -1002,6 +1095,7 @@ function App() {
     } finally {
       if (csvBundleRef.current) csvBundleRef.current.value = '';
       setLoading(false);
+      finishOperationProgress();
     }
   }
 
@@ -1131,12 +1225,83 @@ function App() {
   async function downloadSessionFile(path, fallbackName) {
     setLoading(true);
     try {
-      await downloadFile(path, fallbackName);
-      setStatus(`Downloaded ${fallbackName}.`);
+      // Desktop window: browser blob downloads do not work in WebView2, so
+      // write to disk through the native save dialog instead.
+      if (isDesktopApp()) {
+        const api = await waitForDesktopSaveApi();
+        if (!api) throw new Error('Desktop save bridge is not ready. Try again in a moment.');
+        beginOperationProgress(`Saving ${fallbackName}...`);
+        const result = await nativeSaveFromServer(api, path, fallbackName);
+        if (result?.cancelled) {
+          setStatus('Save cancelled.');
+          return;
+        }
+        if (!result?.ok) throw new Error(result?.error || 'Save failed.');
+        setStatus(`Saved ${result.path}.`);
+        return;
+      }
+      beginOperationProgress(`Saving ${fallbackName}...`);
+      const out = await downloadFile(path, fallbackName);
+      setStatus(`Downloaded ${out.filename || fallbackName}.`);
     } catch (err) {
-      setStatus(`Download failed: ${err.message}`);
+      setStatus(`Save failed: ${err.message}`);
     } finally {
       setLoading(false);
+      finishOperationProgress();
+    }
+  }
+
+  async function saveSessionFileAs(path, fallbackName) {
+    let browserHandle = null;
+    setLoading(true);
+    try {
+      const desktop = isDesktopApp();
+      // Browser only: capture the file picker synchronously inside the click
+      // gesture before any awaited work. WebView2 does not support this API.
+      if (!desktop && window.showSaveFilePicker) {
+        try {
+          browserHandle = await window.showSaveFilePicker({ suggestedName: fallbackName });
+        } catch (err) {
+          if (err?.name === 'AbortError') {
+            setStatus('Save As cancelled.');
+            return;
+          }
+          browserHandle = null; // picker unavailable here; fall back to a normal download
+        }
+      }
+      beginOperationProgress(`Preparing ${fallbackName}...`);
+      if (desktop) {
+        const api = await waitForDesktopSaveApi();
+        if (!api) throw new Error('Desktop save bridge is not ready. Try again in a moment.');
+        const result = await nativeSaveFromServer(api, path, fallbackName);
+        if (result?.cancelled) {
+          setStatus('Save As cancelled.');
+          return;
+        }
+        if (!result?.ok) throw new Error(result?.error || 'Save As failed.');
+        setStatus(`Saved as ${result.path}.`);
+        return;
+      }
+      const { blob, filename } = await fetchDownloadBlob(path, fallbackName);
+      const suggestedName = filename || fallbackName;
+      if (browserHandle) {
+        const writable = await browserHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        setStatus(`Saved as ${browserHandle.name}.`);
+        return;
+      }
+      downloadBlob(blob, suggestedName);
+      setStatus(`Downloaded ${suggestedName}.`);
+    } catch (err) {
+      if (err?.name === 'AbortError') {
+        setStatus('Save As cancelled.');
+      } else {
+        setStatus(`Save As failed: ${err.message}`);
+      }
+    } finally {
+      setLoading(false);
+      finishOperationProgress();
     }
   }
 
@@ -1149,10 +1314,30 @@ function App() {
   const currentCsvImportDisabled = !session || view === 'visuals' || !currentTable;
   const currentJsonImportDisabled = !session || (view !== 'visuals' && !currentTable);
 
+  function openedFileStem() {
+    const name = session?.input_file || 'roster';
+    return name.replace(/\.[^.]+$/, '') || 'roster';
+  }
+
+  function saveFilename(label = 'edited') {
+    const extension = session?.session_kind === 'franchise'
+      ? (session.input_file?.match(/\.[^.]+$/)?.[0] || '.FTC')
+      : '.db';
+    return `${openedFileStem()}_${label}${extension}`;
+  }
+
+  function saveCompressedWithChoice() {
+    const game = window.prompt('Compression/game target: CFB 27, Madden 27, Madden 26, Madden 25, or Same', 'Same');
+    if (game === null) return;
+    const query = encodeURIComponent(game.trim() || 'Same');
+    downloadSessionFile(`/session/${session.session_id}/save-compressed?game=${query}`, saveFilename('compressed'));
+  }
+
   async function loadExistingSession(sessionId) {
     if (!sessionId) return;
     setLoading(true);
     setStatus(`Loading session ${sessionId}...`);
+    beginOperationProgress('Loading roster session...');
     try {
       const data = await fetchJson(`/session/${sessionId}`);
       applySession(data);
@@ -1165,6 +1350,7 @@ function App() {
       }
     } finally {
       setLoading(false);
+      finishOperationProgress();
     }
   }
 
@@ -1385,10 +1571,11 @@ function App() {
         { label: 'Open...', disabled: false, action: () => fileRef.current?.click() },
         { label: 'Open Sample', disabled: false, action: parseSample },
         { type: 'separator' },
-        { label: 'Save DB', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/save-roster.db`, 'roster.db') },
-        { label: 'Save Raw', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/save-raw.db`, 'roster_raw.db') },
-        { label: 'Save Compressed', disabled: !session || franchiseSession || session.input_container !== 'fbchunks', action: () => downloadSessionFile(`/session/${session.session_id}/save-compressed`, 'roster_wrapped') },
-        { label: 'Save As DB', disabled: !session || franchiseSession, action: () => downloadSessionFile(`/session/${session.session_id}/save-roster.db`, 'roster.db') },
+        { label: 'Save', disabled: !session, action: () => downloadSessionFile(`/session/${session.session_id}/save`, saveFilename('edited')) },
+        { label: 'Save As', disabled: !session, action: () => saveSessionFileAs(`/session/${session.session_id}/save-as`, saveFilename('save_as')) },
+        { label: 'Save Raw', disabled: !session, action: () => downloadSessionFile(`/session/${session.session_id}/save-raw.db`, saveFilename('raw')) },
+        { label: 'Save Compressed', disabled: !session, action: saveCompressedWithChoice },
+        { label: 'Save As DB', disabled: !session, action: () => saveSessionFileAs(`/session/${session.session_id}/save-roster.db`, saveFilename('db')) },
         { label: 'Save As JSON', disabled: !session, action: () => downloadSessionFile(`/session/${session.session_id}/save-project.json`, 'madden_roster_editor_project.json') },
       ],
     },
@@ -1496,6 +1683,17 @@ function App() {
           <input ref={jsonImportRef} className="file-input" type="file" accept=".json,application/json" onChange={e => importCurrentJson(e.target.files?.[0])} />
           <input ref={visualsJsonRef} className="file-input" type="file" accept=".json,application/json" onChange={e => importVisualsJson(e.target.files?.[0])} />
         </nav>
+        {operationProgress && (
+          <div className="global-loading-progress" role="status" aria-live="polite">
+            <div className="table-loading-progress-card">
+              <strong>{operationProgress.label}</strong>
+              <span>{Math.round(operationProgress.value)}%</span>
+              <div className="table-loading-progress-track">
+                <div style={{ width: `${clampNumber(operationProgress.value, 0, 100)}%` }} />
+              </div>
+            </div>
+          </div>
+        )}
         {mobileNavOpen && (
           <div className="mobile-nav-panel" ref={mobileNavRef}>
             <div className="mobile-nav-menus">
@@ -1732,6 +1930,13 @@ function TableView({
   const visibleColumns = data.columns.filter(isVisibleTableColumn);
   const filterableColumns = visibleColumns;
   const showLabel = column => displayLabel(column, columnLabels);
+  const fieldDefinitionMap = useMemo(() => {
+    const out = {};
+    for (const field of data.field_definitions || data.fieldDefinitions || []) {
+      if (field?.name) out[String(field.name)] = field;
+    }
+    return out;
+  }, [data.field_definitions, data.fieldDefinitions]);
   const searchPlaceholder = selectionScope === 'visuals' ? 'Search visuals...' : 'Search table...';
   const totalRows = data.records.length;
   const virtualStart = clampNumber(Math.floor(scrollTop / TABLE_ROW_HEIGHT) - TABLE_OVERSCAN, 0, totalRows);
@@ -1794,6 +1999,37 @@ function TableView({
       filterColumn: '',
       filterValue: '',
     });
+  }
+
+  function selectOptionsForCell(column) {
+    const field = fieldDefinitionMap[column];
+    if (!field) return [];
+    if (field.type === 'bool') {
+      return [
+        { label: 'False', value: 'false' },
+        { label: 'True', value: 'true' },
+      ];
+    }
+    const enumOptions = field.enumOptions || field.enum_options || [];
+    if (enumOptions.length > 0 && enumOptions.length <= 250) {
+      return enumOptions.map(option => ({
+        label: option.label ?? option.value,
+        value: String(option.value ?? option.label ?? ''),
+      }));
+    }
+    return [];
+  }
+
+  function valueForSelect(value) {
+    if (value === true) return 'true';
+    if (value === false) return 'false';
+    return valueText(value);
+  }
+
+  function parseSelectValue(column, value) {
+    const field = fieldDefinitionMap[column];
+    if (field?.type === 'bool') return value === 'true';
+    return value;
   }
 
   return (
@@ -1904,11 +2140,12 @@ function TableView({
                   {visibleColumns.map(column => {
                     const readonly = isReadonlyColumn(column);
                     const selected = selectedCell?.scope === selectionScope && selectedCell?.rowIndex === rowId && selectedCell?.column === column;
+                    const selectOptions = readonly ? [] : selectOptionsForCell(column);
                     return (
                       <td
                         key={column}
                         className={`${readonly ? 'readonly' : ''} ${selected ? 'selected' : ''}`}
-                        contentEditable={!readonly}
+                        contentEditable={!readonly && !selectOptions.length}
                         suppressContentEditableWarning
                         onFocus={() => setSelectedCell({ scope: selectionScope, rowIndex: rowId, column })}
                         onClick={() => setSelectedCell({ scope: selectionScope, rowIndex: rowId, column })}
@@ -1922,7 +2159,20 @@ function TableView({
                         }}
                         title={valueText(row[column])}
                       >
-                        {valueText(row[column])}
+                        {selectOptions.length ? (
+                          <select
+                            className="cell-select"
+                            value={valueForSelect(row[column])}
+                            onChange={event => {
+                              const next = parseSelectValue(column, event.target.value);
+                              onCellCommit(rowId, column, next);
+                            }}
+                          >
+                            {selectOptions.map(option => (
+                              <option key={`${column}-${option.value}`} value={option.value}>{option.label}</option>
+                            ))}
+                          </select>
+                        ) : valueText(row[column])}
                       </td>
                     );
                   })}
@@ -2030,6 +2280,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
   const [gearValues, setGearValues] = useState({});
   const [visualOptions, setVisualOptions] = useState({});
   const [bootstrapping, setBootstrapping] = useState(false);
+  const [recordLoading, setRecordLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('info');
   const [navScrollTop, setNavScrollTop] = useState(0);
   const [navViewportHeight, setNavViewportHeight] = useState(600);
@@ -2261,6 +2512,9 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
 
   async function loadRecord(rowIndex, requestSeq = ++requestSeqRef.current) {
     if (rowIndex === '' || rowIndex === undefined || rowIndex === null) return;
+    setSelectedRowIndex(String(rowIndex));
+    if (kind === 'Team') setSelectedTeam(String(rowIndex));
+    setRecordLoading(true);
     const q = new URLSearchParams({ offset: rowIndex, limit: 1, search: '' });
     try {
       const out = await fetchJson(`/session/${session.session_id}/table/${encodeURIComponent(tablePath)}?${q}`);
@@ -2296,6 +2550,8 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
         return;
       }
       setStatus?.(`Load ${kind.toLowerCase()} failed: ${err.message}`);
+    } finally {
+      if (requestSeq === requestSeqRef.current) setRecordLoading(false);
     }
   }
 
@@ -2470,6 +2726,24 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
     if (kind === 'Player' && col === 'PPOS') {
       return POSITION_OPTIONS.map(option => ({ label: option.label, value: String(option.id) }));
     }
+    const fieldDefinition = editorMeta.fieldDefinitions?.[col] || editorMeta.field_definitions?.[col];
+    if (fieldDefinition?.type === 'bool') {
+      return [
+        { label: 'False', value: 'false' },
+        { label: 'True', value: 'true' },
+      ];
+    }
+    const enumOptions = fieldDefinition?.enumOptions || fieldDefinition?.enum_options || [];
+    if (enumOptions.length > 0 && enumOptions.length <= 250) {
+      const current = valueText(draftValues[col]);
+      const options = enumOptions.map(option => ({
+        label: option.label ?? option.value,
+        value: String(option.value ?? option.label ?? ''),
+      }));
+      return options.some(option => option.value === current)
+        ? options
+        : [{ label: `${current} (Current)`, value: current }, ...options];
+    }
     if (kind !== 'Team') return [];
     if (TEAM_RIVAL_COLUMNS.includes(col)) {
       const current = valueText(draftValues[col]);
@@ -2500,14 +2774,34 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
   async function commitFieldValue(col, rawValue) {
     if (!record) return;
     const nextValue = parsePossibleJson(rawValue);
-    if (String(valueText(record[col])) === String(rawValue)) return;
+    const previousValue = record[col];
+    if (valueText(previousValue) === valueText(nextValue)) return;
     const currentRowIndex = record.__rowIndex;
     await patchCell(tablePath, record.__rowIndex, col, nextValue);
+    setDraftValues(current => ({ ...current, [col]: valueText(nextValue) }));
     setData(current => ({
       ...current,
       records: current.records.map(r => r.__rowIndex === currentRowIndex ? { ...r, [col]: nextValue } : r),
     }));
+    if (kind === 'Team') {
+      setTeamOptions(current => current.map(option => {
+        if (String(option.rowIndex) !== String(currentRowIndex)) return option;
+        const nextOption = { ...option };
+        if (col === 'TDNA') nextOption.label = valueText(nextValue);
+        if (col === 'TMNC') nextOption.nickname = valueText(nextValue);
+        if (col === 'TGID') nextOption.teamId = nextValue;
+        if (col === 'TROV') nextOption.ovr = nextValue;
+        if (['TBCR', 'TBCG', 'TBCB'].includes(col)) {
+          nextOption.primaryColor = { ...(nextOption.primaryColor || {}), [col === 'TBCR' ? 'r' : col === 'TBCG' ? 'g' : 'b']: nextValue };
+        }
+        if (['TB2R', 'TB2G', 'TB2B'].includes(col)) {
+          nextOption.secondaryColor = { ...(nextOption.secondaryColor || {}), [col === 'TB2R' ? 'r' : col === 'TB2G' ? 'g' : 'b']: nextValue };
+        }
+        return nextOption;
+      }));
+    }
     await refreshEditorCollections({ teamId: selectedTeam, position: selectedPosition, search: query });
+    setStatus?.(`Updated ${labelForField(editorMeta, col)}.`);
   }
 
   async function commitField(col) {
@@ -2605,7 +2899,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
           <input
             value={draftValues[col] ?? ''}
             onChange={e => setDraftValues(current => ({ ...current, [col]: e.target.value }))}
-            onBlur={() => commitField(col)}
+            onBlur={() => commitField(col).catch(err => setStatus?.(`Update ${labelForField(editorMeta, col)} failed: ${err.message}`))}
           />
         )}
         {teamReferenceLabel(col, draftValues[col]) && !selectOptions.length && <em className="field-hint">{teamReferenceLabel(col, draftValues[col])}</em>}
@@ -2619,7 +2913,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
 
   return (
     <section className={`panel fullheight editor-page editor-page-${kind.toLowerCase()}`}>
-      {!record ? <div className="empty">{bootstrapping ? `Loading ${kind.toLowerCase()} editor...` : 'No record selected.'}</div> : (
+      {!record ? <div className="empty">{bootstrapping || recordLoading ? `Loading ${kind.toLowerCase()} editor...` : 'No record selected.'}</div> : (
           <div className="editor-shell">
             <aside className="editor-nav">
             <div className="nav-controls">
@@ -2720,6 +3014,7 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
             </div>
             </aside>
             <div className="editor-content" ref={editorContentRef}>
+              {recordLoading && <div className="editor-loading-banner">Loading {kind.toLowerCase()}...</div>}
               <div className="identity-card compact-identity" style={{ background: texturedTeamBackground(currentRecordTeamOption, 'rgba(20, 22, 25, .82)') }}>
                 <div className="identity-main">
                   <div className="identity-title-group">

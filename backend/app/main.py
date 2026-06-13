@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import threading
 import uuid
 import zipfile
 import xml.etree.ElementTree as ET
@@ -50,6 +51,8 @@ NODE_EXECUTABLE_CANDIDATES = [
     (BACKEND_ROOT / "bin" / "node.exe").resolve(),
     (BACKEND_ROOT / "node.exe").resolve(),
 ]
+JSON_FILE_LOCKS: Dict[str, threading.RLock] = {}
+JSON_FILE_LOCKS_GUARD = threading.Lock()
 
 
 def cfb27_dynasty_files_root() -> Optional[Path]:
@@ -632,14 +635,14 @@ def franchise_table_meta_file(base: Path, table_meta: Dict[str, Any]) -> Path:
     return base / "parse" / f"{re.sub(r'[^A-Za-z0-9_-]+', '_', table_meta['path'])}.table-meta.json"
 
 
-def ensure_franchise_table_exported(session_id: str, table_path: str) -> None:
+def ensure_franchise_table_exported(session_id: str, table_path: str, *, force: bool = False) -> None:
     meta = session_metadata(session_id)
     if meta.get("session_kind") != "franchise":
         return
     base = sdir(session_id)
     table = table_meta(session_id, table_path)
     json_path = base / "parse" / table["json_file"]
-    if json_path.exists():
+    if json_path.exists() and not force:
         return
     table_meta_path = franchise_table_meta_file(base, table)
     write_json(table_meta_path, table)
@@ -878,20 +881,51 @@ def sdir(session_id: str) -> Path:
 
 
 def read_json(path: Path) -> Any:
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+    lock = json_file_lock(path)
+    with lock:
+        with path.open("r", encoding="utf-8") as f:
+            return json.load(f)
+
+
+def json_file_lock(path: Path) -> threading.RLock:
+    key = str(path.resolve())
+    with JSON_FILE_LOCKS_GUARD:
+        lock = JSON_FILE_LOCKS.get(key)
+        if lock is None:
+            lock = threading.RLock()
+            JSON_FILE_LOCKS[key] = lock
+        return lock
+
+
+def write_json_atomic(path: Path, value: Any, *, minified: bool = False) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lock = json_file_lock(path)
+    with lock:
+        fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=str(path.parent))
+        tmp_path = Path(tmp_name)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                if minified:
+                    json.dump(value, f, ensure_ascii=False, separators=(",", ":"))
+                else:
+                    json.dump(value, f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, path)
+        except Exception:
+            try:
+                tmp_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+            raise
 
 
 def write_json(path: Path, value: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
-        json.dump(value, f, ensure_ascii=False, indent=2)
+    write_json_atomic(path, value, minified=False)
 
 
 def write_minified_json(path: Path, value: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
-        json.dump(value, f, ensure_ascii=False, separators=(",", ":"))
+    write_json_atomic(path, value, minified=True)
 
 
 def rebuild_classic_h2_from_visuals_json(visuals_json_path: Path, original_h2_path: Path, output_h2_path: Path) -> Dict[str, Any]:
@@ -955,7 +989,20 @@ def table_json_path(session_id: str, table_path: str) -> Path:
 
 def load_table_obj(session_id: str, table_path: str) -> Dict[str, Any]:
     ensure_franchise_table_exported(session_id, table_path)
-    return read_json(table_json_path(session_id, table_path))
+    json_path = table_json_path(session_id, table_path)
+    try:
+        return read_json(json_path)
+    except json.JSONDecodeError as exc:
+        meta = session_metadata(session_id)
+        if meta.get("session_kind") != "franchise":
+            raise HTTPException(500, f"Table JSON is corrupt: {exc}") from exc
+        corrupt_path = json_path.with_suffix(f"{json_path.suffix}.corrupt-{uuid.uuid4().hex[:8]}")
+        try:
+            json_path.replace(corrupt_path)
+        except OSError:
+            pass
+        ensure_franchise_table_exported(session_id, table_path, force=True)
+        return read_json(json_path)
 
 
 def sanitize_table_obj(obj: Dict[str, Any]) -> Dict[str, Any]:
@@ -986,6 +1033,61 @@ def save_table_obj(session_id: str, table_path: str, obj: Dict[str, Any]) -> Non
     obj = sanitize_table_obj(obj)
     write_json(table_json_path(session_id, table_path), obj)
     get_team_lookup.cache_clear()
+
+
+def field_definitions_by_name(obj: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    return {
+        str(field.get("name")): field
+        for field in obj.get("field_definitions", [])
+        if field.get("name")
+    }
+
+
+def mirror_existing_field(record: Dict[str, Any], source: str, targets: Iterable[str]) -> None:
+    if source not in record:
+        return
+    for target in targets:
+        if target in record:
+            record[target] = record[source]
+
+
+def mirror_franchise_aliases(table_path: str, record: Dict[str, Any], changed_column: Optional[str] = None) -> None:
+    table_name = table_path.split(".")[-1].upper()
+    if table_name == "TEAM":
+        alias_targets = {
+            "TDNA": ("DisplayName",),
+            "TMNC": ("DisplayName",),
+            "TDLN": ("LongName",),
+            "TDAN": ("AssetName",),
+            "TABB": ("ShortName",),
+            "TGID": ("TeamIndex",),
+            "TROV": ("TEAM_RATINGOVR",),
+            "TROF": ("TEAM_RATINGOFF",),
+            "TRDE": ("TEAM_RATINGDEF",),
+            "TBCR": ("TEAM_BACKGROUNDCOLORR", "HubBackgroundColorR"),
+            "TBCG": ("TEAM_BACKGROUNDCOLORG", "HubBackgroundColorG"),
+            "TBCB": ("TEAM_BACKGROUNDCOLORB", "HubBackgroundColorB"),
+            "TB2R": ("TEAM_BACKGROUNDCOLORR2", "TEAM_LOGO_SECONDARYR"),
+            "TB2G": ("TEAM_BACKGROUNDCOLORG2", "TEAM_LOGO_SECONDARYG"),
+            "TB2B": ("TEAM_BACKGROUNDCOLORB2", "TEAM_LOGO_SECONDARYB"),
+        }
+    elif table_name == "PLAY":
+        alias_targets = {
+            "PFNA": ("FirstName",),
+            "PLNA": ("LastName",),
+            "POVR": ("OverallRating",),
+            "PPOS": ("Position",),
+            "PJEN": ("JerseyNum",),
+            "JNUM": ("JerseyNum",),
+            "TGID": ("TeamIndex",),
+        }
+    else:
+        return
+    if changed_column:
+        mirror_existing_field(record, changed_column, alias_targets.get(changed_column, ()))
+        return
+    for source, targets in alias_targets.items():
+        mirror_existing_field(record, source, targets)
 
 
 def collect_columns(records: Iterable[Dict[str, Any]]) -> List[str]:
@@ -2637,13 +2739,20 @@ def get_editor_meta(session_id: str, table_name: str):
             "table": table_name,
             "labels": {},
             "selectOptions": editor_select_options(table_name),
+            "fieldDefinitions": {},
             "gearFields": player_gear_fields(session_id) if table_name.upper() == "PLAY" else [],
         }
     labels = get_field_labels_for_table(meta["name"])
+    try:
+        table_obj = load_table_obj(session_id, meta["path"])
+        definitions = field_definitions_by_name(table_obj)
+    except Exception:
+        definitions = {}
     return {
         "table": meta["name"],
         "labels": labels,
         "selectOptions": editor_select_options(meta["name"]),
+        "fieldDefinitions": definitions,
         "gearFields": player_gear_fields(session_id) if meta["name"].upper() == "PLAY" else [],
     }
 
@@ -2714,7 +2823,15 @@ def get_table(
     columns = table_columns(session_id, table_path, obj)
     if "__rowIndex" not in columns:
         columns.insert(0, "__rowIndex")
-    return {"path": table_path, "offset": offset, "limit": limit, "total": total, "columns": columns, "records": page}
+    return {
+        "path": table_path,
+        "offset": offset,
+        "limit": limit,
+        "total": total,
+        "columns": columns,
+        "field_definitions": obj.get("field_definitions", []),
+        "records": page,
+    }
 
 
 @app.get("/api/session/{session_id}/table-json/{table_path:path}")
@@ -2730,6 +2847,8 @@ def update_cell(session_id: str, edit: CellEdit):
         raise HTTPException(400, "row_index out of range")
     before = records[edit.row_index].get(edit.column)
     records[edit.row_index][edit.column] = edit.value
+    if session_metadata(session_id).get("session_kind") == "franchise":
+        mirror_franchise_aliases(edit.table_path, records[edit.row_index], edit.column)
     save_table_obj(session_id, edit.table_path, obj)
     log_path = sdir(session_id) / "edit_log.jsonl"
     with log_path.open("a", encoding="utf-8") as f:
@@ -2759,6 +2878,8 @@ def paste_grid(session_id: str, req: BulkPasteRequest):
                 continue
             before = records[target_row].get(col)
             records[target_row][col] = value
+            if session_metadata(session_id).get("session_kind") == "franchise":
+                mirror_franchise_aliases(req.table_path, records[target_row], col)
             changes.append({"row": target_row, "column": col, "before": before, "after": value})
     save_table_obj(session_id, req.table_path, obj)
     return {"ok": True, "changes": len(changes)}
@@ -2782,6 +2903,8 @@ def find_replace(session_id: str, req: ReplaceRequest):
             hay = s if req.match_case else s.lower()
             if find in hay:
                 rec[col] = s.replace(req.find, req.replace) if req.match_case else replace_case_insensitive(s, req.find, req.replace)
+                if session_metadata(session_id).get("session_kind") == "franchise":
+                    mirror_franchise_aliases(req.table_path, rec, col)
                 replaced += 1
     save_table_obj(session_id, req.table_path, obj)
     return {"ok": True, "replacements": replaced}
@@ -3255,14 +3378,24 @@ def save_roster_db(session_id: str):
     return save_roster_variant(session_id, "default")
 
 
+@app.get("/api/session/{session_id}/save")
+def save_roster_same_format(session_id: str):
+    return save_roster_variant(session_id, "default")
+
+
 @app.get("/api/session/{session_id}/save-raw.db")
 def save_roster_raw(session_id: str):
     return save_roster_variant(session_id, "raw")
 
 
 @app.get("/api/session/{session_id}/save-compressed")
-def save_roster_compressed(session_id: str):
+def save_roster_compressed(session_id: str, game: str = Query("same")):
     return save_roster_variant(session_id, "wrapped")
+
+
+@app.get("/api/session/{session_id}/save-as")
+def save_roster_as(session_id: str):
+    return save_roster_variant(session_id, "default")
 
 
 def save_roster_variant(session_id: str, mode: str):
@@ -3274,7 +3407,7 @@ def save_roster_variant_to_path(session_id: str, mode: str, output_path: Optiona
     base = sdir(session_id)
     meta = session_metadata(session_id)
     if meta.get("session_kind") == "franchise":
-        raise HTTPException(400, "Franchise save/export write-back is not enabled yet.")
+        return save_franchise_variant_to_path(session_id, mode, output_path, clear_autosave=clear_autosave)
     raw_input_path = base / meta.get("parse_input_file", meta.get("input_file", "roster.db"))
     if not raw_input_path.exists():
         raise HTTPException(500, "Original roster DB is missing for this session.")
@@ -3291,7 +3424,7 @@ def save_roster_variant_to_path(session_id: str, mode: str, output_path: Optiona
             run_hc09_save_bridge(session_id, "raw", raw_out_path)
             if clear_autosave:
                 clear_autosave_file(session_id)
-            return raw_out_path
+                return raw_out_path
         raise HTTPException(400, f"Unsupported save mode: {effective_mode}")
     if should_use_tdb_bridge(meta):
         raw_out_path = output_path or (base / f"{Path(meta.get('input_file', 'roster')).stem}_edited_raw.db")
@@ -3372,6 +3505,58 @@ def save_roster_variant_to_path(session_id: str, mode: str, output_path: Optiona
             clear_autosave_file(session_id)
         return wrapped_out_path
     raise HTTPException(400, f"Unsupported save mode: {effective_mode}")
+
+
+def franchise_summary_path(session_id: str) -> Path:
+    base = sdir(session_id)
+    meta = session_metadata(session_id)
+    return base / "parse" / f"{meta.get('input_stem', Path(str(meta.get('input_file', 'franchise'))).stem)}_summary.json"
+
+
+def save_franchise_variant_to_path(session_id: str, mode: str, output_path: Optional[Path] = None, *, clear_autosave: bool = True) -> Path:
+    base = sdir(session_id)
+    meta = session_metadata(session_id)
+    input_name = meta.get("parse_input_file") or meta.get("input_file")
+    if not input_name:
+        raise HTTPException(500, "Original franchise file is missing from the session metadata.")
+    input_path = base / input_name
+    if not input_path.exists():
+        raise HTTPException(500, "Original franchise file is missing for this session.")
+    summary_path = franchise_summary_path(session_id)
+    if not summary_path.exists():
+        raise HTTPException(500, "Franchise table summary is missing for this session.")
+    parse_dir = base / "parse"
+    stem = Path(meta.get("input_file", input_path.name)).stem
+    suffix = Path(meta.get("input_file", input_path.name)).suffix or ".FTC"
+    effective_mode = default_save_mode(meta) if mode == "default" else mode
+    if effective_mode in ("raw", "tdb2", "tdb"):
+        default_name = f"{stem}_edited_raw{suffix}"
+    elif effective_mode in ("wrapped", "fbchunks", "compressed"):
+        default_name = f"{stem}_edited_compressed{suffix}"
+    else:
+        default_name = f"{stem}_edited{suffix}"
+    out_path = output_path or (base / default_name)
+    run_franchise_bridge([
+        "save",
+        str(input_path),
+        str(summary_path),
+        str(parse_dir),
+        str(out_path),
+    ])
+    write_json(
+        base / "last_binary_rebuild_summary.json",
+        {
+            "mode": "franchise-bridge",
+            "save_mode": effective_mode,
+            "output_file": out_path.name,
+            "input_container": meta.get("input_container"),
+            "parse_format": meta.get("parse_format"),
+            "note": "Saved through madden-franchise using the original opened binary format.",
+        },
+    )
+    if clear_autosave:
+        clear_autosave_file(session_id)
+    return out_path
 
 
 @app.get("/api/session/{session_id}/binary-rebuild-summary.json")

@@ -268,6 +268,18 @@ function addLegacyAliases(tableName, record, rowIndex) {
   }
 }
 
+function enumMembersFor(field) {
+  const members = field?.enum?.members || [];
+  return members
+    .filter((member) => member?.name && member.name !== 'First_' && member.name !== 'Last_')
+    .map((member) => ({
+      label: member.name,
+      value: member.name,
+      rawValue: member.value ?? null,
+      unformattedValue: member.unformattedValue ?? null
+    }));
+}
+
 async function exportTableToJson(franchise, tableMeta, outputPath) {
   const table = franchise.getTableByUniqueId(tableMeta.unique_id);
   if (!table) fail(`Table not found: ${tableMeta.path}`);
@@ -275,7 +287,9 @@ async function exportTableToJson(franchise, tableMeta, outputPath) {
   const fieldDefinitions = (table.offsetTable || []).map((field) => ({
     name: field.name,
     type: field.type,
-    isReference: !!field.isReference
+    isReference: !!field.isReference,
+    enumName: field.enum?.name ?? null,
+    enumOptions: enumMembersFor(field)
   }));
   const records = table.records.map((sourceRecord, rowIndex) => {
     const record = {
@@ -301,6 +315,36 @@ async function exportTableToJson(franchise, tableMeta, outputPath) {
   };
   ensureDir(path.dirname(outputPath));
   fs.writeFileSync(outputPath, JSON.stringify(payload, null, 2), 'utf8');
+}
+
+async function applyTableJson(franchise, tableMeta, jsonPath) {
+  if (!fs.existsSync(jsonPath)) return { path: tableMeta.path, applied: 0, skipped: true };
+  const table = franchise.getTableByUniqueId(tableMeta.unique_id);
+  if (!table) return { path: tableMeta.path, applied: 0, skipped: true, reason: 'table not found' };
+  await table.readRecords();
+  const payload = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  const records = payload.records || [];
+  const fields = new Set((table.offsetTable || []).map((field) => field.name));
+  let applied = 0;
+  for (const sourceRecord of records) {
+    const rowIndex = Number(sourceRecord._index);
+    if (!Number.isInteger(rowIndex) || rowIndex < 0 || rowIndex >= table.records.length) continue;
+    const targetRecord = table.records[rowIndex];
+    if (!targetRecord || targetRecord.isEmpty) continue;
+    for (const fieldName of fields) {
+      if (!Object.prototype.hasOwnProperty.call(sourceRecord, fieldName)) continue;
+      const nextValue = sourceRecord[fieldName];
+      if (nextValue === null || nextValue === undefined) continue;
+      try {
+        targetRecord[fieldName] = nextValue;
+        applied++;
+      } catch {
+        // Some generated/schema fields are read-only or expect opaque binary. Keep saving
+        // resilient by preserving the original value if the library rejects the edit.
+      }
+    }
+  }
+  return { path: tableMeta.path, applied, skipped: false };
 }
 
 async function doSummary(inputPath, outDir, inputStem) {
@@ -343,6 +387,24 @@ async function doExportTable(inputPath, tableMetaPath, outputPath) {
   await exportTableToJson(franchise, tableMeta, outputPath);
 }
 
+async function doSave(inputPath, summaryPath, parseDir, outputPath) {
+  const franchise = await openFranchiseFile(inputPath);
+  const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+  const results = [];
+  for (const tableMeta of summary.tables || []) {
+    const jsonFile = tableMeta.json_file;
+    if (!jsonFile) continue;
+    const jsonPath = path.join(parseDir, jsonFile);
+    results.push(await applyTableJson(franchise, tableMeta, jsonPath));
+  }
+  if (!franchise.packedFileContents) {
+    franchise.packedFileContents = franchise.rawContents;
+  }
+  ensureDir(path.dirname(outputPath));
+  await franchise.save(outputPath, { sync: true });
+  fs.writeFileSync(`${outputPath}.save-summary.json`, JSON.stringify({ outputPath, tables: results }, null, 2), 'utf8');
+}
+
 try {
   if (command === 'summary') {
     const [, , , inputPath, outDir, inputStem] = process.argv;
@@ -354,6 +416,12 @@ try {
     const [, , , inputPath, tableMetaPath, outputPath] = process.argv;
     if (!inputPath || !tableMetaPath || !outputPath) fail('Usage: export-table <inputPath> <tableMetaPath> <outputPath>');
     await doExportTable(inputPath, tableMetaPath, outputPath);
+    process.exit(0);
+  }
+  if (command === 'save') {
+    const [, , , inputPath, summaryPath, parseDir, outputPath] = process.argv;
+    if (!inputPath || !summaryPath || !parseDir || !outputPath) fail('Usage: save <inputPath> <summaryPath> <parseDir> <outputPath>');
+    await doSave(inputPath, summaryPath, parseDir, outputPath);
     process.exit(0);
   }
   fail(`Unknown command: ${command}`);

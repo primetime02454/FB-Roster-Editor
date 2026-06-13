@@ -23,10 +23,18 @@ call .venv\Scripts\activate.bat
 if errorlevel 1 exit /b 1
 
 echo Refreshing bundled Node dependencies...
-call npm.cmd --prefix vendor\madden-file-tools install --omit=dev
-if errorlevel 1 exit /b 1
-call npm.cmd --prefix vendor\madden-franchise install --omit=dev
-if errorlevel 1 exit /b 1
+if not exist vendor\madden-file-tools\node_modules (
+  call npm.cmd --prefix vendor\madden-file-tools install --omit=dev
+  if errorlevel 1 exit /b 1
+) else (
+  echo vendor\madden-file-tools node_modules already present.
+)
+if not exist vendor\madden-franchise\node_modules (
+  call npm.cmd --prefix vendor\madden-franchise install --omit=dev
+  if errorlevel 1 exit /b 1
+) else (
+  echo vendor\madden-franchise node_modules already present.
+)
 
 if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist

@@ -5,6 +5,7 @@ import threading
 import time
 import urllib.request
 import os
+import base64
 from pathlib import Path
 
 import uvicorn
@@ -22,6 +23,52 @@ HOST = "127.0.0.1"
 PORT = 8000
 APP_URL = f"http://{HOST}:{PORT}"
 APP_NAME = "FB Roster Editor"
+
+
+class DesktopApi:
+    def _prompt_save_path(self, suggested_name: str):
+        target = webview.windows[0].create_file_dialog(
+            webview.SAVE_DIALOG,
+            save_filename=suggested_name or "roster",
+        )
+        if not target:
+            return None
+        if isinstance(target, (list, tuple)):
+            return Path(target[0])
+        return Path(target)
+
+    def save_download(self, url: str, suggested_name: str) -> dict:
+        """Open a native Save dialog, then download `url` from the local server
+        and write the bytes to the chosen path. Avoids pushing large files
+        through the JS bridge and avoids browser-download handling that
+        WebView2 does not support inside pywebview."""
+        try:
+            target_path = self._prompt_save_path(suggested_name)
+            if target_path is None:
+                return {"ok": False, "cancelled": True}
+            request = urllib.request.Request(url)
+            with urllib.request.urlopen(request, timeout=600) as response:
+                if getattr(response, "status", 200) >= 400:
+                    return {"ok": False, "error": f"Server returned {response.status}."}
+                data = response.read()
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            target_path.write_bytes(data)
+            return {"ok": True, "path": str(target_path)}
+        except Exception as exc:
+            append_runtime_log(f"save_download_error {type(exc).__name__}: {exc}")
+            return {"ok": False, "error": str(exc)}
+
+    def save_file_as(self, suggested_name: str, base64_data: str) -> dict:
+        try:
+            target_path = self._prompt_save_path(suggested_name)
+            if target_path is None:
+                return {"ok": False, "cancelled": True}
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            target_path.write_bytes(base64.b64decode(base64_data))
+            return {"ok": True, "path": str(target_path)}
+        except Exception as exc:
+            append_runtime_log(f"save_file_as_error {type(exc).__name__}: {exc}")
+            return {"ok": False, "error": str(exc)}
 
 
 def project_root() -> Path:
@@ -128,6 +175,7 @@ def main() -> int:
         height=1000,
         min_size=(1100, 720),
         text_select=True,
+        js_api=DesktopApi(),
     )
 
     def shutdown() -> None:
