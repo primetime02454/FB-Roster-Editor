@@ -709,14 +709,14 @@ function isTeamRatingColumn(code, label = '') {
 
 const PLAYER_RATING_GROUPS = [
   { title: 'Offense', subgroups: [
-    { title: 'Passing', codes: ['PTHP', 'PTAS', 'PTAM', 'PTAD', 'PTHA', 'PTOR', 'PTUP', 'PPLA'] },
+    { title: 'Passing', codes: ['PTHP', 'PTAS', 'PTAM', 'PTAD', 'PTHA', 'PTOR', 'PTUP', 'PPLA', 'PBSK'] }, // Moved PBSK from Defense to Offense _Passing -Primetime02454 6-12-26
     { title: 'Ball Carrier', codes: ['PCAR', 'PBCV', 'PBKT', 'PELU', 'PLJM', 'PLSM', 'PLTR', 'PLSA'] },
-    { title: 'Receiving', codes: ['PCTH', 'PCBT', 'PLCI', 'PLSC', 'PLRL', 'PDRR', 'PMRR'] },
+    { title: 'Receiving', codes: ['PCTH', 'PCBT', 'PLCI', 'PLSC', 'PLRL', 'PDRR', 'PMRR','SRRN'] },
     { title: 'Blocking', codes: ['PPBK', 'PPBF', 'PPBS', 'PRBK', 'PRBF', 'PRBS', 'PLBK', 'PLIB'] },
   ] },
   { title: 'Defense', subgroups: [
     { title: 'Coverage', codes: ['PLMC', 'PLZC', 'PLPE', 'PLRE'] },
-    { title: 'Pass Rush & Tackling', codes: ['PTAK', 'PLHT', 'PBSG', 'PLPU', 'PFMS', 'PBSK', 'PLPR'] },
+    { title: 'Pass Rush & Tackling', codes: ['PTAK', 'PLHT', 'PBSG', 'PLPU', 'PFMS', 'PLPR'] },
   ] },
   { title: 'Special Teams', subgroups: [
     { title: 'Kicking & Returns', codes: ['PKAC', 'PKPR', 'PKRT', 'PIMP'] },// Added Long Snap Rating - Primetime02454 6-12-26
