@@ -17,7 +17,7 @@ const PLAYER_VISUALS_CACHE = new Map();
 const PLAYER_INFO_ORDER = [
   'PFNA', 'PLNA', 'PGID', 'POID', 'TGID', 'PPOS', 'PLTY', 'POVR',
   'PAGE', 'PHGT', 'PWGT', 'PYEA', 'PYRP', 'PRSD', 'PJEN', 'PCOL', 'PHTN', 'PHSN',
-  'PHAN', 'PCPH', 'PIMP', 'PINJ', 'PYCF', 'PSXP', 'PGHE', 'PCMT',
+  'PHAN', 'PCPH', 'PINJ', 'PYCF', 'PSXP', 'PGHE', 'PCMT',
 ];
 const PLAYER_CONTRACT_ORDER = [
   'PCON', 'PCYL', 'PCSA', 'PTSA', 'PVCO', 'PVSB', 'PVTS', 'PSBO',
@@ -96,7 +96,7 @@ const PLAYER_RATING_COLUMNS = new Set([
   'PJEN', 'PJMP', 'PKAC', 'PKPR', 'PKRT', 'PLBK', 'PLBD', 'PMCV', 'PPBK',
   'PPLY', 'PPMC', 'PPRE', 'PRBK', 'PRLS', 'PRUN', 'PSAC', 'PSFA', 'PSFM',
   'PSHK', 'PSHP', 'PSPD', 'PSTA', 'PSTR', 'PTAK', 'PTHA', 'PTHP', 'PTOR',
-  'PTUP', 'PWGT', 'PZCV',
+  'PTUP', 'PWGT', 'PZCV', 'PIMP'      //added PIMP - primetime02454 6-12-26
 ]);
 const TEAM_COLOR_FIELDS = [
   { key: 'TBCR', label: 'Primary R' },
@@ -771,17 +771,17 @@ function isTeamRatingColumn(code, label = '') {
 
 const PLAYER_RATING_GROUPS = [
   { title: 'Offense', subgroups: [
-    { title: 'Passing', codes: ['PTHP', 'PTAS', 'PTAM', 'PTAD', 'PTHA', 'PTOR', 'PTUP', 'PPLA'] },
+    { title: 'Passing', codes: ['PTHP', 'PTAS', 'PTAM', 'PTAD', 'PTHA', 'PTOR', 'PTUP', 'PPLA', 'PBSK'] }, // Moved PBSK from Defense to Offense _Passing -Primetime02454 6-12-26
     { title: 'Ball Carrier', codes: ['PCAR', 'PBCV', 'PBKT', 'PELU', 'PLJM', 'PLSM', 'PLTR', 'PLSA'] },
-    { title: 'Receiving', codes: ['PCTH', 'PCBT', 'PLCI', 'PLSC', 'PLRL', 'PDRR', 'PMRR'] },
+    { title: 'Receiving', codes: ['PCTH', 'PCBT', 'PLCI', 'PLSC', 'PLRL', 'PDRR', 'PMRR','SRRN'] },
     { title: 'Blocking', codes: ['PPBK', 'PPBF', 'PPBS', 'PRBK', 'PRBF', 'PRBS', 'PLBK', 'PLIB'] },
   ] },
   { title: 'Defense', subgroups: [
     { title: 'Coverage', codes: ['PLMC', 'PLZC', 'PLPE', 'PLRE'] },
-    { title: 'Pass Rush & Tackling', codes: ['PTAK', 'PLHT', 'PBSG', 'PLPU', 'PFMS', 'PBSK', 'PLPR'] },
+    { title: 'Pass Rush & Tackling', codes: ['PTAK', 'PLHT', 'PBSG', 'PLPU', 'PFMS', 'PLPR'] },
   ] },
   { title: 'Special Teams', subgroups: [
-    { title: 'Kicking & Returns', codes: ['PKAC', 'PKPR', 'PKRT'] },
+    { title: 'Kicking & Returns', codes: ['PKAC', 'PKPR', 'PKRT', 'PIMP'] },// Added Long Snap Rating - Primetime02454 6-12-26
   ] },
   { title: 'Athleticism', subgroups: [
     { title: 'Physical', codes: ['PSPD', 'PACC', 'PAGI', 'PSTR', 'PJMP', 'PSTA', 'PTGH'] },
