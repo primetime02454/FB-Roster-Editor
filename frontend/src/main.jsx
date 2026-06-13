@@ -2632,7 +2632,13 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
   const playerPortrait = playerPortraitCandidatesList[0] || '';
   const playerJerseyNumber = valueText(draftValues.PJEN ?? record?.PJEN ?? selectedPlayerOption?.jerseyNumber ?? '');
   const playerPosition = displayValueForColumn('PPOS', draftValues.PPOS ?? record?.PPOS ?? selectedPlayerOption?.positionId ?? record?.Position ?? selectedPlayerOption?.position ?? '');
-  const playerArchetype = valueText(draftValues.PLTY ?? record?.PLTY ?? '');
+  function optionLabelForColumn(col, value) {
+    const current = valueText(value);
+    const option = selectOptionsForColumn(col).find(option => String(option.value) === current);
+    return option?.label || displayValueForColumn(col, value);
+  }
+
+  const playerArchetype = optionLabelForColumn('PLTY', draftValues.PLTY ?? record?.PLTY ?? '');
   const playerClass = normalizePlayerClass(draftValues.PYEA ?? record?.PYEA ?? '');
   const playerRedshirt = isRedshirtStatus(draftValues.PRSD ?? record?.PRSD ?? '0');
   const playerHeight = formatHeight(draftValues.PHGT ?? record?.PHGT ?? '');
@@ -2743,6 +2749,17 @@ function RecordEditor({ kind, tablePath, session, patchCell, setStatus, onDirty,
       return options.some(option => option.value === current)
         ? options
         : [{ label: `${current} (Current)`, value: current }, ...options];
+    }
+    const selectOptions = editorMeta.selectOptions?.[col] || [];
+    if (selectOptions.length) {
+      const current = valueText(draftValues[col]);
+      const withZero = selectOptions.some(option => String(option.value) === '0')
+        ? selectOptions
+        : [{ label: '0', value: '0' }, ...selectOptions];
+
+      return withZero.some(option => String(option.value) === current)
+        ? withZero
+        : [{ label: `${current} (Current)`, value: current }, ...withZero];
     }
     if (kind !== 'Team') return [];
     if (TEAM_RIVAL_COLUMNS.includes(col)) {

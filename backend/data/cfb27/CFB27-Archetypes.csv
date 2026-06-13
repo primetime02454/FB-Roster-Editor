@@ -1,0 +1,69 @@
+﻿ARLN,ARSN,ENUV
+QB - Pocket Passer,Pocket Passer,0
+QB - Strong Arm,Strong Arm,1
+QB - Backfield Creator,Backfield Creator,2
+QB - Dual Threat,Dual Threat,3
+QB - Pure Runner,Pure Runner,4
+HB - Contact Seeker,Contact Seeker,5
+HB - East/West Playmaker,East/West Playmaker,6
+HB - Backfield Threat,Backfield Threat,7
+HB - North/South Blocker,North/South Blocker,8
+HB - North/South Receiver,North/South Receiver,9
+HB - Elusive Bruiser,Elusive Bruiser,10
+HB - East/West Receiver,East/West Receiver,11
+FB - Blocking,Blocking,12
+FB - Utility,Utility,13
+WR - Speedster,Speedster,14
+WR - Route Artist,Route Artist,15
+WR - Physical Route Runner,Physical Route Runner,16
+WR - Elusive Route Runner,Elusive Route Runner,17
+WR - Gritty Possession,Gritty Possession,18
+WR - Gadget,Gadget,19
+WR - Contested Specialist,Contested Specialist,20
+WR - Slot,Slot,21
+TE - Pure Blocker,Pure Blocker,22
+TE - Vertical Threat,Vertical Threat,23
+TE - Physical Route Runner,Physical Route Runner,24
+TE - Gritty Possession,Gritty Possession,25
+TE - Pure Possession,Pure Possession,26
+C - Pass Protector,Pass Protector,27
+C - Raw Strength,Raw Strength,28
+C - Well Rounded,Well Rounded,29
+C - Agile,Agile,30
+OT - Pass Protector,Pass Protector,31
+OT - Raw Strength,Raw Strength,32
+OT - Well Rounded,Well Rounded,33
+OT - Agile,Agile,34
+G - Pass Protector,Pass Protector,35
+G - Well Rounded,Well Rounded,36
+G - Raw Strength,Raw Strength,37
+G - Agile,Agile,38
+EDGE - Speed Rusher,Speed Rusher,39
+EDGE - Power Rusher,Power Rusher,40
+EDGE - Pure Power,Pure Power,41
+EDGE - Edge Setter,Edge Setter,42
+DT - Gap Specialist,Gap Specialist,43
+DT - Pure Power,Pure Power,44
+DT - Speed Rusher,Speed Rusher,45
+DT - Power Rusher,Power Rusher,46
+DEPRECIATED,DEPRECIATED,47
+OLB - Signal Caller,Signal Caller,48
+OLB - Lurker,Lurker,49
+OLB - Thumper,Thumper,50
+MIKE - Signal Caller,Signal Caller,51
+MIKE - Lurker,Lurker,52
+MIKE - Thumper,Thumper,53
+CB - Bump and Run,Bump and Run,54
+CB - Boundary,Boundary,55
+CB - Zone,Zone,56
+CB - Field,Field,57
+S - Coverage Specialist,Coverage Specialist,58
+S - Hybrid,Hybrid,59
+S - Box Specialist,Box Specialist,60
+KP - Accurate,Accurate,61
+KP - Power,Power,62
+KR - Balanced,Balanced,63
+PR - Balanced,Balanced,64
+LS - Power,Power,65
+LS - Accurate,Accurate,66
+GAD - Gadget,Gadget,67

@@ -32,6 +32,10 @@ BACKEND_ROOT = Path(os.environ.get("FB_EDITOR_BACKEND_ROOT") or Path(__file__).r
 PROJECT_ROOT = Path(os.environ.get("FB_EDITOR_PROJECT_ROOT") or BACKEND_ROOT.parent).resolve()
 DATA_ROOT = Path(os.environ.get("FB_EDITOR_DATA_ROOT") or (BACKEND_ROOT / "data")).resolve()
 REFERENCE_OPTIONS_PATH = BACKEND_ROOT / "app" / "reference_options.json"
+CFB27_ARCHETYPES_PATHS = (
+    DATA_ROOT / "cfb27" / "CFB27-Archetypes.csv",
+    DATA_ROOT / "CFB27-Archetypes.csv",
+)
 SESSION_ROOT = Path(os.environ.get("FB_EDITOR_SESSION_ROOT") or (DATA_ROOT / "sessions")).resolve()
 FRONTEND_DIST = Path(os.environ.get("FB_EDITOR_FRONTEND_DIST") or (PROJECT_ROOT / "frontend" / "dist")).resolve()
 EXTERNAL_ASSET_ROOT = Path(os.environ.get("FB_EDITOR_EXTERNAL_ASSET_ROOT") or (PROJECT_ROOT / "frontend" / "public")).resolve()
@@ -269,7 +273,7 @@ COLLEGE_TEAM_NAMES = {
 }
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=1)       ##Added by Primetime02454 6-13-26 (arechtype support)
 def load_reference_options() -> Dict[str, List[Dict[str, str]]]:
     if not REFERENCE_OPTIONS_PATH.exists():
         return {}
@@ -279,16 +283,49 @@ def load_reference_options() -> Dict[str, List[Dict[str, str]]]:
         return {}
 
 
-def editor_select_options(table_name: str) -> Dict[str, List[Dict[str, str]]]:
-    if (table_name or "").upper() != "TEAM":
+@lru_cache(maxsize=1)
+def load_cfb27_archetype_options() -> List[Dict[str, str]]:
+    archetype_path = next((path for path in CFB27_ARCHETYPES_PATHS if path.exists()), None)
+    if archetype_path is None:
+        return []
+
+    options: List[Dict[str, str]] = []
+    with archetype_path.open("r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            value = str(row.get("ENUV", "")).strip()
+            label = str(row.get("ARLN") or row.get("ARSN") or value).strip()
+
+            if value == "":
+                continue
+
+            options.append({
+                "label": label,
+                "value": value,
+            })
+
+    return options
+
+
+def editor_select_options(table_name: str, roster_family: str = "college") -> Dict[str, List[Dict[str, str]]]:
+    table_name = (table_name or "").upper()
+
+    if table_name == "PLAY":
+        if roster_family == "college":
+            return {
+                "PLTY": load_cfb27_archetype_options(),
+            }
         return {}
+
+    if table_name != "TEAM":
+        return {}
+
     refs = load_reference_options()
     return {
         "SGID": refs.get("STADIUM_IDOptions", []),
         "TDPB": refs.get("DEF_PLAYBOOK_IDOptions", []),
         "TOPB": refs.get("OFF_PLAYBOOK_IDOptions", []),
     }
-
 
 def detect_roster_family_from_team_records(records: List[Dict[str, Any]]) -> str:
     candidates = []
@@ -2733,29 +2770,35 @@ def get_position_options(session_id: str):
 
 @app.get("/api/session/{session_id}/editor-meta/{table_name}")
 def get_editor_meta(session_id: str, table_name: str):
+    roster_family = roster_family_for_session(session_id)
     meta = find_table(session_id, table_name)
+
     if not meta:
+        short_table_name = str(table_name or "").split(".")[-1].upper()
         return {
             "table": table_name,
             "labels": {},
-            "selectOptions": editor_select_options(table_name),
+            "selectOptions": editor_select_options(short_table_name, roster_family),
             "fieldDefinitions": {},
-            "gearFields": player_gear_fields(session_id) if table_name.upper() == "PLAY" else [],
+            "gearFields": player_gear_fields(session_id) if short_table_name == "PLAY" else [],
         }
-    labels = get_field_labels_for_table(meta["name"])
+
+    short_table_name = str(meta["name"] or "").split(".")[-1].upper()
+    labels = get_field_labels_for_table(short_table_name)
+
     try:
         table_obj = load_table_obj(session_id, meta["path"])
         definitions = field_definitions_by_name(table_obj)
     except Exception:
         definitions = {}
+
     return {
         "table": meta["name"],
         "labels": labels,
-        "selectOptions": editor_select_options(meta["name"]),
+        "selectOptions": editor_select_options(short_table_name, roster_family),
         "fieldDefinitions": definitions,
-        "gearFields": player_gear_fields(session_id) if meta["name"].upper() == "PLAY" else [],
+        "gearFields": player_gear_fields(session_id) if short_table_name == "PLAY" else [],
     }
-
 
 @app.get("/api/session/{session_id}/visual-options")
 def get_visual_options(session_id: str):
