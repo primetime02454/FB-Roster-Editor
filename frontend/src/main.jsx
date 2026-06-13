@@ -17,7 +17,7 @@ const PLAYER_VISUALS_CACHE = new Map();
 const PLAYER_INFO_ORDER = [
   'PFNA', 'PLNA', 'PGID', 'POID', 'TGID', 'PPOS', 'PLTY', 'POVR',
   'PAGE', 'PHGT', 'PWGT', 'PYEA', 'PYRP', 'PRSD', 'PJEN', 'PCOL', 'PHTN', 'PHSN',
-  'PHAN', 'PCPH', 'PIMP', 'PINJ', 'PYCF', 'PSXP', 'PGHE', 'PCMT',
+  'PHAN', 'PCPH', 'PINJ', 'PYCF', 'PSXP', 'PGHE', 'PCMT',
 ];
 const PLAYER_CONTRACT_ORDER = [
   'PCON', 'PCYL', 'PCSA', 'PTSA', 'PVCO', 'PVSB', 'PVTS', 'PSBO',
@@ -96,7 +96,7 @@ const PLAYER_RATING_COLUMNS = new Set([
   'PJEN', 'PJMP', 'PKAC', 'PKPR', 'PKRT', 'PLBK', 'PLBD', 'PMCV', 'PPBK',
   'PPLY', 'PPMC', 'PPRE', 'PRBK', 'PRLS', 'PRUN', 'PSAC', 'PSFA', 'PSFM',
   'PSHK', 'PSHP', 'PSPD', 'PSTA', 'PSTR', 'PTAK', 'PTHA', 'PTHP', 'PTOR',
-  'PTUP', 'PWGT', 'PZCV',
+  'PTUP', 'PWGT', 'PZCV', 'PIMP'      //added PIMP - primetime02454 6-12-26
 ]);
 const TEAM_COLOR_FIELDS = [
   { key: 'TBCR', label: 'Primary R' },
@@ -719,7 +719,7 @@ const PLAYER_RATING_GROUPS = [
     { title: 'Pass Rush & Tackling', codes: ['PTAK', 'PLHT', 'PBSG', 'PLPU', 'PFMS', 'PBSK', 'PLPR'] },
   ] },
   { title: 'Special Teams', subgroups: [
-    { title: 'Kicking & Returns', codes: ['PKAC', 'PKPR', 'PKRT'] },
+    { title: 'Kicking & Returns', codes: ['PKAC', 'PKPR', 'PKRT', 'PIMP'] },// Added Long Snap Rating - Primetime02454 6-12-26
   ] },
   { title: 'Athleticism', subgroups: [
     { title: 'Physical', codes: ['PSPD', 'PACC', 'PAGI', 'PSTR', 'PJMP', 'PSTA', 'PTGH'] },
